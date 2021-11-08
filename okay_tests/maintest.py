@@ -72,9 +72,19 @@ class Maintest:
         self.driver.execute_script("arguments[0].scrollIntoView();", element)
         element.click()
 
+    def send_keys_slowly(self, element, text):
+        """self.send_keys_slowly(element=WebdriverObject, text=Str)"""
+        for char in text:
+            element.send_keys(char)
+            self.sleep(1)
+
     def abort(self):
         """Close the browser window and exit the test."""
         self.driver.close()
+
+    def log(self, step):
+        """self.log(message=Str)"""
+        self.step = f"Func: {sys._getframe(1).f_code.co_name} >> {step}"
     
     def take_screenshot(self, timestamp="", type="src"):
         """self.take_screenshot(timestamp=DatetimeObject, type=Str)"""

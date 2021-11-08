@@ -1,3 +1,4 @@
+import functools
 import random
 import requests
 import sys
@@ -26,6 +27,7 @@ class OkaySK(Maintest):
         self.sleep(5)
 
     def catch_error(f):
+        @functools.wraps(f)
         def inner(self, *args, **kwargs):
             try:
                 f(self, *args, **kwargs)
@@ -38,20 +40,21 @@ class OkaySK(Maintest):
     @catch_error
     def add_to_cart(self):
         """
-        Add current product to cart. Before running this method, you have to open some product in stock first, eg. with open_product() method.
+        Add current product to cart. Before running this method, you have to open some product in stock first, 
+        eg. with open_product() method.
 
         Example:
         - test.add_to_cart()
         """
-        self.step = "Get the name of the product"
+        self.log("Get the name of the product")
         product_name = self.driver.find_element(By.TAG_NAME, "h1").text
-        self.step = f"Add '{product_name}' to the cart"
+        self.log(f"Add '{product_name}' to the cart")
         self.click(self.driver.find_element(By.NAME, "add"))
 
         self.sleep()
-        self.step = "Continue to the cart"
+        self.log("Continue to the cart")
         try:
-            self.click(self.driver.find_element(By.CSS, ".modal__overlay .button--add-to-cart"))
+            self.click(self.driver.find_element(By.CSS_SELECTOR, "#cross-sell .button--add-to-cart"))
         except Exception as err:
             print("Product has no cross-sell ----------")
             self.sleep()
@@ -66,18 +69,39 @@ class OkaySK(Maintest):
         self.take_screenshot()
 
     @catch_error
+    def check_services(self, services):
+        """
+        Try to check all furniture services in cart. After all services are checked, take a screenshot. You have to
+        provide a list of 'services' IDs that shoud be available for this category.
+
+        Examples:
+        - test.check_services(services=["40968686796951", "40968686829719"])
+        - test.check_services(services=["40968686928023"])
+
+        The 'services' argument is mandatory.
+        """
+        for service in services:
+            self.log(f"{service}: check if service is available")
+            self.click(self.driver.find_element(By.XPATH, f"//input[@product-service-id={service}]"))
+            self.sleep(5)
+            
+        self.driver.find_element(By.TAG_NAME, "body").send_keys(Keys.CONTROL + Keys.HOME)
+        self.sleep()
+        self.take_screenshot()
+
+    @catch_error
     def choose_delivery(self, delivery, proceed=False):
         """
         Choose delivery type defined in 'delivery' argument. You have to be in the 'shipping' step of checkout.
 
         Example:
-        test.choose_delivery(delivery='na moju adresu', proceed=True)
+        - test.choose_delivery(delivery='na moju adresu', proceed=True)
 
         The argument 'delivery' is mandatory and it should correspond to real delivery types on website.
         The argument 'proceed' is optional. If you set 'proceed' to 'True', test will proceed to next step.
         The default value of 'proceed' argument is 'False'.
         """
-        self.step = "Get all possible delivery types"
+        self.log("Get all possible delivery types")
         shipping_tabs = self.driver.find_elements(By.CSS_SELECTOR, ".checkout-shipping-tabs a")
         chosen_option = None
         for element in shipping_tabs:
@@ -86,7 +110,7 @@ class OkaySK(Maintest):
             shipping_options = self.driver.find_elements(By.CSS_SELECTOR, ".section--shipping-method .content-box__row")
             possible_options = [element for element in shipping_options if "table" in element.get_attribute("style")]
 
-            self.step = f"Find delivery type that corresponds to '{delivery}'"
+            self.log(f"Find delivery type that corresponds to '{delivery}'")
             for option in possible_options:
                 
                 delivery_option = option.find_element(By.CSS_SELECTOR, ".radio__label__primary")
@@ -98,7 +122,7 @@ class OkaySK(Maintest):
             if chosen_option:
                 break
 
-        self.step = f"Click on the delivery type that corresponds to '{delivery}'"
+        self.log(f"Click on the delivery type that corresponds to '{delivery}'")
         self.click(chosen_option)
 
         self.sleep()
@@ -120,10 +144,10 @@ class OkaySK(Maintest):
         The argument 'proceed' is optional. If you set 'proceed' to 'True', test will proceed to next step.
         The default value of 'proceed' argument is 'False'.
         """
-        self.step = "Get list of all possible payment options"
+        self.log("Get list of all possible payment options")
         payment_options = self.driver.find_elements(By.CSS_SELECTOR, ".section--payment-method fieldset .content-box__row")
         chosen_option = None
-        self.step = f"Find payment type that corresponds to '{payment}'"
+        self.log(f"Find payment type that corresponds to '{payment}'")
         for option in payment_options:
             if "secondary" in option.get_attribute("class"):
                 continue
@@ -133,7 +157,7 @@ class OkaySK(Maintest):
                 break
         
         self.sleep()
-        self.step = f"Click on the payment type that corresponds to '{payment}'"
+        self.log(f"Click on the payment type that corresponds to '{payment}'")
         self.click(chosen_option)
         
         self.sleep()
@@ -142,7 +166,28 @@ class OkaySK(Maintest):
         if proceed:
             self.click(self.driver.find_element(By.ID, "continue_button"))
             self.sleep()
-            
+
+    @catch_error
+    def empty_cart(self):
+        """
+        Open the cart and delete all items in it. This method won't raise any errors if there are no items in cart.
+
+        Example:
+        - test.empty_cart()
+        """            
+        self.log("Empty the cart")
+        self.driver.get(f"{self.home_url}/cart")
+        cart_is_empty = False
+        while not cart_is_empty:
+            self.sleep()
+            try:
+                self.click(self.driver.find_element(By.CSS_SELECTOR, ".cart__remove a"))
+            except Exception as err:
+                print("Cart is empty ----------")
+                cart_is_empty = True
+        
+        self.sleep()
+
     @catch_error
     def goto_checkout(self):
         """
@@ -152,7 +197,7 @@ class OkaySK(Maintest):
         Example:
         - test.goto_checkout()
         """
-        self.step = "Proceed to the checkout"
+        self.log("Proceed to the checkout")
         if "cart" not in self.driver.current_url:
             self.driver.get(f"{self.home_url}/cart")
             self.sleep()
@@ -160,14 +205,14 @@ class OkaySK(Maintest):
         self.click(self.driver.find_element(By.NAME, "checkout"))
 
         self.sleep()
-        self.step = "Fill in all necessary details if needed"
+        self.log("Fill in all necessary details if needed")
         try:
             email = self.driver.find_element(By.ID, "checkout_email")
             email.send_keys("test.okay@okaycz.eu")
             firstname = self.driver.find_element_by_id("checkout_shipping_address_first_name")
             firstname.send_keys("test")
             surname = self.driver.find_element_by_id("checkout_shipping_address_last_name")
-            surname.send_keys("selenium")
+            surname.send_keys("test")
             street = self.driver.find_element_by_id("checkout_shipping_address_address1")
             street.send_keys("Testovaci 123")
             zipnr = self.driver.find_element_by_id("checkout_shipping_address_zip")
@@ -182,7 +227,7 @@ class OkaySK(Maintest):
             self.sleep()
             self.take_screenshot()
 
-            self.step = "Proceed to shipping form"
+            self.log("Proceed to shipping form")
             self.click(self.driver.find_element(By.ID, "continue_button"))
         
         except Exception as err:
@@ -191,17 +236,85 @@ class OkaySK(Maintest):
         self.sleep()
 
     @catch_error
+    def handle_gopay(self):
+        """
+        Proceed through the payment gate until it is able to fill in credit card information,    
+        then return back to the eshop to cancel order.
+
+        Example:
+        - test.handle_gopay()
+        """
+        self.log("Wait for redirect to payment gate")
+        self.sleep(20)
+        self.take_screenshot()
+
+        self.log("Choose payment by card")
+        elements = self.driver.find_elements(By.CSS_SELECTOR, "div.sc-iCoGMd")
+        for element in elements:
+            if any(word in element.text.lower() for word in ["karta", "card"]):
+                self.click(element)
+                break
+        
+        self.log("Switch to iframe")
+        self.sleep()
+        self.driver.switch_to.frame(self.driver.find_element(By.TAG_NAME, "iframe"))
+
+        self.log("Fill in card details")
+        card_num = self.driver.find_element(By.NAME, "cardnumber")
+        self.send_keys_slowly(card_num, "5555555555554444")
+        self.sleep(2)
+        expiration = self.driver.find_element(By.NAME, "exp-date")
+        self.send_keys_slowly(expiration, "1230")
+        self.sleep(2)
+        cvc = self.driver.find_element(By.NAME, "cvc")
+        self.send_keys_slowly(cvc, "123")
+
+        self.sleep()
+        self.take_screenshot()
+
+        self.log("Switch back from iframe to main content")
+        self.driver.switch_to.default_content()
+
+        self.log("Close the payment plugin")
+        elements = self.driver.find_elements(By.CSS_SELECTOR, "div.sc-eXuyPJ.grxFi")
+        elements.extend(self.driver.find_elements(By.CSS_SELECTOR, "div.sc-gzcbmu.bENTHN"))
+        element_found = False
+        for element in elements:
+            print(element.text)
+            if "menu" in element.text.lower():
+                element_found = True
+                self.click(element)
+                break
+        if not element_found:
+            raise Exception("Gopay: Unable to locate the 'menu' button.")
+        
+        self.sleep()
+        elements = self.driver.find_elements(By.CSS_SELECTOR, "div.sc-iCoGMd.hoarAx")
+        element_found = False
+        for element in elements:
+            print(element.text)
+            if any(word in element.text.lower() for word in ["zpět", "back"]):
+                element_found = True
+                element.click()
+                break
+        if not element_found:
+            raise Exception("Gopay: Unable to locate the 'back' button.")
+        
+        self.log("Wait for redirect back to eshop")
+        self.sleep(20)
+                
+    @catch_error
     def open_product(self):
         """
-        Looks for the top bestseller in stock. If there is none, opens the first product in collection.
+        Look for the top bestseller in stock. If there is none, open the first product in collection.
 
         Example:
         - test.open_product()
         """
-        self.step = "Get the list of the bestsellers"
+        self.log("Get the list of the bestsellers")
         bestsellers = self.driver.find_elements(By.CSS_SELECTOR, ".flickity-slider div")
 
-        self.step = "Find the first product in stock and open it"
+        self.log("Find the first product in stock and open it")
         test_product = None
         for item in bestsellers:
             try:
@@ -212,7 +325,7 @@ class OkaySK(Maintest):
                 continue
 
         if not test_product:
-            self.step = "There is no bestseller, choosing from other products"
+            self.log("There is no bestseller, choosing from other products")
             products = self.driver.find_elements(By.CSS_SELECTOR, ".collection-matrix div")
             for item in products:
                 try:
@@ -239,7 +352,7 @@ class OkaySK(Maintest):
         This is going to click on 3 items in main menu.
         """
 
-        self.step = f"Click on {items} random items in main menu"
+        self.log(f"Click on {items} random items in main menu")
         clicked = []
         i = 0
 
@@ -255,13 +368,13 @@ class OkaySK(Maintest):
             self.sleep()
             menuitems = self.driver.find_elements(By.CSS_SELECTOR, ".nav-nested .nav-nested__link-parent")
 
-            self.step = f"H{i}. choose random item from the menu"
+            self.log(f"H{i}. choose random item from the menu")
             item = random.choice(menuitems)
             item_anchor = item.find_element(By.TAG_NAME, "a")
             item_url = item_anchor.get_attribute("href")
 
             if item_url not in clicked:
-                self.step = f"{item_anchor.text} - click this item"
+                self.log(f"{item_anchor.text} - click this item")
                 clicked.append(item_url)
                 self.click(item_anchor)
                 if self.is_mobile:
@@ -286,7 +399,7 @@ class OkaySK(Maintest):
         This is going to click on 3 items in footer.
         """
 
-        self.step = f"Click on {items} random items in foooter"
+        self.log(f"Click on {items} random items in foooter")
         clicked = []
         i = 0
 
@@ -301,12 +414,12 @@ class OkaySK(Maintest):
             else:
                 footer_items = self.driver.find_elements(By.CSS_SELECTOR, "footer a")
 
-            self.step = f"F{i}. choose random item from the footer"
+            self.log(f"F{i}. choose random item from the footer")
             item = random.choice(footer_items)
             item_url = item.get_attribute("href")
 
             if item_url not in clicked and item_url.startswith(self.home_url):
-                self.step = f"{item.text} - click this item"
+                self.log(f"{item.text} - click this item")
                 clicked.append(item_url)
                 self.click(item)
 
@@ -327,11 +440,11 @@ class OkaySK(Maintest):
         The argument 'text' is mandatory.
         """
         if self.is_mobile:
-            self.step = "Open dropdown menu on mobile"
+            self.log("Open dropdown menu on mobile")
             self.click(self.driver.find_element(By.CSS_SELECTOR, ".mobile-menu__toggle-button"))
             self.sleep()
 
-        self.step = f"Open category: {text}"
+        self.log(f"Open category: {text}")
         item = self.driver.find_element(By.LINK_TEXT, text)
         self.click(item)
 
@@ -356,7 +469,7 @@ class OkaySK(Maintest):
 
         The argument 'url' is mandatory.
         """
-        self.step = f"Open {url} in the browser"
+        self.log(f"Open {url} in the browser")
         self.driver.get(url)
         self.sleep()
 
@@ -370,9 +483,9 @@ class OkaySK(Maintest):
 
         The argument 'text' is mandatory.
         """
-        self.step = f"Search for '{text}'"
+        self.log(f"Search for '{text}'")
         if self.is_mobile:
-            self.step = "Click search button on mobile."
+            self.log("Click search button on mobile.")
             self.click(self.driver.find_element(By.CSS_SELECTOR, ".mobile-icons a"))
 
             self.sleep()
@@ -399,7 +512,7 @@ class OkaySK(Maintest):
     @catch_error
     def set_filter(self, name, value):
         """
-        Sets a filter by name and value provided as arguments.
+        Set a filter by name and value provided as arguments.
 
         Example:
         - test.set_filter(name='výrobcovia', value='lg')
@@ -408,13 +521,13 @@ class OkaySK(Maintest):
         """
 
         if self.is_mobile:
-            self.step = "Open filter menu on mobile"
+            self.log("Open filter menu on mobile")
             wait = WebDriverWait(self.driver, 60)
-            filter_btn = wait.until(EC.element_to_be_clickable((By.CSS_SELECTOR, ".boost-pfs-filter-tree-mobile-button button")))
+            filter_btn = wait.until(EC.element_to_be_clickable(By.CSS_SELECTOR, ".boost-pfs-filter-tree-mobile-button button"))
             self.click(filter_btn)
             self.sleep()
 
-            self.step = f"Open '{name}' filter on mobile"
+            self.log(f"Open '{name}' filter on mobile")
             filter_options = self.driver.find_elements(By.CSS_SELECTOR, ".boost-pfs-filter-option-title button")
             for item in filter_options:
                 if str(name).lower() in item.text.lower():
@@ -422,7 +535,7 @@ class OkaySK(Maintest):
                     break
             self.sleep()
 
-        self.step = f"Set the '{name}' filter to '{value}'"        
+        self.log(f"Set the '{name}' filter to '{value}'")
         filter = self.driver.find_elements(By.CSS_SELECTOR, ".boost-pfs-filter-button .boost-pfs-filter-option-value")
         for item in filter:
             if str(value).lower() in item.text.lower():
@@ -431,7 +544,7 @@ class OkaySK(Maintest):
         self.sleep()
 
         if self.is_mobile:
-            self.step = f"Accept the '{name}' filter on mobile"
+            self.log(f"Accept the '{name}' filter on mobile")
             self.click(self.driver.find_element(By.CSS_SELECTOR, ".boost-pfs-filter-back-btn"))
             self.sleep()
             self.take_screenshot()
