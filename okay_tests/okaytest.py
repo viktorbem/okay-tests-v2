@@ -1,28 +1,27 @@
 import random
 import requests
 import sys
-from okay_tests import Maintest
+from okay_tests import MainTest
 from selenium.webdriver.common.by import By
 from selenium.webdriver.common.keys import Keys
 from selenium.webdriver.support import expected_conditions as EC
 from selenium.webdriver.support.ui import WebDriverWait
+from urllib.parse import urlparse
 
 
-class OkaySK(Maintest):
-    def __init__(self, theme="", **kwargs):
+class OkayTest(MainTest):
+    def __init__(self, theme="", debug=False, **kwargs):
         super().__init__(**kwargs)
-        self.home_url = "https://www.okay.sk"
-
-        if theme != "":
-            self.set_dev_theme(theme)
+        self.home_url = ""
+        self.debug = debug
+        self.theme = theme
 
     def set_dev_theme(self, theme):
         dev_url = f"{self.home_url}/?preview_theme_id={theme}"
         response = requests.get(dev_url)
         if response.status_code == 200:
             print("DEV ENVIRONMENT ----------")
-            url = dev_url
-        self.driver.get(url)
+            self.driver.get(dev_url)
         self.sleep(5)
 
     def catch_error(f):
@@ -31,7 +30,8 @@ class OkaySK(Maintest):
                 f(self, *args, **kwargs)
             except Exception as err:
                 self.log_error(message=err, during=self.step)
-                self.abort()
+                if not self.debug:
+                    self.abort()
                 sys.exit()
         return inner
 
@@ -266,7 +266,7 @@ class OkaySK(Maintest):
                 self.click(item_anchor)
                 if self.is_mobile:
                     self.sleep()
-                    self.click(item.find_element(By.CSS_SELECTOR, "nav-nested__forward"))
+                    self.click(item.find_element(By.CSS_SELECTOR, ".nav-nested__forward"))
 
                 self.sleep()
                 self.take_screenshot()
@@ -352,11 +352,14 @@ class OkaySK(Maintest):
         Open an URL defined as argument of this method.
 
         Example:
-        - test.open_url(url='https://www.okay.sk/')
+        - test.open_url(url='https://www.okay.cz/')
 
         The argument 'url' is mandatory.
         """
         self.step = f"Open {url} in the browser"
+        self.home_url = f"{urlparse(url).scheme}://{urlparse(url).netloc}/"
+        if self.theme != "":
+            self.set_dev_theme(self.theme)
         self.driver.get(url)
         self.sleep()
 
@@ -372,7 +375,7 @@ class OkaySK(Maintest):
         """
         self.step = f"Search for '{text}'"
         if self.is_mobile:
-            self.step = "Click search button on mobile."
+            self.step = f"Confirm search for '{text}' on mobile."
             self.click(self.driver.find_element(By.CSS_SELECTOR, ".mobile-icons a"))
 
             self.sleep()
@@ -390,8 +393,9 @@ class OkaySK(Maintest):
         try:
             suggestion = self.driver.find_element(By.CSS_SELECTOR, ".boost-pfs-search-suggestion-item b")
         except Exception as err:
-            suggestion = self.driver.find_element(By.CSS_SELECTOR, ".boost-pfs-search-suggestion-item")
-        self.click(suggestion)
+            print(err)
+            suggestion = self.driver.find_element(By.CSS_SELECTOR, ".boost-pfs-search-suggestion-item a")
+        suggestion.click()
 
         self.sleep()
         self.take_screenshot()
@@ -416,18 +420,26 @@ class OkaySK(Maintest):
 
             self.step = f"Open '{name}' filter on mobile"
             filter_options = self.driver.find_elements(By.CSS_SELECTOR, ".boost-pfs-filter-option-title button")
+            is_found = False
             for item in filter_options:
                 if str(name).lower() in item.text.lower():
                     self.click(item)
+                    is_found = True
                     break
+            if not is_found:
+                raise Exception(f"The '{name}' filter was not found.")
             self.sleep()
 
         self.step = f"Set the '{name}' filter to '{value}'"        
         filter = self.driver.find_elements(By.CSS_SELECTOR, ".boost-pfs-filter-button .boost-pfs-filter-option-value")
+        is_found = False
         for item in filter:
             if str(value).lower() in item.text.lower():
                 self.click(item)
+                is_found = True
                 break
+        if not is_found:
+            raise Exception(f"The '{value}' value of the '{name}' filter was not found.")
         self.sleep()
 
         if self.is_mobile:
