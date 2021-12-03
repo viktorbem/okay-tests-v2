@@ -1,2 +1,2 @@
-from okay_tests.maintest import Maintest
-from okay_tests.okaysk import OkaySK
+from okay_tests.maintest import MainTest
+from okay_tests.okaytest import OkayTest

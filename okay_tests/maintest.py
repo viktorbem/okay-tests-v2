@@ -1,8 +1,9 @@
 import __main__
+import json
 import os
 import smtplib
-import time
 import sys
+import time
 
 from datetime import datetime
 from email import encoders
@@ -11,17 +12,20 @@ from email.mime.multipart import MIMEMultipart
 from email.mime.text import MIMEText
 from PIL import Image
 from selenium import webdriver
-from slack_sdk.webhook import WebhookClient
+from slack_sdk import WebClient
+from types import SimpleNamespace
 
 
-MAILFROM = ""
-MAILTO = ""
-PASSWORD = ""
-SLACK_URL = ""
+with open(os.path.join(os.path.abspath(os.path.dirname(__name__)), "config.json")) as json_file:
+    data = json.loads(json_file.read(), object_hook=lambda kwargs: SimpleNamespace(**kwargs))
+    DEFAULT, SECRET = data.defaults, data.secrets
 
 
-class Maintest:
-    def __init__(self, name=None, is_mobile=False, is_headless=False, is_email=False, is_slack=False, delay=10, **kwargs):
+class MainTest:
+    def __init__(
+        self, name=None, is_mobile=bool(DEFAULT.is_mobile), is_headless=bool(DEFAULT.is_headless), 
+        is_email=bool(DEFAULT.is_email), is_slack=bool(DEFAULT.is_slack), delay=int(DEFAULT.delay), **kwargs
+    ):
         self.testname = name
         if not self.testname:
             self.testname = os.path.basename(sys.argv[0][:-3])
@@ -46,6 +50,7 @@ class Maintest:
     def setup_chrome(self, driver):
         self.options = webdriver.ChromeOptions()
         self.options.add_argument("--lang=en")
+        self.options.add_experimental_option("excludeSwitches", ["enable-logging"])
         if self.is_mobile:
             width = 360
             height = width * 3
@@ -101,23 +106,25 @@ class Maintest:
     
     def log_error(self, message, during="Unidentified error"):
         """self.log_error(message=Str, during=Str)"""
-        msg = f"{during}\n\n{message}"
+        message = str(message).split("Stacktrace:")[0]
+        msg = f"ERR during >> {during}\n\n{message}"
         print(msg)
         timestamp = datetime.now().strftime("%H%M%S")
         self.take_screenshot(timestamp, "err")
         with open(os.path.join(self.logpath, f"{timestamp}_err.txt"), "w") as logfile:
             logfile.write(msg)
 
+        filename = f"{timestamp}_err.jpg"
+        path_to_img = os.path.join(self.logpath, filename)
+
         # Send email if test crashes
         if self.is_email:
             new_msg = MIMEMultipart()
-            new_msg["From"] = MAILFROM
-            new_msg["To"] = MAILTO
+            new_msg["From"] = SECRET.mail_from
+            new_msg["To"] = SECRET.mail_to
             new_msg["Subject"] = self.testname
             new_msg.attach(MIMEText(f"\n\n{message}", "plain"))
 
-            filename = f"{timestamp}_err.jpg"
-            path_to_img = os.path.join(self.logpath, filename)
             payload = MIMEBase("application", "octate-stream")
             with open(path_to_img, "rb") as file:
                 payload.set_payload(file.read())
@@ -128,17 +135,21 @@ class Maintest:
 
             with smtplib.SMTP("smtp.gmail.com") as mailserver:
                 mailserver.starttls()
-                mailserver.login(user=MAILFROM, password=PASSWORD)
+                mailserver.login(user=SECRET.mail_from, password=SECRET.mail_password)
                 mailserver.sendmail(
-                    from_addr=MAILFROM,
-                    to_addrs=MAILTO,
+                    from_addr=SECRET.mail_from,
+                    to_addrs=SECRET.mail_to,
                     msg=text
                 )
 
         # Send message to Slack if test crashes
         if self.is_slack:
-            webhook = WebhookClient(SLACK_URL)    
-            response = webhook.send(text=f"*{self.testname} >>* {msg}")
+            client = WebClient(SECRET.slack_token)
+            response = client.files_upload(
+                channels=SECRET.slack_channel,
+                initial_comment=f"*{self.testname} >>* {msg}",
+                file=path_to_img
+            )
             print(response.status_code)
         
 
