@@ -77,7 +77,7 @@ from okay_tests import OkayTest
 
 # ## OKAY.SK UNFINISHED ORDER MOBILE
 
-# test = OkaySK(name="okaysk_unfinished_order", is_mobile=True, delay=3)
+# test = OkayTest(name="okaysk_unfinished_order_mobile", is_mobile=True, delay=3)
 # test.open_url(url="https://www.okay.sk/collections/mobilne-telefony-4")
 # test.open_product()
 # test.add_to_cart()
@@ -89,19 +89,20 @@ from okay_tests import OkayTest
 
 # ## OKAY.SK FINISHED COD ORDER
 
-# test = OkaySK(name="okaysk_finished_cod_order", delay=3)
+# test = OkayTest(name="okaysk_finished_cod_order", delay=3)
 # test.open_url(url="https://www.okay.sk/collections/alkalicke-baterie?sort=price-ascending")
 # test.open_product()
 # test.add_to_cart()
 # test.goto_checkout()
 # test.choose_delivery(delivery="na moju adresu", proceed=True)
 # test.choose_payment(payment="dobierka", proceed=True)
+# test.confirm_order()
 # test.abort()
 
 
 # ## OKAY.SK PAYMENT GATE
 
-# test = OkaySK(name="okaysk_payment_gate", delay=3)
+# test = OkayTest(name="okaysk_payment_gate", delay=3)
 # test.open_url(url="https://www.okay.sk/products/baterie-varta-energy-aaa-4ks")
 # test.add_to_cart()
 # test.goto_checkout()
@@ -151,11 +152,122 @@ from okay_tests import OkayTest
 #     }
 # ]
 
-# test = OkaySK(name="okaysk_furniture_services", delay=3)
+# test = OkayTest(name="okaysk_furniture_services", delay=3)
 # for category in CATEGORIES:
+#     test.new_test()
 #     test.open_url(url=category["url"])
 #     test.open_product()
 #     test.add_to_cart()
 #     test.check_services(services=category["services"])
+#     test.empty_cart()
+# test.abort()
+
+
+# ## OKAY.SK DELIVERY OPTIONS ELECTRO
+
+# CATEGORIES = [
+#     {
+#         "name": "(8) Do 3 kg",
+#         "url": "https://www.okay.sk/collections/mobilne-telefony-4?pf_st_expedicia=true",
+#     },
+#     {
+#         "name": "(1) Do 30 kg",
+#         "url": "https://www.okay.sk/collections/kuchynske-roboty?pf_st_expedicia=true",
+#     },
+#     {
+#         "name": "(2) Do 50 kg",
+#         "url": "https://www.okay.sk/collections/mikrovlnne-rury-a-mini-rury?pf_st_expedicia=true",
+#     },
+#     {
+#         "name": "(3) Nadrozměrný balík",
+#         "url": "https://www.okay.sk/collections/tv-s-uhloprieckou-40-az-43-101-az-109-cm?pf_st_expedicia=true",
+#     },
+#     {
+#         "name": "(4) 1/2 Paleta",
+#         "url": "https://www.okay.sk/collections/vstavne-rury-2?pf_st_expedicia=true",
+#     },
+#     {
+#         "name": "(5) Paleta",
+#         "url": "https://www.okay.sk/collections/biele-chladnicky-s-mraznickou?pf_st_expedicia=true",
+#     },
+#     {
+#         "name": "(7) Dvoupaleta",
+#         "url": "https://www.okay.sk/collections/americke-chladnicky?pf_st_expedicia=true",
+#     }
+# ]
+
+# test = OkayTest(name="okaysk_delivery_options_electro", delay=3)
+# for category in CATEGORIES:
+#     test.new_test()
+#     test.open_url(url=category["url"])
+#     test.open_product()
+#     test.add_to_cart()
+#     test.goto_checkout()
+#     delivery = test.parse_delivery()
+#     test.choose_delivery(delivery="na moju adresu", proceed=True)
+#     payment = test.parse_payment()
+#     test.choose_payment(payment="dobierka", proceed=False)
+#     test.log_results(
+#         name=category["name"],
+#         url=category["url"],
+#         logs=[delivery, payment]
+#     )
+#     test.empty_cart()
+# test.abort()
+
+
+# ## OKAY.SK DELIVERY OPTIONS FURNITURE
+
+# CATEGORIES = [
+#     {
+#         "name": "(8) Do 3 kg",
+#         "url": "https://www.okay.sk/collections/vankusiky-k-sedackam",
+#     },
+#     {
+#         "name": "(1) Do 30 kg",
+#         "url": "https://www.okay.sk/collections/barove-stolicky-2",
+#     },
+#     {
+#         "name": "(2) Do 50 kg",
+#         "url": "https://www.okay.sk/collections/rosty-6",
+#     },
+#     {
+#         "name": "(3) Nadrozměrný balík",
+#         "url": "https://www.okay.sk/collections/matrace-90x200",
+#     },
+#     {
+#         "name": "(4) 1/2 Paleta",
+#         "url": "https://www.okay.sk/collections/valandy-2",
+#     },
+#     {
+#         "name": "(5) Paleta",
+#         "url": "https://www.okay.sk/collections/kresla-2",
+#     },
+#     {
+#         "name": "(7) Dvoupaleta - kuchyne",
+#         "url": "https://www.okay.sk/collections/rovne-kuchynske",
+#     },
+#     {
+#         "name": "(7) Dvoupaleta - sedacka",
+#         "url": "https://www.okay.sk/collections/rohove-o",
+#     }
+# ]
+
+# test = OkayTest(name="okaysk_delivery_options_furniture", delay=3)
+# for category in CATEGORIES:
+#     test.new_test()
+#     test.open_url(url=category["url"])
+#     test.open_product()
+#     test.add_to_cart()
+#     test.goto_checkout()
+#     delivery = test.parse_delivery()
+#     test.choose_delivery(delivery="na moju adresu", proceed=True)
+#     payment = test.parse_payment()
+#     test.choose_payment(payment="dobierka", proceed=False)
+#     test.log_results(
+#         name=category["name"],
+#         url=category["url"],
+#         logs=[delivery, payment]
+#     )
 #     test.empty_cart()
 # test.abort()

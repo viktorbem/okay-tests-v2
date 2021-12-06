@@ -1,7 +1,5 @@
 import functools
 import random
-import requests
-import sys
 from okay_tests import MainTest
 from selenium.webdriver.common.by import By
 from selenium.webdriver.common.keys import Keys
@@ -11,34 +9,21 @@ from urllib.parse import urlparse
 
 
 class OkayTest(MainTest):
-    def __init__(self, theme="", debug=False, **kwargs):
+    def __init__(self, **kwargs):
         super().__init__(**kwargs)
-        self.home_url = ""
-        self.debug = debug
-        self.theme = theme
-
-    def set_dev_theme(self, theme):
-        dev_url = f"{self.home_url}/?preview_theme_id={theme}"
-        response = requests.get(dev_url)
-        if response.status_code == 200:
-            print("DEV ENVIRONMENT ----------")
-            self.driver.get(dev_url)
-        self.sleep(5)
 
     def catch_error(f):
         @functools.wraps(f)
         def inner(self, *args, **kwargs):
-            try:
-                f(self, *args, **kwargs)
-            except Exception as err:
-                self.log_error(message=err, during=self.step)
-                if not self.debug:
-                    self.abort()
-                sys.exit()
+            if self.errors:
+                try:
+                    return f(self, *args, **kwargs)
+                except Exception as err:
+                    self.log_error(message=err, during=self.step)
         return inner
 
     @catch_error
-    def add_to_cart(self):
+    def add_to_cart(self, screenshots=True):
         """
         Add current product to cart. Before running this method, you have to open some product in stock first, 
         eg. with open_product() method.
@@ -46,9 +31,10 @@ class OkayTest(MainTest):
         Example:
         - test.add_to_cart()
         """
+        self.screenshots = screenshots
         self.log("Get the name of the product")
-        product_name = self.driver.find_element(By.TAG_NAME, "h1").text
-        self.log(f"Add '{product_name}' to the cart")
+        self.product_name = self.driver.find_element(By.CSS_SELECTOR, "h1.product_name").get_attribute("textContent")
+        self.log(f"Add '{self.product_name}' to the cart")
         self.click(self.driver.find_element(By.NAME, "add"))
 
         self.sleep()
@@ -69,7 +55,7 @@ class OkayTest(MainTest):
         self.take_screenshot()
 
     @catch_error
-    def check_services(self, services):
+    def check_services(self, services, screenshots=True):
         """
         Try to check all furniture services in cart. After all services are checked, take a screenshot. You have to
         provide a list of 'services' IDs that shoud be available for this category.
@@ -80,6 +66,7 @@ class OkayTest(MainTest):
 
         The 'services' argument is mandatory.
         """
+        self.screenshots = screenshots
         for service in services:
             self.log(f"{service}: check if service is available")
             self.click(self.driver.find_element(By.XPATH, f"//input[@product-service-id={service}]"))
@@ -90,7 +77,7 @@ class OkayTest(MainTest):
         self.take_screenshot()
 
     @catch_error
-    def choose_delivery(self, delivery, proceed=False):
+    def choose_delivery(self, delivery, proceed=False, screenshots=True):
         """
         Choose delivery type defined in 'delivery' argument. You have to be in the 'shipping' step of checkout.
 
@@ -101,11 +88,16 @@ class OkayTest(MainTest):
         The argument 'proceed' is optional. If you set 'proceed' to 'True', test will proceed to next step.
         The default value of 'proceed' argument is 'False'.
         """
+        self.screenshots = screenshots
         self.log("Get all possible delivery types")
         shipping_tabs = self.driver.find_elements(By.CSS_SELECTOR, ".checkout-shipping-tabs a")
         chosen_option = None
         for element in shipping_tabs:
-            self.click(element)
+            try:
+                self.click(element)
+            except Exception as err:
+                print(f"'{element.text}' is not clickable ----------")
+                continue
 
             shipping_options = self.driver.find_elements(By.CSS_SELECTOR, ".section--shipping-method .content-box__row")
             possible_options = [element for element in shipping_options if "table" in element.get_attribute("style")]
@@ -133,7 +125,7 @@ class OkayTest(MainTest):
             self.sleep()
 
     @catch_error
-    def choose_payment(self, payment, proceed=False):
+    def choose_payment(self, payment, proceed=False, screenshots=True):
         """
         Choose payment type defined in 'payment' argument. You have to be in the 'payment' step of checkout.
 
@@ -144,6 +136,7 @@ class OkayTest(MainTest):
         The argument 'proceed' is optional. If you set 'proceed' to 'True', test will proceed to next step.
         The default value of 'proceed' argument is 'False'.
         """
+        self.screenshots = screenshots
         self.log("Get list of all possible payment options")
         payment_options = self.driver.find_elements(By.CSS_SELECTOR, ".section--payment-method fieldset .content-box__row")
         chosen_option = None
@@ -166,15 +159,30 @@ class OkayTest(MainTest):
         if proceed:
             self.click(self.driver.find_element(By.ID, "continue_button"))
             self.sleep()
+            self.take_screenshot()
 
     @catch_error
-    def empty_cart(self):
+    def confirm_order(self, screenshots=True):
+        """
+        Confirm if order was created by trying to click on some element in thank you page.
+
+        Example:
+        - test.confirm_order()
+        """
+        self.screenshots = screenshots
+        self.log("Confirm if order was created")
+        self.click(self.driver.find_element(By.CSS_SELECTOR, ".os-step__description a"))
+        self.sleep()
+
+    @catch_error
+    def empty_cart(self, screenshots=True):
         """
         Open the cart and delete all items in it. This method won't raise any errors if there are no items in cart.
 
         Example:
         - test.empty_cart()
-        """            
+        """
+        self.screenshots = screenshots
         self.log("Empty the cart")
         self.driver.get(f"{self.home_url}/cart")
         cart_is_empty = False
@@ -189,7 +197,7 @@ class OkayTest(MainTest):
         self.sleep()
 
     @catch_error
-    def goto_checkout(self):
+    def goto_checkout(self, screenshots=True):
         """
         Proceed from the cart to the checkout. If you are currently not in cart, this method will open it for you first.
         It will also fill in all necessary order details if needed to proceed to the next step.
@@ -197,6 +205,7 @@ class OkayTest(MainTest):
         Example:
         - test.goto_checkout()
         """
+        self.screenshots = screenshots
         self.log("Proceed to the checkout")
         if "cart" not in self.driver.current_url:
             self.driver.get(f"{self.home_url}/cart")
@@ -231,12 +240,12 @@ class OkayTest(MainTest):
             self.click(self.driver.find_element(By.ID, "continue_button"))
         
         except Exception as err:
-            print(err)
+            print("Credentials already provided ----------")
         
         self.sleep()
 
     @catch_error
-    def handle_gopay(self):
+    def handle_gopay(self, screenshots=True):
         """
         Proceed through the payment gate until it is able to fill in credit card information,    
         then return back to the eshop to cancel order.
@@ -244,6 +253,7 @@ class OkayTest(MainTest):
         Example:
         - test.handle_gopay()
         """
+        self.screenshots = screenshots
         self.log("Wait for redirect to payment gate")
         self.sleep(20)
         self.take_screenshot()
@@ -280,7 +290,6 @@ class OkayTest(MainTest):
         elements.extend(self.driver.find_elements(By.CSS_SELECTOR, "div.sc-gzcbmu.bENTHN"))
         element_found = False
         for element in elements:
-            print(element.text)
             if "menu" in element.text.lower():
                 element_found = True
                 self.click(element)
@@ -292,7 +301,6 @@ class OkayTest(MainTest):
         elements = self.driver.find_elements(By.CSS_SELECTOR, "div.sc-iCoGMd.hoarAx")
         element_found = False
         for element in elements:
-            print(element.text)
             if any(word in element.text.lower() for word in ["zpět", "back"]):
                 element_found = True
                 element.click()
@@ -304,13 +312,14 @@ class OkayTest(MainTest):
         self.sleep(20)
                 
     @catch_error
-    def open_product(self):
+    def open_product(self, screenshots=True):
         """
         Look for the top bestseller in stock. If there is none, open the first product in collection.
 
         Example:
         - test.open_product()
         """
+        self.screenshots = screenshots
         self.log("Get the list of the bestsellers")
         bestsellers = self.driver.find_elements(By.CSS_SELECTOR, ".flickity-slider div")
 
@@ -341,7 +350,7 @@ class OkayTest(MainTest):
         self.take_screenshot()
 
     @catch_error
-    def open_random_menu_items(self, items):
+    def open_random_menu_items(self, items, screenshots=True):
         """
         Get a list of all main menu items, randomly click as many as defined in argument and take screenshots of results.
 
@@ -351,7 +360,7 @@ class OkayTest(MainTest):
         The argument 'items' is mandatory.
         This is going to click on 3 items in main menu.
         """
-
+        self.screenshots = screenshots
         self.log(f"Click on {items} random items in main menu")
         clicked = []
         i = 0
@@ -388,7 +397,7 @@ class OkayTest(MainTest):
         self.sleep()
 
     @catch_error
-    def open_random_footer_items(self, items):
+    def open_random_footer_items(self, items, screenshots=True):
         """
         Get a list of all footer items, randomly click as many as defined in argument and take screenshots of results.
 
@@ -398,7 +407,7 @@ class OkayTest(MainTest):
         The argument 'items' is mandatory.
         This is going to click on 3 items in footer.
         """
-
+        self.screenshots = screenshots
         self.log(f"Click on {items} random items in foooter")
         clicked = []
         i = 0
@@ -430,7 +439,7 @@ class OkayTest(MainTest):
         self.sleep()
 
     @catch_error
-    def open_specific_menu_item(self, text):
+    def open_specific_menu_item(self, text, screenshots=True):
         """
         Open an item in main menu items with link text provided as an argument.
 
@@ -439,6 +448,7 @@ class OkayTest(MainTest):
 
         The argument 'text' is mandatory.
         """
+        self.screenshots = screenshots
         if self.is_mobile:
             self.log("Open dropdown menu on mobile")
             self.click(self.driver.find_element(By.CSS_SELECTOR, ".mobile-menu__toggle-button"))
@@ -460,7 +470,7 @@ class OkayTest(MainTest):
         pass
 
     @catch_error
-    def open_url(self, url):
+    def open_url(self, url, screenshots=True):
         """
         Open an URL defined as argument of this method.
 
@@ -469,6 +479,7 @@ class OkayTest(MainTest):
 
         The argument 'url' is mandatory.
         """
+        self.screenshots = screenshots
         self.log(f"Open {url} in the browser")
         self.home_url = f"{urlparse(url).scheme}://{urlparse(url).netloc}/"
         if self.theme != "":
@@ -477,7 +488,58 @@ class OkayTest(MainTest):
         self.sleep()
 
     @catch_error
-    def search_for(self, text):
+    def parse_delivery(self, screenshots=True):
+        """
+        Parse the list of all delivery options and return it as a dictionary.
+
+        Example:
+        - test.parse_delivery()
+        """
+        self.screenshots = screenshots
+        self.sleep()
+        self.log(f"Parse list of delivery options for '{self.product_name}'")
+        self.take_screenshot()
+
+        results = {}
+        delivery_list = self.driver.find_elements(By.CSS_SELECTOR, ".section--shipping-method .content-box__row")
+        for delivery in delivery_list:
+            delivery_name_obj = delivery.find_element(By.CSS_SELECTOR, ".radio__label__primary")
+            delivery_name = delivery_name_obj.get_attribute("data-shipping-method-label-title").strip()
+            delivery_price_obj = delivery.find_element(By.CSS_SELECTOR, ".radio__label__accessory span")
+            delivery_price = delivery_price_obj.get_attribute("innerHTML").replace("&nbsp;", " ").strip()
+            results[delivery_name] = delivery_price
+        return results
+
+    @catch_error
+    def parse_payment(self, screenshots=True):
+        """
+        Parse the list of all payment options and return it as a dictionary.
+
+        Example:
+        - test.parse_payment()
+        """
+        self.screenshots = screenshots
+        self.sleep()
+        self.log(f"Parse list of payment options for '{self.product_name}'")
+        self.take_screenshot()
+
+        results = {}
+        payment_list = self.driver.find_elements(By.CSS_SELECTOR, ".section--payment-method fieldset .content-box__row")
+        for payment in payment_list:
+            if "secondary" in payment.get_attribute("class"):
+                continue
+            payment_object = payment.find_element(By.CSS_SELECTOR, ".radio__label__primary")
+            payment_data = payment_object.get_attribute("textContent").strip().split("\n")
+            payment_name = payment_data[0].strip()
+            if len(payment_data) > 1:
+                payment_price = payment_data.pop().strip()
+            else:
+                payment_price = "-"
+            results[payment_name] = payment_price
+        return results
+
+    @catch_error
+    def search_for(self, text, screenshots=True):
         """
         Search a phrase defined by the 'text' argument.
 
@@ -486,6 +548,7 @@ class OkayTest(MainTest):
 
         The argument 'text' is mandatory.
         """
+        self.screenshots = screenshots
         self.log(f"Search for '{text}'")
         if self.is_mobile:
             self.log(f"Confirm search for '{text}' on mobile.")
@@ -514,7 +577,7 @@ class OkayTest(MainTest):
         self.take_screenshot()
 
     @catch_error
-    def set_filter(self, name, value):
+    def set_filter(self, name, value, screenshots=True):
         """
         Set a filter by name and value provided as arguments.
 
@@ -523,7 +586,7 @@ class OkayTest(MainTest):
 
         Both arguments are mandatory.
         """
-
+        self.screenshots = screenshots
         if self.is_mobile:
             self.log("Open filter menu on mobile")
             wait = WebDriverWait(self.driver, 60)
