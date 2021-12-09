@@ -24,8 +24,8 @@ with open(os.path.join(os.path.abspath(os.path.dirname(__name__)), "config.json"
 
 class MainTest:
     def __init__(
-        self, name=None, theme="", is_mobile=bool(DEFAULT.is_mobile), is_headless=bool(DEFAULT.is_headless), 
-        is_email=bool(DEFAULT.is_email), is_slack=bool(DEFAULT.is_slack), delay=int(DEFAULT.delay), **kwargs
+        self, name=None, theme="", is_mobile=0, delay=int(DEFAULT.delay), is_headless=bool(DEFAULT.is_headless),
+        is_email=bool(DEFAULT.is_email), is_slack=bool(DEFAULT.is_slack), **kwargs
     ):
         self.testname = name
         if not self.testname:
@@ -117,13 +117,14 @@ class MainTest:
 
     def new_test(self):
         """
-        Set default values for test during each iteration.
+        Set default values for test during each iteration, clear cache and cookies.
         It is meant to be run in 'for' loops at the beginning of each test.
 
         Example:
         - test.new_test()
         """
         self.errors = True
+        self.driver.delete_all_cookies()
     
     def take_screenshot(self, timestamp="", type="src"):
         """self.take_screenshot(timestamp=DatetimeObject, type=Str)"""

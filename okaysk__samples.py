@@ -1,9 +1,12 @@
+import time
 from okay_tests import OkayTest
+
+start = time.perf_counter()
 
 
 ## OKAY.SK MENU DESKTOP
 
-test = OkayTest(name="okaysk_menu", delay=3)
+test = OkayTest(name="okaysk_menu")
 test.open_url(url="https://www.okay.sk/")
 test.open_random_menu_items(3)
 test.open_random_footer_items(3)
@@ -12,7 +15,7 @@ test.abort()
 
 ## OKAY.SK MENU MOBILE
 
-test = OkayTest(name="okaysk_menu_mobile", is_mobile=True, delay=3)
+test = OkayTest(name="okaysk_menu_mobile", is_mobile=True)
 test.open_url(url="https://www.okay.sk/")
 test.open_random_menu_items(3)
 test.open_random_footer_items(3)
@@ -21,7 +24,7 @@ test.abort()
 
 ## OKAY.SK FILTERS DESKTOP
 
-test = OkayTest(name="okaysk_filters", delay=3)
+test = OkayTest(name="okaysk_filters")
 test.open_url(url="https://www.okay.sk/")
 test.open_specific_menu_item(text="Televízory")
 test.set_filter(name="výrobcovia", value="lg")
@@ -31,7 +34,7 @@ test.abort()
 
 ## OKAY.SK FILTERS MOBILE
 
-test = OkayTest(name="okaysk_filters_mobile", is_mobile=True, delay=3)
+test = OkayTest(name="okaysk_filters_mobile", is_mobile=True)
 test.open_url(url="https://www.okay.sk/")
 test.open_specific_menu_item(text="Postele")
 test.set_filter(name="rozmery", value="180 x 200")
@@ -54,7 +57,7 @@ test.abort()
 
 ## OKAY.SK SEARCH MOBILE
 
-test = OkayTest(name="okaysk_search_mobile", is_mobile=True, delay=3)
+test = OkayTest(name="okaysk_search_mobile", is_mobile=True)
 test.open_url(url="https://www.okay.sk/")
 test.search_for(text="mobilny telefon")
 test.search_for(text="bratislava")
@@ -65,7 +68,7 @@ test.abort()
 
 ## OKAY.SK UNFINISHED ORDER DESKTOP
 
-test = OkayTest(name="okaysk_unfinished_order", delay=3)
+test = OkayTest(name="okaysk_unfinished_order")
 test.open_url(url="https://www.okay.sk/collections/mobilne-telefony-4")
 test.open_product()
 test.add_to_cart()
@@ -77,7 +80,7 @@ test.abort()
 
 ## OKAY.SK UNFINISHED ORDER MOBILE
 
-test = OkayTest(name="okaysk_unfinished_order_mobile", is_mobile=True, delay=3)
+test = OkayTest(name="okaysk_unfinished_order_mobile", is_mobile=True)
 test.open_url(url="https://www.okay.sk/collections/mobilne-telefony-4")
 test.open_product()
 test.add_to_cart()
@@ -89,7 +92,7 @@ test.abort()
 
 ## OKAY.SK FINISHED COD ORDER
 
-test = OkayTest(name="okaysk_finished_cod_order", delay=3)
+test = OkayTest(name="okaysk_finished_cod_order")
 test.open_url(url="https://www.okay.sk/collections/alkalicke-baterie?sort=price-ascending")
 test.open_product()
 test.add_to_cart()
@@ -102,8 +105,9 @@ test.abort()
 
 ## OKAY.SK PAYMENT GATE
 
-test = OkayTest(name="okaysk_payment_gate", delay=3)
-test.open_url(url="https://www.okay.sk/products/baterie-varta-energy-aaa-4ks")
+test = OkayTest(name="okaysk_payment_gate")
+test.open_url(url="https://www.okay.sk/collections/alkalicke-baterie?sort=price-ascending")
+test.open_product()
 test.add_to_cart()
 test.goto_checkout()
 test.choose_delivery(delivery="na moju adresu", proceed=True)
@@ -152,7 +156,7 @@ CATEGORIES = [
     }
 ]
 
-test = OkayTest(name="okaysk_furniture_services", delay=3)
+test = OkayTest(name="okaysk_furniture_services")
 for category in CATEGORIES:
     test.new_test()
     test.open_url(url=category["url"])
@@ -196,13 +200,13 @@ CATEGORIES = [
     }
 ]
 
-test = OkayTest(name="okaysk_delivery_options_electro", delay=3)
+test = OkayTest(name="okaysk_delivery_options_electro")
 for category in CATEGORIES:
     test.new_test()
-    test.open_url(url=category["url"])
-    test.open_product()
-    test.add_to_cart()
-    test.goto_checkout()
+    test.open_url(url=category["url"], screenshots=False)
+    test.open_product(screenshots=False)
+    test.add_to_cart(screenshots=False)
+    test.goto_checkout(screenshots=False)
     delivery = test.parse_delivery()
     test.choose_delivery(delivery="na moju adresu", proceed=True)
     payment = test.parse_payment()
@@ -253,17 +257,17 @@ CATEGORIES = [
     }
 ]
 
-test = OkayTest(name="okaysk_delivery_options_furniture", delay=3)
+test = OkayTest(name="okaysk_delivery_options_furniture")
 for category in CATEGORIES:
     test.new_test()
-    test.open_url(url=category["url"])
-    test.open_product()
-    test.add_to_cart()
-    test.goto_checkout()
+    test.open_url(url=category["url"], screenshots=False)
+    test.open_product(screenshots=False)
+    test.add_to_cart(screenshots=False)
+    test.goto_checkout(screenshots=False)
     delivery = test.parse_delivery()
     test.choose_delivery(delivery="na moju adresu", proceed=True)
     payment = test.parse_payment()
-    test.choose_payment(payment="dobierka", proceed=False)
+    test.choose_payment(payment="prevod", proceed=False)
     test.log_results(
         name=category["name"],
         url=category["url"],
@@ -271,3 +275,7 @@ for category in CATEGORIES:
     )
     test.empty_cart()
 test.abort()
+
+
+end = time.perf_counter() - start
+print(f"Finished in {end:.2f} s")

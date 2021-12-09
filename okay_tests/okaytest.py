@@ -590,7 +590,7 @@ class OkayTest(MainTest):
         if self.is_mobile:
             self.log("Open filter menu on mobile")
             wait = WebDriverWait(self.driver, 60)
-            filter_btn = wait.until(EC.element_to_be_clickable(By.CSS_SELECTOR, ".boost-pfs-filter-tree-mobile-button button"))
+            filter_btn = wait.until(EC.element_to_be_clickable((By.CSS_SELECTOR, ".boost-pfs-filter-tree-mobile-button button")))
             self.click(filter_btn)
             self.sleep()
 
