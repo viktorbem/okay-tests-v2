@@ -102,7 +102,7 @@ class MainTest:
             element.send_keys(char)
             self.sleep(1)
 
-    def abort(self):
+    def abort(self, screenshots=True):
         """
         Close the browser window and exit the test.
         
@@ -115,7 +115,7 @@ class MainTest:
         """self.log(message=Str)"""
         self.step = f"Func: {sys._getframe(1).f_code.co_name} >> {step}"
 
-    def new_test(self):
+    def new_test(self, screenshots=True):
         """
         Set default values for test during each iteration, clear cache and cookies.
         It is meant to be run in 'for' loops at the beginning of each test.
