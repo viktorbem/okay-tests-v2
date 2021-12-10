@@ -17,7 +17,7 @@ from slack_sdk import WebClient
 from types import SimpleNamespace
 
 
-with open(os.path.join(os.path.abspath(os.path.dirname(__name__)), "config.json")) as json_file:
+with open(os.path.join(os.path.abspath(os.path.dirname(__main__.__file__)), "config.json")) as json_file:
     data = json.loads(json_file.read(), object_hook=lambda kwargs: SimpleNamespace(**kwargs))
     DEFAULT, SECRET = data.defaults, data.secrets
 
@@ -33,7 +33,7 @@ class MainTest:
         self.step = "Initialize maintest"
         self.date = datetime.now().strftime("%Y-%m-%d")
         self.time = datetime.now().strftime("%H%M%S")
-        self.rootpath = os.path.abspath(os.path.dirname(__name__))
+        self.rootpath = os.path.abspath(os.path.dirname(__main__.__file__))
         self.logpath = os.path.join(self.rootpath, "logs", self.date, self.testname)
         
         self.home_url = ""
@@ -126,13 +126,13 @@ class MainTest:
         self.errors = True
         self.driver.delete_all_cookies()
     
-    def take_screenshot(self, timestamp="", type="src"):
+    def take_screenshot(self, timestamp="", type=""):
         """self.take_screenshot(timestamp=DatetimeObject, type=Str)"""
         if not self.screenshots:
             return
         if timestamp == '':
             timestamp = datetime.now().strftime("%H%M%S")
-        filename = f"{timestamp}_{type}"
+        filename = f"{timestamp}{type}_{sys._getframe(1).f_code.co_name}"
         png_img = os.path.join(self.logpath, f"{filename}.png")
         self.driver.save_screenshot(png_img)
         with Image.open(png_img) as rgba_img:
@@ -140,6 +140,7 @@ class MainTest:
             rgb_img = rgba_img.convert("RGB")
             rgb_img.save(jpg_img, optimize=True, quality=30)
         os.remove(png_img)
+        return f"{filename}.jpg"
     
     def log_results(self, name, url, logs, screenshots=True):
         """
@@ -183,13 +184,12 @@ class MainTest:
         msg = f"ERR during >> {during}\n\n{message}"
         print(msg)
         timestamp = datetime.now().strftime("%H%M%S")
-        self.take_screenshot(timestamp, "err")
-        with open(os.path.join(self.logpath, f"{timestamp}_err.txt"), "w", encoding="utf-8") as logfile:
+        filename = self.take_screenshot(timestamp, "_ERR")
+        with open(os.path.join(self.logpath, f"{timestamp}_ERR.txt"), "w", encoding="utf-8") as logfile:
             logfile.write(msg)
 
-        filename = f"{timestamp}_err.jpg"
         path_to_img = os.path.join(self.logpath, filename)
-
+        print(filename)
         # Send email if test crashes
         if self.is_email:
             new_msg = MIMEMultipart()

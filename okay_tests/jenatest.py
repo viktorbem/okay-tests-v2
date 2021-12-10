@@ -8,7 +8,7 @@ from selenium.webdriver.support.ui import WebDriverWait
 from urllib.parse import urlparse
 
 
-class OkayTest(MainTest):
+class JenaTest(MainTest):
     def __init__(self, **kwargs):
         super().__init__(**kwargs)
 
@@ -82,7 +82,7 @@ class OkayTest(MainTest):
         Choose delivery type defined in 'delivery' argument. You have to be in the 'shipping' step of checkout.
 
         Example:
-        - test.choose_delivery(delivery='na moju adresu', proceed=True)
+        - test.choose_delivery(delivery='na mou adresu', proceed=True)
 
         The argument 'delivery' is mandatory and it should correspond to real delivery types on website.
         The argument 'proceed' is optional. If you set 'proceed' to 'True', test will proceed to next step.
@@ -90,29 +90,18 @@ class OkayTest(MainTest):
         """
         self.screenshots = screenshots
         self.log("Get all possible delivery types")
-        shipping_tabs = self.driver.find_elements(By.CSS_SELECTOR, ".checkout-shipping-tabs a")
+        possible_options = self.driver.find_elements(By.CSS_SELECTOR, ".section--shipping-method .content-box__row")
+
         chosen_option = None
-        for element in shipping_tabs:
-            try:
-                self.click(element)
-            except Exception as err:
-                print(f"'{element.text}' is not clickable ----------")
-                continue
-
-            shipping_options = self.driver.find_elements(By.CSS_SELECTOR, ".section--shipping-method .content-box__row")
-            possible_options = [element for element in shipping_options if "table" in element.get_attribute("style")]
-
-            self.log(f"Find delivery type that corresponds to '{delivery}'")
-            for option in possible_options:
-                
-                delivery_option = option.find_element(By.CSS_SELECTOR, ".radio__label__primary")
-                if delivery in delivery_option.get_attribute("data-shipping-method-label-title").lower():
-                    chosen_option = option
-                    break
+        self.log(f"Find delivery type that corresponds to '{delivery}'")
+        for option in possible_options:
+         
+            delivery_option = option.find_element(By.CSS_SELECTOR, ".radio__label__primary")
+            if delivery in delivery_option.get_attribute("data-shipping-method-label-title").lower():
+                chosen_option = option
+                break
 
             self.sleep()
-            if chosen_option:
-                break
 
         self.log(f"Click on the delivery type that corresponds to '{delivery}'")
         self.click(chosen_option)
@@ -130,7 +119,7 @@ class OkayTest(MainTest):
         Choose payment type defined in 'payment' argument. You have to be in the 'payment' step of checkout.
 
         Example:
-        test.choose_payment(payment='na moju adresu', proceed=True)
+        test.choose_payment(payment='na mou adresu', proceed=True)
 
         The argument 'delivery' is mandatory and it should correspond to real delivery types on website.
         The argument 'proceed' is optional. If you set 'proceed' to 'True', test will proceed to next step.
@@ -171,7 +160,7 @@ class OkayTest(MainTest):
         """
         self.screenshots = screenshots
         self.log("Confirm if order was created")
-        self.click(self.driver.find_element(By.CSS_SELECTOR, ".os-step__description a"))
+        self.click(self.driver.find_element(By.CSS_SELECTOR, ".step__footer__continue-btn"))
         self.sleep()
 
     @catch_error
@@ -225,11 +214,16 @@ class OkayTest(MainTest):
             street = self.driver.find_element_by_id("checkout_shipping_address_address1")
             street.send_keys("Testovaci 123")
             zipnr = self.driver.find_element_by_id("checkout_shipping_address_zip")
-            zipnr.send_keys("83300")
+            zipnr.send_keys("60200")
             city = self.driver.find_element_by_id("checkout_shipping_address_city")
-            city.send_keys("Bratislava")
+            city.send_keys("Brno")
             phonenr = self.driver.find_element_by_id("checkout_shipping_address_phone")
             phonenr.send_keys("608123123")
+
+            self.log("Terms and conditions agreement")
+            checkbox = self.driver.find_element_by_id("ecf--terms-input")
+            if not checkbox.is_selected():
+                self.click(checkbox)
 
             self.driver.find_element(By.TAG_NAME, "body").send_keys(Keys.CONTROL + Keys.HOME)
 
@@ -365,30 +359,28 @@ class OkayTest(MainTest):
         clicked = []
         i = 0
 
-        if self.is_mobile:
-            selector = ".mobile-menu__toggle-button"
-        else:
-            selector = ".header__open-menu"
-
         while i < items:
             self.sleep()
-            self.click(self.driver.find_element(By.CSS_SELECTOR, selector))
+            if self.is_mobile:
+                self.log(f"H{i}. open dropdown menu")
+                self.click(self.driver.find_element(By.CSS_SELECTOR, ".mobile-menu__toggle-button"))
+                self.sleep()
+                selector = ".mobile-menu__first-level"
+            else:
+                self.driver.find_element(By.TAG_NAME, "body").send_keys(Keys.CONTROL + Keys.HOME)
+                selector = ".header__menu-items .header__item"
 
-            self.sleep()
-            menuitems = self.driver.find_elements(By.CSS_SELECTOR, ".nav-nested .nav-nested__link-parent")
+            menuitems = self.driver.find_elements(By.CSS_SELECTOR, selector)
 
             self.log(f"H{i}. choose random item from the menu")
             item = random.choice(menuitems)
             item_anchor = item.find_element(By.TAG_NAME, "a")
             item_url = item_anchor.get_attribute("href")
 
-            if item_url not in clicked:
+            if item_url not in clicked and item_anchor.text != "":
                 self.log(f"{item_anchor.text} - click this item")
                 clicked.append(item_url)
                 self.click(item_anchor)
-                if self.is_mobile:
-                    self.sleep()
-                    self.click(item.find_element(By.CSS_SELECTOR, ".nav-nested__forward"))
 
                 self.sleep()
                 self.take_screenshot()
@@ -415,13 +407,7 @@ class OkayTest(MainTest):
         while i < items:
             self.sleep()
 
-            if self.is_mobile:
-                parent_items = self.driver.find_elements(By.CSS_SELECTOR, "footer .footer__menu")
-                parent = random.choice(parent_items)
-                self.click(parent)
-                footer_items = parent.find_elements(By.CSS_SELECTOR, ".footer__menu-link a")
-            else:
-                footer_items = self.driver.find_elements(By.CSS_SELECTOR, "footer a")
+            footer_items = self.driver.find_elements(By.CSS_SELECTOR, ".footer__menu-link a")
 
             self.log(f"F{i}. choose random item from the footer")
             item = random.choice(footer_items)
@@ -444,7 +430,7 @@ class OkayTest(MainTest):
         Open an item in main menu items with link text provided as an argument.
 
         Example:
-        - test.click_specific_mainmenu_item(text='Televízory')
+        - test.click_specific_mainmenu_item(text='Postele')
 
         The argument 'text' is mandatory.
         """
@@ -457,11 +443,6 @@ class OkayTest(MainTest):
         self.log(f"Open category: {text}")
         item = self.driver.find_element(By.LINK_TEXT, text)
         self.click(item)
-
-        if self.is_mobile:
-            self.sleep()
-            self.click(item.find_element(By.XPATH, "..").find_element(By.CSS_SELECTOR, ".nav-nested__forward"))
-        
         self.sleep()
 
     @catch_error
@@ -478,7 +459,7 @@ class OkayTest(MainTest):
         Open an URL defined as argument of this method.
 
         Example:
-        - test.open_url(url='https://www.okay.cz/')
+        - test.open_url(url='https://www.jena-nabytek.cz/')
 
         The argument 'url' is mandatory.
         """
@@ -547,7 +528,7 @@ class OkayTest(MainTest):
         Search a phrase defined by the 'text' argument.
 
         Example:
-        - test.search_for(text='mobilný telefón')
+        - test.search_for(text='postele boxspring')
 
         The argument 'text' is mandatory.
         """
@@ -585,7 +566,7 @@ class OkayTest(MainTest):
         Set a filter by name and value provided as arguments.
 
         Example:
-        - test.set_filter(name='výrobcovia', value='lg')
+        - test.set_filter(name='rozměr', value='180 x 200')
 
         Both arguments are mandatory.
         """
@@ -597,17 +578,18 @@ class OkayTest(MainTest):
             self.click(filter_btn)
             self.sleep()
 
-            self.log(f"Open '{name}' filter on mobile")
-            filter_options = self.driver.find_elements(By.CSS_SELECTOR, ".boost-pfs-filter-option-title button")
-            is_found = False
-            for item in filter_options:
-                if str(name).lower() in item.text.lower():
-                    self.click(item)
-                    is_found = True
-                    break
-            if not is_found:
-                raise Exception(f"The '{name}' filter was not found.")
-            self.sleep()
+        self.log(f"Open '{name}' filter")
+        filter_options = self.driver.find_elements(By.CSS_SELECTOR, ".boost-pfs-filter-option-title button")
+        is_found = False
+        for item in filter_options:
+            if str(name).lower() in item.text.lower():
+                self.click(item)
+                dropdown = item.find_element(By.XPATH, "./../..").find_element(By.CSS_SELECTOR, ".boost-pfs-filter-option-content")
+                is_found = True
+                break
+        if not is_found:
+            raise Exception(f"The '{name}' filter was not found.")
+        self.sleep()
 
         self.log(f"Set the '{name}' filter to '{value}'")
         filter = self.driver.find_elements(By.CSS_SELECTOR, ".boost-pfs-filter-button .boost-pfs-filter-option-value")
@@ -628,10 +610,10 @@ class OkayTest(MainTest):
             self.take_screenshot()
             self.click(self.driver.find_element(By.CSS_SELECTOR, ".boost-pfs-filter-show-result"))
         else:
-            self.driver.find_element(By.TAG_NAME, "body").send_keys(Keys.CONTROL + Keys.HOME)
-            self.sleep()
-            self.take_screenshot()
+            self.click(dropdown.find_element(By.CSS_SELECTOR, ".boost-pfs-filter-apply-button"))
+
         self.sleep()
+        self.take_screenshot()
 
 
 if __name__ == "__main__":
