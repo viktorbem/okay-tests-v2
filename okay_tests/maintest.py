@@ -17,7 +17,7 @@ from slack_sdk import WebClient
 from types import SimpleNamespace
 
 
-with open(os.path.join(os.path.abspath(os.path.dirname(__file__)), "config.json")) as json_file:
+with open(os.path.join(os.path.abspath(os.path.dirname(__main__.__file__)), "config.json")) as json_file:
     data = json.loads(json_file.read(), object_hook=lambda kwargs: SimpleNamespace(**kwargs))
     DEFAULT, SECRET = data.defaults, data.secrets
 
@@ -33,7 +33,7 @@ class MainTest:
         self.step = "Initialize maintest"
         self.date = datetime.now().strftime("%Y-%m-%d")
         self.time = datetime.now().strftime("%H%M%S")
-        self.rootpath = os.path.abspath(os.path.dirname(__file__))
+        self.rootpath = os.path.abspath(os.path.dirname(__main__.__file__))
         self.logpath = os.path.join(self.rootpath, "logs", self.date, self.testname)
         
         self.home_url = ""
