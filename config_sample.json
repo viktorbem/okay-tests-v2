@@ -1,10 +1,9 @@
 {
     "defaults": {
-        "is_mobile": 0,
+        "delay": 10,
         "is_headless": 0,
         "is_email": 0,
         "is_slack": 0,
-        "delay": 10
     },
     "secrets": {
         "mail_to": "",

@@ -93,7 +93,7 @@ test.abort()
 ## OKAY.SK FINISHED COD ORDER
 
 test = OkayTest(name="okaysk_finished_cod_order")
-test.open_url(url="https://www.okay.sk/collections/alkalicke-baterie?sort=price-ascending")
+test.open_url(url="https://www.okay.sk/collections/alkalicke-baterie?pf_p_ceny=2.28%3A5.28")
 test.open_product()
 test.add_to_cart()
 test.goto_checkout()
@@ -106,7 +106,7 @@ test.abort()
 ## OKAY.SK PAYMENT GATE
 
 test = OkayTest(name="okaysk_payment_gate")
-test.open_url(url="https://www.okay.sk/collections/alkalicke-baterie?sort=price-ascending")
+test.open_url(url="https://www.okay.sk/collections/alkalicke-baterie?pf_p_ceny=2.28%3A5.28")
 test.open_product()
 test.add_to_cart()
 test.goto_checkout()
