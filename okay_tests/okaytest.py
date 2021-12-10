@@ -496,7 +496,7 @@ class OkayTest(MainTest):
         Parse the list of all delivery options and return it as a dictionary.
 
         Example:
-        - test.parse_delivery()
+        - delivery = test.parse_delivery()
         """
         self.screenshots = screenshots
         self.sleep()
@@ -519,7 +519,7 @@ class OkayTest(MainTest):
         Parse the list of all payment options and return it as a dictionary.
 
         Example:
-        - test.parse_payment()
+        - payment = test.parse_payment()
         """
         self.screenshots = screenshots
         self.sleep()
