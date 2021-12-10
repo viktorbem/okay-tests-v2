@@ -160,8 +160,8 @@ test = OkayTest(name="okaysk_furniture_services")
 for category in CATEGORIES:
     test.new_test()
     test.open_url(url=category["url"])
-    test.open_product()
-    test.add_to_cart()
+    test.open_product(screenshots=False)
+    test.add_to_cart(screenshots=False)
     test.check_services(services=category["services"])
     test.empty_cart()
 test.abort()
@@ -203,14 +203,14 @@ CATEGORIES = [
 test = OkayTest(name="okaysk_delivery_options_electro")
 for category in CATEGORIES:
     test.new_test()
-    test.open_url(url=category["url"], screenshots=False)
+    test.open_url(url=category["url"])
     test.open_product(screenshots=False)
     test.add_to_cart(screenshots=False)
     test.goto_checkout(screenshots=False)
     delivery = test.parse_delivery()
-    test.choose_delivery(delivery="na moju adresu", proceed=True)
+    test.choose_delivery(delivery="na moju adresu", proceed=True, screenshots=False)
     payment = test.parse_payment()
-    test.choose_payment(payment="dobierka", proceed=False)
+    test.choose_payment(payment="dobierka", proceed=False, screenshots=False)
     test.log_results(
         name=category["name"],
         url=category["url"],
@@ -260,14 +260,14 @@ CATEGORIES = [
 test = OkayTest(name="okaysk_delivery_options_furniture")
 for category in CATEGORIES:
     test.new_test()
-    test.open_url(url=category["url"], screenshots=False)
+    test.open_url(url=category["url"])
     test.open_product(screenshots=False)
     test.add_to_cart(screenshots=False)
     test.goto_checkout(screenshots=False)
     delivery = test.parse_delivery()
-    test.choose_delivery(delivery="na moju adresu", proceed=True)
+    test.choose_delivery(delivery="na moju adresu", proceed=True, screenshots=False)
     payment = test.parse_payment()
-    test.choose_payment(payment="prevod", proceed=False)
+    test.choose_payment(payment="prevod", proceed=False, screenshots=False)
     test.log_results(
         name=category["name"],
         url=category["url"],

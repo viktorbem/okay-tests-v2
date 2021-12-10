@@ -466,6 +466,9 @@ class OkayTest(MainTest):
 
     @catch_error
     def open_specific_footer_item(self):
+        """
+        This method is yet to be done. Don't use it!
+        """
         # TODO
         pass
 
