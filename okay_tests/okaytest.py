@@ -365,16 +365,23 @@ class OkayTest(MainTest):
         clicked = []
         i = 0
 
-        if self.is_mobile:
-            selector = ".mobile-menu__toggle-button"
-        else:
-            selector = ".header__open-menu"
-
         while i < items:
             self.sleep()
-            self.click(self.driver.find_element(By.CSS_SELECTOR, selector))
 
-            self.sleep()
+            should_open = True
+            if self.is_mobile:
+                menu_toggle = self.driver.find_element(By.CSS_SELECTOR, ".mobile-menu__toggle-button")
+                if menu_toggle.get_attribute("data-show-mobile-menu") == "true":
+                    should_open = False
+            else:
+                menu_toggle = self.driver.find_element(By.CSS_SELECTOR, ".header__open-menu")
+                if "is-active" in menu_toggle.get_attribute("class"):
+                    should_open = False
+            
+            if should_open:
+                self.click(menu_toggle)
+                self.sleep()
+
             menuitems = self.driver.find_elements(By.CSS_SELECTOR, ".nav-nested .nav-nested__link-parent")
 
             self.log(f"H{i}. choose random item from the menu")
@@ -393,6 +400,8 @@ class OkayTest(MainTest):
                 self.sleep()
                 self.take_screenshot()
                 i += 1
+            else:
+                print(f"'{item_anchor.text}' already clicked ----------")
 
         self.sleep()
 
