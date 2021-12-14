@@ -8,8 +8,8 @@ start = time.perf_counter()
 
 test = JenaTest(name="jena_menu")
 test.open_url(url="https://www.jena-nabytek.cz/")
-test.open_random_menu_items(3)
-test.open_random_footer_items(3)
+test.open_random_menu_items(items=3)
+test.open_random_footer_items(items=3)
 test.abort()
 
 
@@ -17,8 +17,8 @@ test.abort()
 
 test = JenaTest(name="jena_menu_mobile", is_mobile=True)
 test.open_url(url="https://www.jena-nabytek.cz/")
-test.open_random_menu_items(3)
-test.open_random_footer_items(3)
+test.open_random_menu_items(items=3)
+test.open_random_footer_items(items=3)
 test.abort()
 
 
@@ -111,9 +111,9 @@ test.open_product()
 test.add_to_cart()
 test.goto_checkout()
 test.choose_delivery(delivery="na mou adresu", proceed=True)
-test.choose_payment(payment="gopay", proceed=False)
-test.handle_gopay()
-test.empty_cart()
+test.choose_payment(payment="gopay", proceed=True)
+# test.handle_gopay()
+# test.empty_cart()
 test.abort()
 
 
