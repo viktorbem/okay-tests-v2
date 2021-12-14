@@ -8,8 +8,8 @@ start = time.perf_counter()
 
 test = OkayTest(name="okaysk_menu")
 test.open_url(url="https://www.okay.sk/")
-test.open_random_menu_items(3)
-test.open_random_footer_items(3)
+test.open_random_menu_items(items=3)
+test.open_random_footer_items(items=3)
 test.abort()
 
 
@@ -17,8 +17,8 @@ test.abort()
 
 test = OkayTest(name="okaysk_menu_mobile", is_mobile=True)
 test.open_url(url="https://www.okay.sk/")
-test.open_random_menu_items(3)
-test.open_random_footer_items(3)
+test.open_random_menu_items(items=3)
+test.open_random_footer_items(items=3)
 test.abort()
 
 
@@ -112,8 +112,8 @@ test.add_to_cart()
 test.goto_checkout()
 test.choose_delivery(delivery="na moju adresu", proceed=True)
 test.choose_payment(payment="karta", proceed=True)
-test.handle_gopay()
-test.empty_cart()
+# test.handle_gopay()
+# test.empty_cart()
 test.abort()
 
 
