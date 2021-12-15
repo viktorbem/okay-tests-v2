@@ -74,7 +74,7 @@ test.open_product()
 test.add_to_cart()
 test.goto_checkout()
 test.choose_delivery(delivery="na moju adresu", proceed=True)
-test.choose_payment(payment="bankový prevod", proceed=False)
+test.choose_payment(payment="karta", proceed=False)
 test.abort()
 
 
@@ -86,7 +86,7 @@ test.open_product()
 test.add_to_cart()
 test.goto_checkout()
 test.choose_delivery(delivery="na moju adresu", proceed=True)
-test.choose_payment(payment="bankový prevod", proceed=False)
+test.choose_payment(payment="karta", proceed=False)
 test.abort()
 
 
@@ -267,7 +267,7 @@ for category in CATEGORIES:
     delivery = test.parse_delivery()
     test.choose_delivery(delivery="na moju adresu", proceed=True, screenshots=False)
     payment = test.parse_payment()
-    test.choose_payment(payment="prevod", proceed=False, screenshots=False)
+    test.choose_payment(payment="karta", proceed=False, screenshots=False)
     test.log_results(
         name=category["name"],
         url=category["url"],
