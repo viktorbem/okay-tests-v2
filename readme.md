@@ -84,7 +84,6 @@ Všechny níže uvedené metody jsou použitelné jak pro třídu `OkayTest` i `
 
 Zavře prohlížeč a ukončí probíhající test.
 
-**Příklad:**
 ```python
 test.abort()
 ```
@@ -95,7 +94,6 @@ test.abort()
 
 Přidá aktuální produkt do košíku. Aby metoda fungovala, musí se test zrovna nacházet na detailu nějakého produktu.
 
-**Příklad:**
 ```python
 test.add_to_cart()
 ```
@@ -106,7 +104,6 @@ test.add_to_cart()
 
 Pokusí se zaškrtnout nábytkové služby v košíku a následně vytvoří printscreen košíku. Je potřeba definovat služby jako `list` (pole) obsahující `variant ID` těchto služeb.
 
-**Příklad:**
 ```python
 test.check_services(services=["40968686796951", "40968686829719"])
 test.check_services(services=["40968686928023"])
@@ -120,7 +117,6 @@ Argument `services` je povinný.
 
 Zvolí druh dopravy definovaný argumentem `delivery`. Je potřeba, aby se test zrovna nacházel ve fázi volby dopravy.
 
-**Příklad:**
 ```python
 test.choose_delivery(delivery='na moju adresu', proceed=True)
 ```
@@ -133,7 +129,6 @@ Argument `delivery` je povinný a musí odpovídat způsobu dopravy na daném we
 
 Zvolí druh platby definovaný argumentem `payment`. Je potřeba, aby se test zrovna nacházel ve fázi volby platby.
 
-**Příklad:**
 ```python
 test.choose_payment(payment='na moju adresu', proceed=True)
 ```
@@ -146,7 +141,6 @@ Argument `payment` je povinný a musí odpovídat způsobu platby na daném webu
 
 Slouží k ověření, zda byla objednávka úspěšně dokončena. Ověření proběhne tím, že se test pokusí kliknout na prvek na thank-you stránce.
 
-**Příklad:**
 ```python
 test.confirm_order()
 ```
@@ -157,7 +151,6 @@ test.confirm_order()
 
 Otevře aktuální košík a smaže všechny položky v něm. Tato metoda nevyvolá žádnou chybu v případě, kdy bude košík prázdný.
 
-**Příklad:**
 ```python
 test.empty_cart()
 ```
@@ -168,7 +161,6 @@ test.empty_cart()
 
 Pokračovat z košíku do checkoutu. Pokud se zrovna nenacházíte v košíku, tato metoda jej otevře za vás. Zároveň vyplní všechny potřebné zákaznické detaily (pokud jsou potřeba) a pokračuje k volbě dopravy.
 
-**Příklad:**
 ```python
 test.goto_checkout()
 ```
@@ -179,7 +171,6 @@ test.goto_checkout()
 
 Projde platební bránou gopay až po zadání čísla karty a potom se vrátí zpět do eshopu, čímž stornuje objednávku.
 
-**Příklad:**
 ```python
 test.handle_gopay()
 ```
@@ -190,7 +181,6 @@ test.handle_gopay()
 
 Za vstup vezme `list` (pole), které se skládá z libovolného počtu `dictionary` a uloží je jako výstup do souboru.
 
-**Příklad:**
 ```python
 test.log_results(
     name='(2) Do 50 kg', 
@@ -210,7 +200,6 @@ Všechny argumenty, tedy `name`, `url` a `logs` jsou povinné.
 
 Tuto metodu je vhodné používat ve všech `for` a `while` smyčkách na začátku každé iterace. Nastaví výchozí hodnoty testu během jednotlivých iterací, vyčistí cache a cookies.
 
-**Příklad:**
 ```python
 test.new_test()
 ```
@@ -221,7 +210,6 @@ test.new_test()
 
 Najde na stránce první nejprodávanější produkt skladem. Pokud takový produkt neexistuje, vybere první produkt v kolekci při aktuálním řazení.
 
-**Příklad:**
 ```python
 test.open_product()
 ```
@@ -232,7 +220,6 @@ test.open_product()
 
 Vezme seznam všech položek v hlavním menu, náhodně klikne na tolik, kolik je definováno argumentem `items` a pořídí printscreeny.
 
-**Příklad:**
 ```python
 test.click_random_mainmenu_items(items=3)
 ```
@@ -245,7 +232,6 @@ Argument `items` je povinný.
 
 Vezme seznam všech položek v patičkovém menu, náhodně klikne na tolik, kolik je definováno argumentem `items` a pořídí printscreeny.
 
-**Příklad:**
 ```python
 test.click_random_footer_items(items=3)
 ```
@@ -258,7 +244,6 @@ Argument `items` je povinný.
 
 Otevře položku v hlavním menu, která odpovídá řetězci zadanému argumentem `text`.
 
-**Příklad:**
 ```python
 test.click_specific_mainmenu_item(text='Televízory')
 ```
@@ -271,7 +256,6 @@ Argument `text` je povinný.
 
 Otevře webovou stránku definovanou argumentem `url`.
 
-**Příklad"**
 ```python
 test.open_url(url='https://www.okay.sk/')
 ```
@@ -284,7 +268,6 @@ Argument `url` je povinný.
 
 Vyčte seznam všech způsobů dopravy a vrátí jej jako `dictionary`.
 
-**Příklad:**
 ```python
 delivery = test.parse_delivery()
 ```
@@ -295,7 +278,6 @@ delivery = test.parse_delivery()
 
 Vyčte seznam všech platebních metod a vrátí jej jako `dictionary`.
 
-**Příklad:**
 ```python
 payment = test.parse_payment()
 ```
@@ -306,7 +288,6 @@ payment = test.parse_payment()
 
 Vyhledá frázi definovanou argumentem `text`.
 
-**Příklad:**
 ```python
 test.search_for(text='mobilný telefón')
 ```
@@ -319,7 +300,6 @@ Argument `text` je povinný.
 
 Nastaví filtr v kolekci podle jeho jména `name` a hodnoty `value`.
 
-**Příklad:**
 ```python
 test.set_filter(name='výrobcovia', value='lg')
 ```

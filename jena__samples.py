@@ -8,8 +8,8 @@ start = time.perf_counter()
 
 test = JenaTest(name="jena_menu")
 test.open_url(url="https://www.jena-nabytek.cz/")
-test.open_random_menu_items(3)
-test.open_random_footer_items(3)
+test.open_random_menu_items(items=3)
+test.open_random_footer_items(items=3)
 test.abort()
 
 
@@ -17,8 +17,8 @@ test.abort()
 
 test = JenaTest(name="jena_menu_mobile", is_mobile=True)
 test.open_url(url="https://www.jena-nabytek.cz/")
-test.open_random_menu_items(3)
-test.open_random_footer_items(3)
+test.open_random_menu_items(items=3)
+test.open_random_footer_items(items=3)
 test.abort()
 
 
@@ -74,7 +74,7 @@ test.open_product()
 test.add_to_cart()
 test.goto_checkout()
 test.choose_delivery(delivery="na mou adresu", proceed=True)
-test.choose_payment(payment="bankovní převod", proceed=False)
+test.choose_payment(payment="gopay", proceed=False)
 test.abort()
 
 
@@ -86,21 +86,21 @@ test.open_product()
 test.add_to_cart()
 test.goto_checkout()
 test.choose_delivery(delivery="na mou adresu", proceed=True)
-test.choose_payment(payment="bankovní převod", proceed=False)
+test.choose_payment(payment="gopay", proceed=False)
 test.abort()
 
 
-## JENA FINISHED ORDER
+# ## JENA FINISHED ORDER
 
-test = JenaTest(name="jena_finished_order")
-test.open_url(url="https://www.jena-nabytek.cz/collections/dekoracni-polstare?pf_p_cena=99%3A1000")
-test.open_product()
-test.add_to_cart()
-test.goto_checkout()
-test.choose_delivery(delivery="na mou adresu", proceed=True)
-test.choose_payment(payment="bankovní převod", proceed=True)
-test.confirm_order()
-test.abort()
+# test = JenaTest(name="jena_finished_order")
+# test.open_url(url="https://www.jena-nabytek.cz/collections/dekoracni-polstare?pf_p_cena=99%3A1000")
+# test.open_product()
+# test.add_to_cart()
+# test.goto_checkout()
+# test.choose_delivery(delivery="na mou adresu", proceed=True)
+# test.choose_payment(payment="bankovní převod", proceed=True)
+# test.confirm_order()
+# test.abort()
 
 
 ## JENA PAYMENT GATE
@@ -111,9 +111,9 @@ test.open_product()
 test.add_to_cart()
 test.goto_checkout()
 test.choose_delivery(delivery="na mou adresu", proceed=True)
-test.choose_payment(payment="gopay", proceed=False)
-test.handle_gopay()
-test.empty_cart()
+test.choose_payment(payment="gopay", proceed=True)
+# test.handle_gopay()
+# test.empty_cart()
 test.abort()
 
 
@@ -206,7 +206,7 @@ for category in CATEGORIES:
     delivery = test.parse_delivery()
     test.choose_delivery(delivery="na mou adresu", proceed=True, screenshots=False)
     payment = test.parse_payment()
-    test.choose_payment(payment="bankovní převod", proceed=False, screenshots=False)
+    test.choose_payment(payment="gopay", proceed=False, screenshots=False)
     test.log_results(
         name=category["name"],
         url=category["url"],
