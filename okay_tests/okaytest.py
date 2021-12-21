@@ -43,7 +43,7 @@ class OkayTest(MainTest):
             self.click(self.driver.find_element(By.CSS_SELECTOR, "#cross-sell .button--add-to-cart"))
         except Exception as err:
             print("Product has no cross-sell ----------")
-            self.sleep()
+            self.sleep(10)
             if self.is_mobile:
                 selector = ".mobile-icons .header-cart a"
             else:
