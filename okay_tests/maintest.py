@@ -72,7 +72,8 @@ class MainTest:
             driver = os.path.join(self.rootpath, "chromedriver.exe")
         else:
             driver = "/usr/bin/chromedriver"
-        new_driver = webdriver.Chrome(driver, chrome_options=self.options)
+        logfile = os.path.join(self.logpath, f"{self.time}_log.txt")
+        new_driver = webdriver.Chrome(driver, chrome_options=self.options, service_args=[f"--log-path={logfile}"])
         new_driver.set_window_size(width=width, height=height)
         return new_driver
 
