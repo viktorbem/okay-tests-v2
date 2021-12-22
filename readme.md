@@ -165,6 +165,12 @@ Pokračovat z košíku do checkoutu. Pokud se zrovna nenacházíte v košíku, t
 test.goto_checkout()
 ```
 
+Můžete použít také další argumenty, které specifikují osobní údaje testovacího uživatele. Tyto argumenty jsou `email`, `name`, `surname`, `street`, `zipnr`, `city` and `phonenr`.
+
+```python
+- test.goto_checkout(email='testovac@seznam.cz', zipnr='73953')
+```
+
 <br>
 
 ### **handle_gopay**

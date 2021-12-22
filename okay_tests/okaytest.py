@@ -197,39 +197,62 @@ class OkayTest(MainTest):
         self.sleep()
 
     @catch_error
-    def goto_checkout(self, screenshots=True):
+    def goto_checkout(self, screenshots=True, **kwargs):
         """
         Proceed from the cart to the checkout. If you are currently not in cart, this method will open it for you first.
         It will also fill in all necessary order details if needed to proceed to the next step.
 
         Example:
         - test.goto_checkout()
+
+        You can use additional arguments to specify credentials of test user.
+        These arguments are 'email', 'firstname', 'name', 'street', 'zipnr', 'city' and 'phonenr'.
+
+        Example:
+        - test.goto_checkout(email='testovac@seznam.cz', zipnr='73953')
         """
         self.screenshots = screenshots
         self.log("Proceed to the checkout")
         if "cart" not in self.driver.current_url:
             self.driver.get(f"{self.home_url}/cart")
             self.sleep()
-        
+
         self.click(self.driver.find_element(By.NAME, "checkout"))
 
         self.sleep()
         self.log("Fill in all necessary details if needed")
+
+        creds = {
+            "email": "test.okay@okaycz.eu",
+            "name": "test",
+            "surname": "test",
+            "street": "Testovaci 123",
+            "zipnr": "83300",
+            "city": "Bratislava",
+            "phonenr": "608123123"
+        }
+
+        for key in creds:
+            try:
+                creds[key] = kwargs[key]
+            except KeyError:
+                print(f"Use default value of '{key}' ----------")
+
         try:
             email = self.driver.find_element(By.ID, "checkout_email")
-            email.send_keys("test.okay@okaycz.eu")
+            email.send_keys(creds["email"])
             firstname = self.driver.find_element_by_id("checkout_shipping_address_first_name")
-            firstname.send_keys("test")
+            firstname.send_keys(creds["name"])
             surname = self.driver.find_element_by_id("checkout_shipping_address_last_name")
-            surname.send_keys("test")
+            surname.send_keys(creds["surname"])
             street = self.driver.find_element_by_id("checkout_shipping_address_address1")
-            street.send_keys("Testovaci 123")
+            street.send_keys(creds["street"])
             zipnr = self.driver.find_element_by_id("checkout_shipping_address_zip")
-            zipnr.send_keys("83300")
+            zipnr.send_keys(creds["zipnr"])
             city = self.driver.find_element_by_id("checkout_shipping_address_city")
-            city.send_keys("Bratislava")
+            city.send_keys(creds["city"])
             phonenr = self.driver.find_element_by_id("checkout_shipping_address_phone")
-            phonenr.send_keys("608123123")
+            phonenr.send_keys(creds["phonenr"])
 
             self.driver.find_element(By.TAG_NAME, "body").send_keys(Keys.CONTROL + Keys.HOME)
 
