@@ -1,6 +1,7 @@
 import __main__
 import json
 import os
+import re
 import requests
 import smtplib
 import sys
@@ -133,7 +134,9 @@ class MainTest:
             return
         if timestamp == '':
             timestamp = datetime.now().strftime("%H%M%S")
-        filename = f"{timestamp}{type}_{sys._getframe(1).f_code.co_name}"
+        method_name = sys._getframe(1).f_code.co_name
+        method_name = re.sub('[^-a-zA-Z0-9_.() ]+', '', method_name)
+        filename = f"{timestamp}{type}_{method_name}"
         png_img = os.path.join(self.logpath, f"{filename}.png")
         self.driver.save_screenshot(png_img)
         with Image.open(png_img) as rgba_img:

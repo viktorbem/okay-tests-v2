@@ -43,7 +43,7 @@ class JenaTest(MainTest):
             self.click(self.driver.find_element(By.CSS_SELECTOR, "#cross-sell .button--add-to-cart"))
         except Exception as err:
             print("Product has no cross-sell ----------")
-            self.sleep()
+            self.sleep(10)
             if self.is_mobile:
                 selector = ".mobile-icons .header-cart a"
             else:
@@ -159,6 +159,7 @@ class JenaTest(MainTest):
         - test.confirm_order()
         """
         self.screenshots = screenshots
+        self.sleep(20)
         self.log("Confirm if order was created")
         self.click(self.driver.find_element(By.CSS_SELECTOR, ".step__footer__continue-btn"))
         self.sleep()
@@ -186,13 +187,20 @@ class JenaTest(MainTest):
         self.sleep()
 
     @catch_error
-    def goto_checkout(self, screenshots=True):
+    def goto_checkout(self, screenshots=True, **kwargs):
         """
         Proceed from the cart to the checkout. If you are currently not in cart, this method will open it for you first.
         It will also fill in all necessary order details if needed to proceed to the next step.
 
         Example:
         - test.goto_checkout()
+
+        
+        You can use additional arguments to specify credentials of test user.
+        These arguments are 'email', 'name', 'surname', 'street', 'zipnr', 'city' and 'phonenr'.
+
+        Example:
+        - test.goto_checkout(email='testovac@seznam.cz', zipnr='73953')
         """
         self.screenshots = screenshots
         self.log("Proceed to the checkout")
@@ -204,21 +212,38 @@ class JenaTest(MainTest):
 
         self.sleep()
         self.log("Fill in all necessary details if needed")
+
+        creds = {
+            "email": "test.okay@okaycz.eu",
+            "name": "test",
+            "surname": "test",
+            "street": "Testovaci 123",
+            "zipnr": "60200",
+            "city": "Brno",
+            "phonenr": "608123123"
+        }
+
+        for key in creds:
+            try:
+                creds[key] = kwargs[key]
+            except KeyError:
+                print(f"Use default value of '{key}' ----------")
+
         try:
             email = self.driver.find_element(By.ID, "checkout_email")
-            email.send_keys("test.okay@okaycz.eu")
+            email.send_keys(creds["email"])
             firstname = self.driver.find_element_by_id("checkout_shipping_address_first_name")
-            firstname.send_keys("test")
+            firstname.send_keys(creds["name"])
             surname = self.driver.find_element_by_id("checkout_shipping_address_last_name")
-            surname.send_keys("test")
+            surname.send_keys(creds["surname"])
             street = self.driver.find_element_by_id("checkout_shipping_address_address1")
-            street.send_keys("Testovaci 123")
+            street.send_keys(creds["street"])
             zipnr = self.driver.find_element_by_id("checkout_shipping_address_zip")
-            zipnr.send_keys("60200")
+            zipnr.send_keys(creds["zipnr"])
             city = self.driver.find_element_by_id("checkout_shipping_address_city")
-            city.send_keys("Brno")
+            city.send_keys(creds["city"])
             phonenr = self.driver.find_element_by_id("checkout_shipping_address_phone")
-            phonenr.send_keys("608123123")
+            phonenr.send_keys(creds["phonenr"])
 
             self.log("Terms and conditions agreement")
             checkbox = self.driver.find_element_by_id("ecf--terms-input")
