@@ -43,7 +43,7 @@ class OkayTest(MainTest):
             self.click(self.driver.find_element(By.CSS_SELECTOR, "#cross-sell .button--add-to-cart"))
         except Exception as err:
             print("Product has no cross-sell ----------")
-            self.sleep()
+            self.sleep(10)
             if self.is_mobile:
                 selector = ".mobile-icons .header-cart a"
             else:
@@ -170,6 +170,7 @@ class OkayTest(MainTest):
         - test.confirm_order()
         """
         self.screenshots = screenshots
+        self.sleep(20)
         self.log("Confirm if order was created")
         self.click(self.driver.find_element(By.CSS_SELECTOR, ".os-step__description a"))
         self.sleep()
@@ -398,7 +399,8 @@ class OkayTest(MainTest):
                     should_open = False
             else:
                 menu_toggle = self.driver.find_element(By.CSS_SELECTOR, ".header__open-menu")
-                if "is-active" in menu_toggle.get_attribute("class"):
+                menu_toggle_parent = menu_toggle.find_element(By.XPATH, "..")
+                if "is-active" in menu_toggle_parent.get_attribute("class"):
                     should_open = False
             
             if should_open:

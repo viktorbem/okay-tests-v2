@@ -43,7 +43,7 @@ class JenaTest(MainTest):
             self.click(self.driver.find_element(By.CSS_SELECTOR, "#cross-sell .button--add-to-cart"))
         except Exception as err:
             print("Product has no cross-sell ----------")
-            self.sleep()
+            self.sleep(10)
             if self.is_mobile:
                 selector = ".mobile-icons .header-cart a"
             else:
@@ -159,6 +159,7 @@ class JenaTest(MainTest):
         - test.confirm_order()
         """
         self.screenshots = screenshots
+        self.sleep(20)
         self.log("Confirm if order was created")
         self.click(self.driver.find_element(By.CSS_SELECTOR, ".step__footer__continue-btn"))
         self.sleep()
