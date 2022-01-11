@@ -125,7 +125,7 @@ CATEGORIES = [
         "url": "https://www.okay.sk/collections/rohove-sedacky-rozkladacie",
         "services": [
             "40968686796951", # Odvoz a ekologicka likvidace sedaciho nabytku a posteli
-            "40968686829719", # Montaz sedaciho nabytku a posteli
+            # "40968686829719", # Montaz sedaciho nabytku a posteli
         ],
     },
     {
@@ -133,7 +133,7 @@ CATEGORIES = [
         "url": "https://www.okay.sk/collections/postele",
         "services": [
             "40968686796951", # Odvoz a ekologicka likvidace sedaciho nabytku a posteli
-            "40968686829719", # Montaz sedaciho nabytku a posteli
+            # "40968686829719", # Montaz sedaciho nabytku a posteli
         ],
     },
     {
