@@ -157,6 +157,18 @@ test.empty_cart()
 
 <br>
 
+### **fill_form_fields**
+
+Vyplní jednotlivá pole ve formuláři. Pole, která se mají vyplnit, jsou specifikována argumentem `fields`, což je `list` (pole) obsahující `dictionary` s klíči `id` a `value` (viz příklad).
+
+```python
+test.fill_form_fields(fields=[{"id": "name", "value": "Josef"}], proceed=True)
+```
+
+Argument `fields` je povinný. Argument `proceed` je nepovinný a pokud jej nastavíte `True`, bude test pokračovat a odešle formulář (výchozí hodnota je `False`).
+
+<br>
+
 ### **goto_checkout**
 
 Pokračovat z košíku do checkoutu. Pokud se zrovna nenacházíte v košíku, tato metoda jej otevře za vás. Zároveň vyplní všechny potřebné zákaznické detaily (pokud jsou potřeba) a pokračuje k volbě dopravy.
