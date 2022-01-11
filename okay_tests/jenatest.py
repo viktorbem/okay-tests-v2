@@ -187,6 +187,33 @@ class JenaTest(MainTest):
         self.sleep()
 
     @catch_error
+    def fill_form_fields(self, fields, proceed=False, screenshots=True):
+        """
+        Fill in several input fields in the form specified by the 'fields' argument as list of dictionaries with 'id' and 'value' keys.
+
+        Example:
+        - test.fill_form_fields(fields=[{"id": "name", "value": "Josef"}], proceed=True)
+
+        The argument 'fields' is mandatory.
+        The argument 'proceed' is optional. If you set 'proceed' to 'True', test will send the form.
+        The default value of 'proceed' argument is 'False'.
+        """
+        self.screenshots = screenshots
+        for field in fields:
+            if field["value"] == "":
+                field["value"] = "Test value"
+            self.log(f"Try to fill form field '{field['id']}' with '{field['value']}'")
+            input_field = self.driver.find_element(By.ID, field["id"])
+            input_field.send_keys(field["value"])
+        self.sleep()
+        self.take_screenshot()
+
+        if proceed:
+            self.click(self.driver.find_element(By.CSS_SELECTOR, "button[class*='submit']"))
+            self.sleep()
+            self.take_screenshot()
+
+    @catch_error
     def goto_checkout(self, screenshots=True, **kwargs):
         """
         Proceed from the cart to the checkout. If you are currently not in cart, this method will open it for you first.

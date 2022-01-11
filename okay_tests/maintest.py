@@ -14,6 +14,7 @@ from email.mime.multipart import MIMEMultipart
 from email.mime.text import MIMEText
 from PIL import Image
 from selenium import webdriver
+from selenium.webdriver.common.by import By
 from slack_sdk import WebClient
 from types import SimpleNamespace
 
@@ -26,9 +27,10 @@ with open(os.path.join(os.path.abspath(os.path.dirname(__main__.__file__)), "con
 class MainTest:
     def __init__(
         self, name=None, theme="", is_mobile=0, delay=int(DEFAULT.delay), is_headless=bool(DEFAULT.is_headless),
-        is_email=bool(DEFAULT.is_email), is_slack=bool(DEFAULT.is_slack), **kwargs
+        is_email=bool(DEFAULT.is_email), is_slack=bool(DEFAULT.is_slack), password="", **kwargs
     ):
         self.testname = name
+        self.shop_password = password
         if not self.testname:
             self.testname = os.path.basename(sys.argv[0][:-3])
         self.step = "Initialize maintest"
@@ -228,7 +230,19 @@ class MainTest:
                 file=path_to_img
             )
             print(response.status_code)
-        
+
+    def bypass_password(self, url):
+        """self.bypass_password(url=Str)"""
+        self.driver.get(url)
+        try:
+            self.click(self.driver.find_element(By.CSS_SELECTOR, "#open-me a"))
+        except Exception as err:
+            print("No password needed ----------")
+        else:
+            self.driver.find_element(By.NAME, "password").send_keys(self.shop_password)
+            self.click(self.driver.find_element(By.NAME, "commit"))
+            self.sleep()
+
 
 if __name__ == "__main__":
     pass
