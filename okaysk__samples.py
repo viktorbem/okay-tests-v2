@@ -277,5 +277,76 @@ for category in CATEGORIES:
 test.abort()
 
 
+## OKAY.SK SALESFORCE FORMS CHECK
+
+FORMS = [
+    {
+        "url": "https://www.okay.sk/pages/kontaktny-formular-95",
+        "fields": [
+            {
+                "id": "storeifyInput_dd2694a1ab83",
+                "value": "Jan"
+            },
+            {
+                "id": "storeifyInput_80d9e047-cb39-48bd-bf96-873076f441ee",
+                "value": "Novak"
+            },
+            {
+                "id": "storeifyInput_2e349aba-9533-4c31-994f-a7b25ec6bdbc",
+                "value": "Message filled by Selenium"
+            }
+        ]
+    },
+    {
+        "url": "https://www.okay.sk/pages/kontaktny-formular-125",
+        "fields": [
+            {
+                "id": "storeifyInput_dd2694a1ab83",
+                "value": "Jan"
+            },
+            {
+                "id": "storeifyInput_80d9e047-cb39-48bd-bf96-873076f441ee",
+                "value": "Novak"
+            },
+            {
+                "id": "storeifyInput_2e349aba-9533-4c31-994f-a7b25ec6bdbc",
+                "value": "Message filled by Selenium"
+            }
+        ]
+    },
+        {
+        "url": "https://www.okay.sk/pages/kontaktny-formular-reklamacia",
+        "fields": [
+            {
+                "id": "storeifyInput_dd2694a1ab83",
+                "value": "Jan"
+            },
+            {
+                "id": "storeifyInput_80d9e047-cb39-48bd-bf96-873076f441ee",
+                "value": "Novak"
+            },
+            {
+                "id": "storeifyInput_2e349aba-9533-4c31-994f-a7b25ec6bdbc",
+                "value": "Message filled by Selenium"
+            }
+        ]
+    }
+]
+
+test = OkayTest(name="okaysk_salesforce_forms")
+for form in FORMS:
+    test.new_test()
+    test.open_url(url=form["url"])
+    test.fill_form_fields(fields=form["fields"], proceed=False)
+test.abort()
+
+test = OkayTest(name="okaysk_salesforce_forms_mobile", is_mobile=True)
+for form in FORMS:
+    test.new_test()
+    test.open_url(url=form["url"])
+    test.fill_form_fields(fields=form["fields"], proceed=False)
+test.abort()
+
+
 end = time.perf_counter() - start
 print(f"Finished in {end:.2f} s")

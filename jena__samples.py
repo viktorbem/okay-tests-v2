@@ -216,5 +216,76 @@ for category in CATEGORIES:
 test.abort()
 
 
+## JENA SALESFORCE FORMS CHECK
+
+FORMS = [
+    {
+        "url": "https://www.jena-nabytek.cz/pages/kontaktujte-nas-moje-platba",
+        "fields": [
+            {
+                "id": "storeifyInput_5581b8ef-35db-4cf4-8ffd-008188d67aaa",
+                "value": "Jan"
+            },
+            {
+                "id": "storeifyInput_e4eb4879-c3df-437a-bd7c-e782087ff672",
+                "value": "Novak"
+            },
+            {
+                "id": "storeifyInput_ac1a85cc-9830-404b-8427-81f13990cfc6",
+                "value": "Message filled by Selenium"
+            }
+        ]
+    },
+    {
+        "url": "https://www.jena-nabytek.cz/pages/kontaktujte-nas-27282",
+        "fields": [
+            {
+                "id": "storeifyInput_5581b8ef-35db-4cf4-8ffd-008188d67aaa",
+                "value": "Jan"
+            },
+            {
+                "id": "storeifyInput_e4eb4879-c3df-437a-bd7c-e782087ff672",
+                "value": "Novak"
+            },
+            {
+                "id": "storeifyInput_ac1a85cc-9830-404b-8427-81f13990cfc6",
+                "value": "Message filled by Selenium"
+            }
+        ]
+    },
+        {
+        "url": "https://www.jena-nabytek.cz/pages/formular-pro-reklamacni-rizeni-nabytku",
+        "fields": [
+            {
+                "id": "storeifyInput_5581b8ef-35db-4cf4-8ffd-008188d67aaa",
+                "value": "Jan"
+            },
+            {
+                "id": "storeifyInput_e4eb4879-c3df-437a-bd7c-e782087ff672",
+                "value": "Novak"
+            },
+            {
+                "id": "storeifyInput_ac1a85cc-9830-404b-8427-81f13990cfc6",
+                "value": "Message filled by Selenium"
+            }
+        ]
+    }
+]
+
+test = JenaTest(name="jena_salesforce_forms")
+for form in FORMS:
+    test.new_test()
+    test.open_url(url=form["url"])
+    test.fill_form_fields(fields=form["fields"], proceed=False)
+test.abort()
+
+test = JenaTest(name="jena_salesforce_forms_mobile", is_mobile=True)
+for form in FORMS:
+    test.new_test()
+    test.open_url(url=form["url"])
+    test.fill_form_fields(fields=form["fields"], proceed=False)
+test.abort()
+
+
 end = time.perf_counter() - start
 print(f"Finished in {end:.2f} s")
