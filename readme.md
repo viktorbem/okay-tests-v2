@@ -169,6 +169,18 @@ Argument `fields` je povinný. Argument `proceed` je nepovinný a pokud jej nast
 
 <br>
 
+### **get_random_words**
+
+Vrátí seznam náhodných výrazů použitelných ve vyhledávání. Délka tohoto seznamu odpovídá číslu v argumentu `items`.
+
+```python
+words = test.get_random_words(items=3)
+```
+
+Argument `items` je povinný.
+
+<br>
+
 ### **goto_checkout**
 
 Pokračovat z košíku do checkoutu. Pokud se zrovna nenacházíte v košíku, tato metoda jej otevře za vás. Zároveň vyplní všechny potřebné zákaznické detaily (pokud jsou potřeba) a pokračuje k volbě dopravy.

@@ -46,11 +46,9 @@ test.abort()
 
 test = JenaTest(name="jena_search")
 test.open_url(url="https://www.jena-nabytek.cz/")
-test.search_for(text="postele boxspring")
-test.search_for(text="polštáře")
-test.search_for(text="ostrava")
-test.search_for(text="splátky")
-test.search_for(text="doprava")
+words = test.get_random_words(items=5)
+for word in words:
+    test.search_for(text=word)
 test.abort()
 
 
@@ -58,11 +56,9 @@ test.abort()
 
 test = JenaTest(name="jena_search_mobile", is_mobile=True)
 test.open_url(url="https://www.jena-nabytek.cz/")
-test.search_for(text="postele boxspring")
-test.search_for(text="polštáře")
-test.search_for(text="ostrava")
-test.search_for(text="splátky")
-test.search_for(text="doprava")
+words = test.get_random_words(items=5)
+for word in words:
+    test.search_for(text=word)
 test.abort()
 
 

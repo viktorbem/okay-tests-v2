@@ -148,7 +148,6 @@ class JenaTest(MainTest):
         if proceed:
             self.click(self.driver.find_element(By.ID, "continue_button"))
             self.sleep()
-            self.take_screenshot()
 
     @catch_error
     def confirm_order(self, screenshots=True):
@@ -161,6 +160,7 @@ class JenaTest(MainTest):
         self.screenshots = screenshots
         self.sleep(20)
         self.log("Confirm if order was created")
+        self.take_screenshot()
         self.click(self.driver.find_element(By.CSS_SELECTOR, ".step__footer__continue-btn"))
         self.sleep()
 
