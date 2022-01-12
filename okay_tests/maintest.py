@@ -1,6 +1,7 @@
 import __main__
 import json
 import os
+import random
 import re
 import requests
 import smtplib
@@ -106,6 +107,40 @@ class MainTest:
             element.send_keys(char)
             self.sleep(1)
 
+    def get_random_words(self, items, screenshots=True):
+        """
+        Return the list of randomly generated search words.
+        Length of the list equals the number provided in 'items' argument.
+
+        Example:
+        - words = test.get_random_words(items=3)
+
+        The 'items' argument is mandatory.
+        """
+        web_key = "okay"
+        lang_key = "cz"
+        if "jena" in self.home_url:
+            web_key = "jena"
+        if "sk" in self.home_url:
+            lang_key = "sk"
+        
+        try:
+            with open(os.path.join(os.path.abspath(os.path.dirname(__file__)), "search.json")) as json_file:
+                data = json.loads(json_file.read())
+                search_words = data[web_key][lang_key]
+        except FileNotFoundError:
+            return ["Search terms not provided"]
+
+        if items > len(search_words):
+            items = len(search_words)
+
+        chosen_words = []
+        while len(chosen_words) < items:
+            word = random.choice(search_words)
+            if word not in chosen_words:
+                chosen_words.append(word)
+        return chosen_words
+
     def abort(self, screenshots=True):
         """
         Close the browser window and exit the test.
@@ -179,7 +214,7 @@ class MainTest:
                 result += f"| {row_name}{spacing}{value}\n"
         result += f"|{'=' * 90}\n"
         print(result)
-        filename = f"{self.time}_log.txt"
+        filename = f"{self.time}_out.txt"
         with open(os.path.join(self.logpath, filename), "a", encoding="utf-8") as logfile:
             logfile.write(result)
 

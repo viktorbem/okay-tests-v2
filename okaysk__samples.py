@@ -46,12 +46,9 @@ test.abort()
 
 test = OkayTest(name="okaysk_search")
 test.open_url(url="https://www.okay.sk/")
-test.search_for(text="mobilny telefon")
-test.search_for(text="vankúš")
-test.search_for(text="predajne")
-test.search_for(text="iphone v akcii")
-test.search_for(text="nintendo")
-test.search_for(text="ako vybrať")
+words = test.get_random_words(items=5)
+for word in words:
+    test.search_for(text=word)
 test.abort()
 
 
@@ -59,10 +56,9 @@ test.abort()
 
 test = OkayTest(name="okaysk_search_mobile", is_mobile=True)
 test.open_url(url="https://www.okay.sk/")
-test.search_for(text="mobilny telefon")
-test.search_for(text="bratislava")
-test.search_for(text="splátky")
-test.search_for(text="doprava")
+words = test.get_random_words(items=5)
+for word in words:
+    test.search_for(text=word)
 test.abort()
 
 
