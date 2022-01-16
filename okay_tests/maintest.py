@@ -1,4 +1,5 @@
 import __main__
+import functools
 import json
 import os
 import random
@@ -57,6 +58,22 @@ class MainTest:
 
         self.driver = self.setup_chrome()
     
+    @staticmethod
+    def catch_error(f):
+        @functools.wraps(f)
+        def inner(self, screenshots=True, *args, **kwargs):
+            self.screenshots = screenshots
+            if self.driver.find_elements(By.CSS_SELECTOR, "div[class*='box-promotion']"):
+                print("Bypass exponea popup ----------")
+                self.click(self.driver.find_element(By.CSS_SELECTOR, "div button.close span"))
+                self.sleep(5)
+            if self.errors:
+                try:
+                    return f(self, *args, **kwargs)
+                except Exception as err:
+                    self.log_error(message=err, during=self.step)
+        return inner
+
     def setup_chrome(self):
         self.options = webdriver.ChromeOptions()
         self.options.add_argument("--lang=en")

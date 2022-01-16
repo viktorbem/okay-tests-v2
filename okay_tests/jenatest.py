@@ -1,4 +1,3 @@
-import functools
 import random
 from okay_tests import MainTest
 from selenium.webdriver.common.by import By
@@ -13,17 +12,10 @@ class JenaTest(MainTest):
         super().__init__(**kwargs)
 
     def catch_error(f):
-        @functools.wraps(f)
-        def inner(self, *args, **kwargs):
-            if self.errors:
-                try:
-                    return f(self, *args, **kwargs)
-                except Exception as err:
-                    self.log_error(message=err, during=self.step)
-        return inner
+        return MainTest.catch_error(f)
 
     @catch_error
-    def add_to_cart(self, screenshots=True):
+    def add_to_cart(self):
         """
         Add current product to cart. Before running this method, you have to open some product in stock first, 
         eg. with open_product() method.
@@ -31,7 +23,6 @@ class JenaTest(MainTest):
         Example:
         - test.add_to_cart()
         """
-        self.screenshots = screenshots
         self.log("Get the name of the product")
         self.product_name = self.driver.find_element(By.CSS_SELECTOR, "h1.product_name").get_attribute("textContent")
         self.log(f"Add '{self.product_name}' to the cart")
@@ -55,7 +46,7 @@ class JenaTest(MainTest):
         self.take_screenshot()
 
     @catch_error
-    def check_services(self, services, screenshots=True):
+    def check_services(self, services):
         """
         Try to check all furniture services in cart. After all services are checked, take a screenshot. You have to
         provide a list of 'services' IDs that shoud be available for this category.
@@ -66,7 +57,6 @@ class JenaTest(MainTest):
 
         The 'services' argument is mandatory.
         """
-        self.screenshots = screenshots
         for service in services:
             self.log(f"{service}: check if service is available")
             self.click(self.driver.find_element(By.XPATH, f"//input[@product-service-id={service}]"))
@@ -77,7 +67,7 @@ class JenaTest(MainTest):
         self.take_screenshot()
 
     @catch_error
-    def choose_delivery(self, delivery, proceed=False, screenshots=True):
+    def choose_delivery(self, delivery, proceed=False):
         """
         Choose delivery type defined in 'delivery' argument. You have to be in the 'shipping' step of checkout.
 
@@ -88,7 +78,6 @@ class JenaTest(MainTest):
         The argument 'proceed' is optional. If you set 'proceed' to 'True', test will proceed to next step.
         The default value of 'proceed' argument is 'False'.
         """
-        self.screenshots = screenshots
         self.log("Get all possible delivery types")
         possible_options = self.driver.find_elements(By.CSS_SELECTOR, ".section--shipping-method .content-box__row")
 
@@ -114,7 +103,7 @@ class JenaTest(MainTest):
             self.sleep()
 
     @catch_error
-    def choose_payment(self, payment, proceed=False, screenshots=True):
+    def choose_payment(self, payment, proceed=False):
         """
         Choose payment type defined in 'payment' argument. You have to be in the 'payment' step of checkout.
 
@@ -125,7 +114,6 @@ class JenaTest(MainTest):
         The argument 'proceed' is optional. If you set 'proceed' to 'True', test will proceed to next step.
         The default value of 'proceed' argument is 'False'.
         """
-        self.screenshots = screenshots
         self.log("Get list of all possible payment options")
         payment_options = self.driver.find_elements(By.CSS_SELECTOR, ".section--payment-method fieldset .content-box__row")
         chosen_option = None
@@ -150,14 +138,13 @@ class JenaTest(MainTest):
             self.sleep()
 
     @catch_error
-    def confirm_order(self, screenshots=True):
+    def confirm_order(self):
         """
         Confirm if order was created by trying to click on some element in thank you page.
 
         Example:
         - test.confirm_order()
         """
-        self.screenshots = screenshots
         self.sleep(20)
         self.log("Confirm if order was created")
         self.take_screenshot()
@@ -165,14 +152,13 @@ class JenaTest(MainTest):
         self.sleep()
 
     @catch_error
-    def empty_cart(self, screenshots=True):
+    def empty_cart(self):
         """
         Open the cart and delete all items in it. This method won't raise any errors if there are no items in cart.
 
         Example:
         - test.empty_cart()
         """
-        self.screenshots = screenshots
         self.log("Empty the cart")
         self.driver.get(f"{self.home_url}/cart")
         cart_is_empty = False
@@ -187,7 +173,7 @@ class JenaTest(MainTest):
         self.sleep()
 
     @catch_error
-    def fill_form_fields(self, fields, proceed=False, screenshots=True):
+    def fill_form_fields(self, fields, proceed=False):
         """
         Fill in several input fields in the form specified by the 'fields' argument as list of dictionaries with 'id' and 'value' keys.
 
@@ -198,7 +184,6 @@ class JenaTest(MainTest):
         The argument 'proceed' is optional. If you set 'proceed' to 'True', test will send the form.
         The default value of 'proceed' argument is 'False'.
         """
-        self.screenshots = screenshots
         for field in fields:
             if field["value"] == "":
                 field["value"] = "Test value"
@@ -214,7 +199,7 @@ class JenaTest(MainTest):
             self.take_screenshot()
 
     @catch_error
-    def goto_checkout(self, screenshots=True, **kwargs):
+    def goto_checkout(self, **kwargs):
         """
         Proceed from the cart to the checkout. If you are currently not in cart, this method will open it for you first.
         It will also fill in all necessary order details if needed to proceed to the next step.
@@ -229,7 +214,6 @@ class JenaTest(MainTest):
         Example:
         - test.goto_checkout(email='testovac@seznam.cz', zipnr='73953')
         """
-        self.screenshots = screenshots
         self.log("Proceed to the checkout")
         if "cart" not in self.driver.current_url:
             self.driver.get(f"{self.home_url}/cart")
@@ -291,7 +275,7 @@ class JenaTest(MainTest):
         self.sleep()
 
     @catch_error
-    def handle_gopay(self, screenshots=True):
+    def handle_gopay(self):
         """
         Proceed through the payment gate until it is able to fill in credit card information,    
         then return back to the eshop to cancel order.
@@ -299,7 +283,6 @@ class JenaTest(MainTest):
         Example:
         - test.handle_gopay()
         """
-        self.screenshots = screenshots
         self.log("Wait for redirect to payment gate")
         self.sleep(20)
         self.take_screenshot()
@@ -358,14 +341,13 @@ class JenaTest(MainTest):
         self.sleep(20)
                 
     @catch_error
-    def open_product(self, screenshots=True):
+    def open_product(self):
         """
         Look for the top bestseller in stock. If there is none, open the first product in collection.
 
         Example:
         - test.open_product()
         """
-        self.screenshots = screenshots
         self.log("Get the list of the bestsellers")
         bestsellers = self.driver.find_elements(By.CSS_SELECTOR, ".flickity-slider div")
 
@@ -396,7 +378,7 @@ class JenaTest(MainTest):
         self.take_screenshot()
 
     @catch_error
-    def open_random_menu_items(self, items, screenshots=True):
+    def open_random_menu_items(self, items):
         """
         Get a list of all main menu items, randomly click as many as defined in argument and take screenshots of results.
 
@@ -406,7 +388,6 @@ class JenaTest(MainTest):
         The argument 'items' is mandatory.
         This is going to click on 3 items in main menu.
         """
-        self.screenshots = screenshots
         self.log(f"Click on {items} random items in main menu")
         clicked = []
         i = 0
@@ -441,7 +422,7 @@ class JenaTest(MainTest):
         self.sleep()
 
     @catch_error
-    def open_random_footer_items(self, items, screenshots=True):
+    def open_random_footer_items(self, items):
         """
         Get a list of all footer items, randomly click as many as defined in argument and take screenshots of results.
 
@@ -451,7 +432,6 @@ class JenaTest(MainTest):
         The argument 'items' is mandatory.
         This is going to click on 3 items in footer.
         """
-        self.screenshots = screenshots
         self.log(f"Click on {items} random items in foooter")
         clicked = []
         i = 0
@@ -477,7 +457,7 @@ class JenaTest(MainTest):
         self.sleep()
 
     @catch_error
-    def open_specific_menu_item(self, text, screenshots=True):
+    def open_specific_menu_item(self, text):
         """
         Open an item in main menu items with link text provided as an argument.
 
@@ -486,7 +466,6 @@ class JenaTest(MainTest):
 
         The argument 'text' is mandatory.
         """
-        self.screenshots = screenshots
         if self.is_mobile:
             self.log("Open dropdown menu on mobile")
             self.click(self.driver.find_element(By.CSS_SELECTOR, ".mobile-menu__toggle-button"))
@@ -506,7 +485,7 @@ class JenaTest(MainTest):
         pass
 
     @catch_error
-    def open_url(self, url, screenshots=True):
+    def open_url(self, url):
         """
         Open an URL defined as argument of this method.
 
@@ -515,7 +494,6 @@ class JenaTest(MainTest):
 
         The argument 'url' is mandatory.
         """
-        self.screenshots = screenshots
         self.log(f"Open {url} in the browser")
         self.home_url = f"{urlparse(url).scheme}://{urlparse(url).netloc}/"
         if self.theme != "":
@@ -524,14 +502,13 @@ class JenaTest(MainTest):
         self.sleep()
 
     @catch_error
-    def parse_delivery(self, screenshots=True):
+    def parse_delivery(self):
         """
         Parse the list of all delivery options and return it as a dictionary.
 
         Example:
         - delivery = test.parse_delivery()
         """
-        self.screenshots = screenshots
         self.sleep()
         self.log(f"Parse list of delivery options for '{self.product_name}'")
         self.take_screenshot()
@@ -547,14 +524,13 @@ class JenaTest(MainTest):
         return results
 
     @catch_error
-    def parse_payment(self, screenshots=True):
+    def parse_payment(self):
         """
         Parse the list of all payment options and return it as a dictionary.
 
         Example:
         - payment = test.parse_payment()
         """
-        self.screenshots = screenshots
         self.sleep()
         self.log(f"Parse list of payment options for '{self.product_name}'")
         self.take_screenshot()
@@ -575,7 +551,7 @@ class JenaTest(MainTest):
         return results
 
     @catch_error
-    def search_for(self, text, screenshots=True):
+    def search_for(self, text):
         """
         Search a phrase defined by the 'text' argument.
 
@@ -584,7 +560,6 @@ class JenaTest(MainTest):
 
         The argument 'text' is mandatory.
         """
-        self.screenshots = screenshots
         self.log(f"Search for '{text}'")
         if self.is_mobile:
             self.log(f"Confirm search for '{text}' on mobile.")
@@ -613,7 +588,7 @@ class JenaTest(MainTest):
         self.take_screenshot()
 
     @catch_error
-    def set_filter(self, name, value, screenshots=True):
+    def set_filter(self, name, value):
         """
         Set a filter by name and value provided as arguments.
 
@@ -622,7 +597,6 @@ class JenaTest(MainTest):
 
         Both arguments are mandatory.
         """
-        self.screenshots = screenshots
         if self.is_mobile:
             self.log("Open filter menu on mobile")
             wait = WebDriverWait(self.driver, 60)
