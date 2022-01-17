@@ -100,6 +100,18 @@ test.add_to_cart()
 
 <br>
 
+### **check_css**
+
+Porovná hodnotu css stylu daného html elementu. Používá se pro kontrolu správného načtení css souboru.
+
+```python
+test.check_css(element=".header--search-focus", style="background-color", value="rgba(26, 77, 150, 1)")
+```
+
+Všechny argumenty jsou povinné.
+
+<br>
+
 ### **check_services**
 
 Pokusí se zaškrtnout nábytkové služby v košíku a následně vytvoří printscreen košíku. Je potřeba definovat služby jako `list` (pole) obsahující `variant ID` těchto služeb.
