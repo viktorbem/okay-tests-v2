@@ -93,6 +93,7 @@ test.open_url(url="https://www.okay.sk/collections/alkalicke-baterie?pf_p_ceny=2
 test.open_product()
 test.add_to_cart()
 test.goto_checkout()
+test.choose_delivery(delivery="zásielkovňa", proceed=False, screenshots=False)
 test.choose_delivery(delivery="na moju adresu", proceed=True)
 test.choose_payment(payment="dobierka", proceed=True)
 test.confirm_order()
