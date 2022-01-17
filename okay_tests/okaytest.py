@@ -46,6 +46,24 @@ class OkayTest(MainTest):
         self.take_screenshot()
 
     @catch_error
+    def check_css(self, element, style, value):
+        """
+        Check value of some html element css property. It is useful to test if css files are loaded properly.
+
+        Example:
+        - test.check_css(element=".header--search-focus", style="background-color", value="rgba(26, 77, 150, 1)")
+
+        All arguments are mandatory.
+        """
+        self.log(f"Check the value of '{style}' property of '{element}'")
+        el = self.driver.find_element(By.CSS_SELECTOR, element)
+        val = el.value_of_css_property(style)
+        if val != value:
+            raise Exception(f"The '{style}' property of '{element}' is '{val}' instead of '{value}'")
+        
+        self.sleep()
+
+    @catch_error
     def check_services(self, services):
         """
         Try to check all furniture services in cart. After all services are checked, take a screenshot. You have to
