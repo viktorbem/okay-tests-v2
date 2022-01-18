@@ -2,6 +2,7 @@ import __main__
 import functools
 import json
 import os
+import pprint
 import random
 import re
 import requests
@@ -17,6 +18,7 @@ from email.mime.text import MIMEText
 from PIL import Image
 from selenium import webdriver
 from selenium.webdriver.common.by import By
+from selenium.webdriver.common.desired_capabilities import DesiredCapabilities
 from slack_sdk import WebClient
 from types import SimpleNamespace
 
@@ -94,7 +96,9 @@ class MainTest:
         else:
             driver = "/usr/bin/chromedriver"
         logfile = os.path.join(self.logpath, f"{self.time}_log.txt")
-        new_driver = webdriver.Chrome(driver, chrome_options=self.options, service_args=[f"--log-path={logfile}"])
+        self.dc = DesiredCapabilities.CHROME
+        self.dc["goog:loggingPrefs"] = {"browser": "ALL"}
+        new_driver = webdriver.Chrome(driver, chrome_options=self.options, desired_capabilities=self.dc, service_args=[f"--log-path={logfile}"])
         new_driver.set_window_size(width=width, height=height)
         return new_driver
 
@@ -244,10 +248,12 @@ class MainTest:
         timestamp = datetime.now().strftime("%H%M%S")
         filename = self.take_screenshot(timestamp, "_ERR")
         with open(os.path.join(self.logpath, f"{timestamp}_ERR.txt"), "w", encoding="utf-8") as logfile:
-            logfile.write(msg)
-
+            pp = pprint.PrettyPrinter(indent=2)
+            console_log = pp.pformat(self.driver.get_log('browser'))
+            logfile.write(f"{msg}\n\nConsole {'-' * 30}\n\n{console_log}")
         path_to_img = os.path.join(self.logpath, filename)
         print(filename)
+
         # Send email if test crashes
         if self.is_email:
             new_msg = MIMEMultipart()

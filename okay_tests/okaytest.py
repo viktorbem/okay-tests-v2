@@ -113,7 +113,7 @@ class OkayTest(MainTest):
             for option in possible_options:
                 
                 delivery_option = option.find_element(By.CSS_SELECTOR, ".radio__label__primary")
-                if delivery in delivery_option.get_attribute("data-shipping-method-label-title").lower():
+                if delivery.lower() in delivery_option.get_attribute("data-shipping-method-label-title").lower():
                     chosen_option = option
                     break
 
@@ -151,7 +151,7 @@ class OkayTest(MainTest):
             if "secondary" in option.get_attribute("class"):
                 continue
             payment_option = option.find_element(By.CSS_SELECTOR, ".radio__label__primary")
-            if payment in payment_option.text.lower():
+            if payment.lower() in payment_option.text.lower():
                 chosen_option = option
                 break
         
