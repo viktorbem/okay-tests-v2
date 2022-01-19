@@ -1,6 +1,9 @@
 import __main__
+import functools
 import json
 import os
+import pprint
+import random
 import re
 import requests
 import smtplib
@@ -15,6 +18,7 @@ from email.mime.text import MIMEText
 from PIL import Image
 from selenium import webdriver
 from selenium.webdriver.common.by import By
+from selenium.webdriver.common.desired_capabilities import DesiredCapabilities
 from slack_sdk import WebClient
 from types import SimpleNamespace
 
@@ -56,6 +60,22 @@ class MainTest:
 
         self.driver = self.setup_chrome()
     
+    @staticmethod
+    def catch_error(f):
+        @functools.wraps(f)
+        def inner(self, screenshots=True, *args, **kwargs):
+            self.screenshots = screenshots
+            if self.driver.find_elements(By.CSS_SELECTOR, "div[class*='box-promotion']"):
+                print("Bypass exponea popup ----------")
+                self.click(self.driver.find_element(By.CSS_SELECTOR, "div button.close span"))
+                self.sleep(5)
+            if self.errors:
+                try:
+                    return f(self, *args, **kwargs)
+                except Exception as err:
+                    self.log_error(message=err, during=self.step)
+        return inner
+
     def setup_chrome(self):
         self.options = webdriver.ChromeOptions()
         self.options.add_argument("--lang=en")
@@ -76,7 +96,9 @@ class MainTest:
         else:
             driver = "/usr/bin/chromedriver"
         logfile = os.path.join(self.logpath, f"{self.time}_log.txt")
-        new_driver = webdriver.Chrome(driver, chrome_options=self.options, service_args=[f"--log-path={logfile}"])
+        self.dc = DesiredCapabilities.CHROME
+        self.dc["goog:loggingPrefs"] = {"browser": "ALL"}
+        new_driver = webdriver.Chrome(driver, chrome_options=self.options, desired_capabilities=self.dc, service_args=[f"--log-path={logfile}"])
         new_driver.set_window_size(width=width, height=height)
         return new_driver
 
@@ -105,6 +127,40 @@ class MainTest:
         for char in text:
             element.send_keys(char)
             self.sleep(1)
+
+    def get_random_words(self, items, screenshots=True):
+        """
+        Return the list of randomly generated search words.
+        Length of the list equals the number provided in 'items' argument.
+
+        Example:
+        - words = test.get_random_words(items=3)
+
+        The 'items' argument is mandatory.
+        """
+        web_key = "okay"
+        lang_key = "cz"
+        if "jena" in self.home_url:
+            web_key = "jena"
+        if "sk" in self.home_url:
+            lang_key = "sk"
+        
+        try:
+            with open(os.path.join(os.path.abspath(os.path.dirname(__file__)), "search.json")) as json_file:
+                data = json.loads(json_file.read())
+                search_words = data[web_key][lang_key]
+        except FileNotFoundError:
+            return ["Search terms not provided"]
+
+        if items > len(search_words):
+            items = len(search_words)
+
+        chosen_words = []
+        while len(chosen_words) < items:
+            word = random.choice(search_words)
+            if word not in chosen_words:
+                chosen_words.append(word)
+        return chosen_words
 
     def abort(self, screenshots=True):
         """
@@ -179,7 +235,7 @@ class MainTest:
                 result += f"| {row_name}{spacing}{value}\n"
         result += f"|{'=' * 90}\n"
         print(result)
-        filename = f"{self.time}_log.txt"
+        filename = f"{self.time}_out.txt"
         with open(os.path.join(self.logpath, filename), "a", encoding="utf-8") as logfile:
             logfile.write(result)
 
@@ -192,10 +248,12 @@ class MainTest:
         timestamp = datetime.now().strftime("%H%M%S")
         filename = self.take_screenshot(timestamp, "_ERR")
         with open(os.path.join(self.logpath, f"{timestamp}_ERR.txt"), "w", encoding="utf-8") as logfile:
-            logfile.write(msg)
-
+            pp = pprint.PrettyPrinter(indent=2)
+            console_log = pp.pformat(self.driver.get_log('browser'))
+            logfile.write(f"{msg}\n\nConsole {'-' * 30}\n\n{console_log}")
         path_to_img = os.path.join(self.logpath, filename)
         print(filename)
+
         # Send email if test crashes
         if self.is_email:
             new_msg = MIMEMultipart()

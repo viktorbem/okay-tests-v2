@@ -100,6 +100,18 @@ test.add_to_cart()
 
 <br>
 
+### **check_css**
+
+Porovná hodnotu css stylu daného html elementu. Používá se pro kontrolu správného načtení css souboru.
+
+```python
+test.check_css(element=".header--search-focus", style="background-color", value="rgba(26, 77, 150, 1)")
+```
+
+Všechny argumenty jsou povinné.
+
+<br>
+
 ### **check_services**
 
 Pokusí se zaškrtnout nábytkové služby v košíku a následně vytvoří printscreen košíku. Je potřeba definovat služby jako `list` (pole) obsahující `variant ID` těchto služeb.
@@ -166,6 +178,18 @@ test.fill_form_fields(fields=[{"id": "name", "value": "Josef"}], proceed=True)
 ```
 
 Argument `fields` je povinný. Argument `proceed` je nepovinný a pokud jej nastavíte `True`, bude test pokračovat a odešle formulář (výchozí hodnota je `False`).
+
+<br>
+
+### **get_random_words**
+
+Vrátí seznam náhodných výrazů použitelných ve vyhledávání. Délka tohoto seznamu odpovídá číslu v argumentu `items`.
+
+```python
+words = test.get_random_words(items=3)
+```
+
+Argument `items` je povinný.
 
 <br>
 
