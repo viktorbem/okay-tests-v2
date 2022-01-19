@@ -481,7 +481,9 @@ class OkayTest(MainTest):
             if self.is_mobile:
                 parent_items = self.driver.find_elements(By.CSS_SELECTOR, "footer .footer__menu")
                 parent = random.choice(parent_items)
-                self.click(parent)
+                parent_classes = parent.find_element(By.XPATH, "..").get_attribute("class").split()
+                if "footer__block--opened" not in parent_classes:
+                    self.click(parent)
                 footer_items = parent.find_elements(By.CSS_SELECTOR, ".footer__menu-link a")
             else:
                 footer_items = self.driver.find_elements(By.CSS_SELECTOR, "footer a")
