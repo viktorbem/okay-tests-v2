@@ -65,10 +65,6 @@ class MainTest:
         @functools.wraps(f)
         def inner(self, screenshots=True, *args, **kwargs):
             self.screenshots = screenshots
-            if self.driver.find_elements(By.CSS_SELECTOR, "div[class*='box-promotion']"):
-                print("Bypass exponea popup ----------")
-                self.click(self.driver.find_element(By.CSS_SELECTOR, "div button.close span"))
-                self.sleep(5)
             if self.errors:
                 try:
                     return f(self, *args, **kwargs)
@@ -119,6 +115,10 @@ class MainTest:
 
     def click(self, element):
         """self.click(element=WebdriverObject)"""
+        if self.driver.find_elements(By.CSS_SELECTOR, "div[class*='box-promotion']"):
+            print("Bypass exponea popup ----------")
+            self.driver.find_element(By.CSS_SELECTOR, "div button.close").click()
+            self.sleep(5)
         self.driver.execute_script("arguments[0].scrollIntoView({block: 'center'});", element)
         element.click()
 
