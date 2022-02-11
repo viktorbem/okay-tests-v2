@@ -79,7 +79,16 @@ class JenaTest(MainTest):
             self.log(f"{service}: check if service is available")
             self.click(self.driver.find_element(By.XPATH, f"//input[@product-service-id={service}]"))
             self.sleep(5)
-            
+
+        unchecked_items = []
+        self.log("Search for services that are still unchecked")
+        item_services = self.driver.find_elements(By.CSS_SELECTOR, ".item__properties input")
+        for service in item_services:
+            if service.get_attribute("checked") != "true":
+                unchecked_items.append(service.get_attribute('product-service-id'))
+        if len(unchecked_items) > 0:
+            raise Exception(f"There is one or more services that should be checked:\n{unchecked_items}")
+
         self.driver.find_element(By.TAG_NAME, "body").send_keys(Keys.CONTROL + Keys.HOME)
         self.sleep()
         self.take_screenshot()

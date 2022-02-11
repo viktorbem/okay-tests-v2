@@ -3,10 +3,11 @@ from okay_tests import OkayTest
 
 start = time.perf_counter()
 
+THEME = ""
 
 ## OKAY.CZ MENU DESKTOP
 
-test = OkayTest(name="okaycz_menu")
+test = OkayTest(name="okaycz_menu", theme=THEME)
 test.open_url(url="https://www.okay.cz/")
 test.open_random_menu_items(items=3)
 test.open_random_footer_items(items=3)
@@ -15,7 +16,7 @@ test.abort()
 
 ## OKAY.CZ MENU MOBILE
 
-test = OkayTest(name="okaycz_menu_mobile", is_mobile=True)
+test = OkayTest(name="okaycz_menu_mobile", is_mobile=True, theme=THEME)
 test.open_url(url="https://www.okay.cz/")
 test.open_random_menu_items(items=3)
 test.open_random_footer_items(items=3)
@@ -24,7 +25,7 @@ test.abort()
 
 ## OKAY.CZ FILTERS DESKTOP
 
-test = OkayTest(name="okaycz_filters")
+test = OkayTest(name="okaycz_filters", theme=THEME)
 test.open_url(url="https://www.okay.cz/")
 test.open_specific_menu_item(text="Televize")
 test.set_filter(name="výrobci", value="lg")
@@ -34,7 +35,7 @@ test.abort()
 
 ## OKAY.CZ FILTERS MOBILE
 
-test = OkayTest(name="okaycz_filters_mobile", is_mobile=True)
+test = OkayTest(name="okaycz_filters_mobile", is_mobile=True, theme=THEME)
 test.open_url(url="https://www.okay.cz/")
 test.open_specific_menu_item(text="Postele")
 test.set_filter(name="rozměry", value="180 x 200")
@@ -44,7 +45,7 @@ test.abort()
 
 ## OKAY.CZ SEARCH DESKTOP
 
-test = OkayTest(name="okaycz_search")
+test = OkayTest(name="okaycz_search", theme=THEME)
 test.open_url(url="https://www.okay.cz/")
 words = test.get_random_words(items=5)
 for word in words:
@@ -54,7 +55,7 @@ test.abort()
 
 ## OKAY.CZ SEARCH MOBILE
 
-test = OkayTest(name="okaycz_search_mobile", is_mobile=True)
+test = OkayTest(name="okaycz_search_mobile", is_mobile=True, theme=THEME)
 test.open_url(url="https://www.okay.cz/")
 words = test.get_random_words(items=5)
 for word in words:
@@ -64,7 +65,7 @@ test.abort()
 
 ## OKAY.CZ UNFINISHED ORDER DESKTOP
 
-test = OkayTest(name="okaycz_unfinished_order")
+test = OkayTest(name="okaycz_unfinished_order", theme=THEME)
 test.open_url(url="https://www.okay.cz/collections/mobilni-telefony-3")
 test.open_product()
 test.add_to_cart()
@@ -76,7 +77,7 @@ test.abort()
 
 ## OKAY.CZ UNFINISHED ORDER MOBILE
 
-test = OkayTest(name="okaycz_unfinished_order_mobile", is_mobile=True)
+test = OkayTest(name="okaycz_unfinished_order_mobile", is_mobile=True, theme=THEME)
 test.open_url(url="https://www.okay.cz/collections/mobilni-telefony-3")
 test.open_product()
 test.add_to_cart()
@@ -88,7 +89,7 @@ test.abort()
 
 ## OKAY.CZ FINISHED COD ORDER
 
-test = OkayTest(name="okaycz_finished_cod_order")
+test = OkayTest(name="okaycz_finished_cod_order", theme=THEME)
 test.open_url(url="https://www.okay.cz/collections/alkalicke-baterie?pf_p_ceny=59.00%3A180.00")
 test.open_product()
 test.add_to_cart()
@@ -102,7 +103,7 @@ test.abort()
 
 ## OKAY.CZ PAYMENT GATE
 
-test = OkayTest(name="okaycz_payment_gate")
+test = OkayTest(name="okaycz_payment_gate", theme=THEME)
 test.open_url(url="https://www.okay.cz/collections/alkalicke-baterie?pf_p_ceny=59.00%3A180.00")
 test.open_product()
 test.add_to_cart()
@@ -122,7 +123,7 @@ CATEGORIES = [
         "url": "https://www.okay.cz/collections/rozkladaci-rohove-sedaci-soupravy",
         "services": [
             "39660571918378", # Odvoz a ekologicka likvidace sedaciho nabytku a posteli
-            # "39660571951146", # Montaz sedaciho nabytku a posteli
+            "39660571951146", # Montaz sedaciho nabytku
         ],
     },
     {
@@ -130,7 +131,6 @@ CATEGORIES = [
         "url": "https://www.okay.cz/collections/postele",
         "services": [
             "39660571918378", # Odvoz a ekologicka likvidace sedaciho nabytku a posteli
-            # "39660571951146", # Montaz sedaciho nabytku a posteli
         ],
     },
     {
@@ -153,7 +153,7 @@ CATEGORIES = [
     }
 ]
 
-test = OkayTest(name="okaycz_furniture_services")
+test = OkayTest(name="okaycz_furniture_services", theme=THEME)
 for category in CATEGORIES:
     test.new_test()
     test.open_url(url=category["url"])
@@ -197,7 +197,7 @@ CATEGORIES = [
     }
 ]
 
-test = OkayTest(name="okaycz_delivery_options_electro")
+test = OkayTest(name="okaycz_delivery_options_electro", theme=THEME)
 for category in CATEGORIES:
     test.new_test()
     test.open_url(url=category["url"])
@@ -254,7 +254,7 @@ CATEGORIES = [
     }
 ]
 
-test = OkayTest(name="okaycz_delivery_options_furniture")
+test = OkayTest(name="okaycz_delivery_options_furniture", theme=THEME)
 for category in CATEGORIES:
     test.new_test()
     test.open_url(url=category["url"])
@@ -330,14 +330,14 @@ FORMS = [
     }
 ]
 
-test = OkayTest(name="okaycz_salesforce_forms")
+test = OkayTest(name="okaycz_salesforce_forms", theme=THEME)
 for form in FORMS:
     test.new_test()
     test.open_url(url=form["url"])
     test.fill_form_fields(fields=form["fields"], proceed=False)
 test.abort()
 
-test = OkayTest(name="okaycz_salesforce_forms_mobile", is_mobile=True)
+test = OkayTest(name="okaycz_salesforce_forms_mobile", is_mobile=True, theme=THEME)
 for form in FORMS:
     test.new_test()
     test.open_url(url=form["url"])

@@ -3,10 +3,11 @@ from okay_tests import OkayTest
 
 start = time.perf_counter()
 
+THEME = ""
 
 ## OKAY.SK MENU DESKTOP
 
-test = OkayTest(name="okaysk_menu")
+test = OkayTest(name="okaysk_menu", theme=THEME)
 test.open_url(url="https://www.okay.sk/")
 test.open_random_menu_items(items=3)
 test.open_random_footer_items(items=3)
@@ -15,7 +16,7 @@ test.abort()
 
 ## OKAY.SK MENU MOBILE
 
-test = OkayTest(name="okaysk_menu_mobile", is_mobile=True)
+test = OkayTest(name="okaysk_menu_mobile", is_mobile=True, theme=THEME)
 test.open_url(url="https://www.okay.sk/")
 test.open_random_menu_items(items=3)
 test.open_random_footer_items(items=3)
@@ -24,7 +25,7 @@ test.abort()
 
 ## OKAY.SK FILTERS DESKTOP
 
-test = OkayTest(name="okaysk_filters")
+test = OkayTest(name="okaysk_filters", theme=THEME)
 test.open_url(url="https://www.okay.sk/")
 test.open_specific_menu_item(text="Televízory")
 test.set_filter(name="výrobcovia", value="lg")
@@ -34,7 +35,7 @@ test.abort()
 
 ## OKAY.SK FILTERS MOBILE
 
-test = OkayTest(name="okaysk_filters_mobile", is_mobile=True)
+test = OkayTest(name="okaysk_filters_mobile", is_mobile=True, theme=THEME)
 test.open_url(url="https://www.okay.sk/")
 test.open_specific_menu_item(text="Postele")
 test.set_filter(name="rozmery", value="180 x 200")
@@ -44,7 +45,7 @@ test.abort()
 
 ## OKAY.SK SEARCH DESKTOP
 
-test = OkayTest(name="okaysk_search")
+test = OkayTest(name="okaysk_search", theme=THEME)
 test.open_url(url="https://www.okay.sk/")
 words = test.get_random_words(items=5)
 for word in words:
@@ -54,7 +55,7 @@ test.abort()
 
 ## OKAY.SK SEARCH MOBILE
 
-test = OkayTest(name="okaysk_search_mobile", is_mobile=True)
+test = OkayTest(name="okaysk_search_mobile", is_mobile=True, theme=THEME)
 test.open_url(url="https://www.okay.sk/")
 words = test.get_random_words(items=5)
 for word in words:
@@ -64,7 +65,7 @@ test.abort()
 
 ## OKAY.SK UNFINISHED ORDER DESKTOP
 
-test = OkayTest(name="okaysk_unfinished_order")
+test = OkayTest(name="okaysk_unfinished_order", theme=THEME)
 test.open_url(url="https://www.okay.sk/collections/mobilne-telefony-4")
 test.open_product()
 test.add_to_cart()
@@ -76,7 +77,7 @@ test.abort()
 
 ## OKAY.SK UNFINISHED ORDER MOBILE
 
-test = OkayTest(name="okaysk_unfinished_order_mobile", is_mobile=True)
+test = OkayTest(name="okaysk_unfinished_order_mobile", is_mobile=True, theme=THEME)
 test.open_url(url="https://www.okay.sk/collections/mobilne-telefony-4")
 test.open_product()
 test.add_to_cart()
@@ -88,12 +89,12 @@ test.abort()
 
 ## OKAY.SK FINISHED COD ORDER
 
-test = OkayTest(name="okaysk_finished_cod_order")
+test = OkayTest(name="okaysk_finished_cod_order", theme=THEME)
 test.open_url(url="https://www.okay.sk/collections/alkalicke-baterie?pf_p_ceny=2.28%3A5.28")
 test.open_product()
 test.add_to_cart()
 test.goto_checkout()
-test.choose_delivery(delivery="zásielkovňa", proceed=False, screenshots=False)
+test.choose_delivery(delivery="packeta", proceed=False, screenshots=False)
 test.choose_delivery(delivery="na moju adresu", proceed=True)
 test.choose_payment(payment="dobierka", proceed=True)
 test.confirm_order()
@@ -102,7 +103,7 @@ test.abort()
 
 ## OKAY.SK PAYMENT GATE
 
-test = OkayTest(name="okaysk_payment_gate")
+test = OkayTest(name="okaysk_payment_gate", theme=THEME)
 test.open_url(url="https://www.okay.sk/collections/alkalicke-baterie?pf_p_ceny=2.28%3A5.28")
 test.open_product()
 test.add_to_cart()
@@ -122,7 +123,6 @@ CATEGORIES = [
         "url": "https://www.okay.sk/collections/rohove-sedacky-rozkladacie",
         "services": [
             "40968686796951", # Odvoz a ekologicka likvidace sedaciho nabytku a posteli
-            # "40968686829719", # Montaz sedaciho nabytku a posteli
         ],
     },
     {
@@ -130,7 +130,6 @@ CATEGORIES = [
         "url": "https://www.okay.sk/collections/postele",
         "services": [
             "40968686796951", # Odvoz a ekologicka likvidace sedaciho nabytku a posteli
-            # "40968686829719", # Montaz sedaciho nabytku a posteli
         ],
     },
     {
@@ -153,7 +152,7 @@ CATEGORIES = [
     }
 ]
 
-test = OkayTest(name="okaysk_furniture_services")
+test = OkayTest(name="okaysk_furniture_services", theme=THEME)
 for category in CATEGORIES:
     test.new_test()
     test.open_url(url=category["url"])
@@ -197,7 +196,7 @@ CATEGORIES = [
     }
 ]
 
-test = OkayTest(name="okaysk_delivery_options_electro")
+test = OkayTest(name="okaysk_delivery_options_electro", theme=THEME)
 for category in CATEGORIES:
     test.new_test()
     test.open_url(url=category["url"])
@@ -254,7 +253,7 @@ CATEGORIES = [
     }
 ]
 
-test = OkayTest(name="okaysk_delivery_options_furniture")
+test = OkayTest(name="okaysk_delivery_options_furniture", theme=THEME)
 for category in CATEGORIES:
     test.new_test()
     test.open_url(url=category["url"])
@@ -330,14 +329,14 @@ FORMS = [
     }
 ]
 
-test = OkayTest(name="okaysk_salesforce_forms")
+test = OkayTest(name="okaysk_salesforce_forms", theme=THEME)
 for form in FORMS:
     test.new_test()
     test.open_url(url=form["url"])
     test.fill_form_fields(fields=form["fields"], proceed=False)
 test.abort()
 
-test = OkayTest(name="okaysk_salesforce_forms_mobile", is_mobile=True)
+test = OkayTest(name="okaysk_salesforce_forms_mobile", is_mobile=True, theme=THEME)
 for form in FORMS:
     test.new_test()
     test.open_url(url=form["url"])

@@ -3,10 +3,11 @@ from okay_tests import JenaTest
 
 start = time.perf_counter()
 
+THEME = ""
 
 ## JENA MENU DESKTOP
 
-test = JenaTest(name="jena_menu")
+test = JenaTest(name="jena_menu", theme=THEME)
 test.open_url(url="https://www.jena-nabytek.cz/")
 test.open_random_menu_items(items=3)
 test.open_random_footer_items(items=3)
@@ -15,7 +16,7 @@ test.abort()
 
 ## JENA MENU MOBILE
 
-test = JenaTest(name="jena_menu_mobile", is_mobile=True)
+test = JenaTest(name="jena_menu_mobile", is_mobile=True, theme=THEME)
 test.open_url(url="https://www.jena-nabytek.cz/")
 test.open_random_menu_items(items=3)
 test.open_random_footer_items(items=3)
@@ -24,7 +25,7 @@ test.abort()
 
 ## JENA FILTERS DESKTOP
 
-test = JenaTest(name="jena_filters")
+test = JenaTest(name="jena_filters", theme=THEME)
 test.open_url(url="https://www.jena-nabytek.cz/")
 test.open_specific_menu_item(text="Sedačky")
 test.set_filter(name="styl", value="moderní")
@@ -34,7 +35,7 @@ test.abort()
 
 ## JENA FILTERS MOBILE
 
-test = JenaTest(name="jena_filters_mobile", is_mobile=True)
+test = JenaTest(name="jena_filters_mobile", is_mobile=True, theme=THEME)
 test.open_url(url="https://www.jena-nabytek.cz/")
 test.open_specific_menu_item(text="Postele")
 test.set_filter(name="rozměr", value="180 x 200")
@@ -44,7 +45,7 @@ test.abort()
 
 ## JENA SEARCH DESKTOP
 
-test = JenaTest(name="jena_search")
+test = JenaTest(name="jena_search", theme=THEME)
 test.open_url(url="https://www.jena-nabytek.cz/")
 words = test.get_random_words(items=5)
 for word in words:
@@ -54,7 +55,7 @@ test.abort()
 
 ## JENA SEARCH MOBILE
 
-test = JenaTest(name="jena_search_mobile", is_mobile=True)
+test = JenaTest(name="jena_search_mobile", is_mobile=True, theme=THEME)
 test.open_url(url="https://www.jena-nabytek.cz/")
 words = test.get_random_words(items=5)
 for word in words:
@@ -64,7 +65,7 @@ test.abort()
 
 ## JENA UNFINISHED ORDER DESKTOP
 
-test = JenaTest(name="jena_unfinished_order")
+test = JenaTest(name="jena_unfinished_order", theme=THEME)
 test.open_url(url="https://www.jena-nabytek.cz/collections/postele")
 test.open_product()
 test.add_to_cart()
@@ -76,7 +77,7 @@ test.abort()
 
 ## JENA UNFINISHED ORDER MOBILE
 
-test = JenaTest(name="jena_unfinished_order_mobile", is_mobile=True)
+test = JenaTest(name="jena_unfinished_order_mobile", is_mobile=True, theme=THEME)
 test.open_url(url="https://www.jena-nabytek.cz/collections/postele")
 test.open_product()
 test.add_to_cart()
@@ -101,7 +102,7 @@ test.abort()
 
 ## JENA PAYMENT GATE
 
-test = JenaTest(name="jena_payment_gate")
+test = JenaTest(name="jena_payment_gate", theme=THEME)
 test.open_url(url="https://www.jena-nabytek.cz/collections/dekoracni-polstare?pf_p_cena=99%3A1000")
 test.open_product()
 test.add_to_cart()
@@ -120,14 +121,15 @@ CATEGORIES = [
         "name": "SEDACKY",
         "url": "https://www.jena-nabytek.cz/collections/sedacky",
         "services": [
-            "38218900930712", # Odvoz a ekologicka likvidace nabytku
+            "38218900930712", # Odvoz a ekologicka likvidace sedaciho nabytku a posteli
+            "38218900963480", # Montaz sedaciho nabytku
         ],
     },
     {
         "name": "POSTELE",
         "url": "https://www.jena-nabytek.cz/collections/postele",
         "services": [
-            "38218900930712", # Odvoz a ekologicka likvidace nabytku
+            "38218900930712", # Odvoz a ekologicka likvidace sedaciho nabytku a posteli
         ],
     },
     {
@@ -136,6 +138,7 @@ CATEGORIES = [
         "services": [
             "38218900996248", # Montaz kuchyne (rohova)
             "39248582279320", # Demontaz, odvoz a likvidace dreveneho nabytku a kuchyni
+            "41489650122904", # Likvidace dreveneho nabytku a kuchyni
         ],
     },
     {
@@ -144,11 +147,12 @@ CATEGORIES = [
         "services": [
             "39248505634968", # Montaz kuchyne (rovna)
             "39248582279320", # Demontaz, odvoz a likvidace dreveneho nabytku a kuchyni
+            "41489650122904", # Likvidace dreveneho nabytku a kuchyni
         ],
     }
 ]
 
-test = JenaTest(name="jena_furniture_services")
+test = JenaTest(name="jena_furniture_services", theme=THEME)
 for category in CATEGORIES:
     test.new_test()
     test.open_url(url=category["url"])
@@ -192,7 +196,7 @@ CATEGORIES = [
     }
 ]
 
-test = JenaTest(name="jena_delivery_options_furniture")
+test = JenaTest(name="jena_delivery_options_furniture", theme=THEME)
 for category in CATEGORIES:
     test.new_test()
     test.open_url(url=category["url"])
@@ -268,14 +272,14 @@ FORMS = [
     }
 ]
 
-test = JenaTest(name="jena_salesforce_forms")
+test = JenaTest(name="jena_salesforce_forms", theme=THEME)
 for form in FORMS:
     test.new_test()
     test.open_url(url=form["url"])
     test.fill_form_fields(fields=form["fields"], proceed=False)
 test.abort()
 
-test = JenaTest(name="jena_salesforce_forms_mobile", is_mobile=True)
+test = JenaTest(name="jena_salesforce_forms_mobile", is_mobile=True, theme=THEME)
 for form in FORMS:
     test.new_test()
     test.open_url(url=form["url"])
