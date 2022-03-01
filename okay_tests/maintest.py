@@ -263,6 +263,7 @@ class MainTest:
     def log_error(self, message, during="Unidentified error"):
         """self.log_error(message=Str, during=Str)"""
         self.errors = False
+        self.screenshots = True
         message = str(message).split("Stacktrace:")[0]
         msg = f"ERR during >> {during}\n\n{message}"
         print(msg)
