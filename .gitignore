@@ -3,5 +3,5 @@ logs/
 venv/
 
 config.json
-chromedriver.exe
+chromedriver*
 __*.py

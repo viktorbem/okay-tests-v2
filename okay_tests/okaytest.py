@@ -284,18 +284,25 @@ class OkayTest(MainTest):
         try:
             email = self.driver.find_element(By.ID, "checkout_email")
             email.send_keys(creds["email"])
+            self.sleep(1)
             firstname = self.driver.find_element_by_id("checkout_shipping_address_first_name")
             firstname.send_keys(creds["name"])
+            self.sleep(1)
             surname = self.driver.find_element_by_id("checkout_shipping_address_last_name")
             surname.send_keys(creds["surname"])
+            self.sleep(1)
             street = self.driver.find_element_by_id("checkout_shipping_address_address1")
             street.send_keys(creds["street"])
+            self.sleep(1)
             zipnr = self.driver.find_element_by_id("checkout_shipping_address_zip")
             zipnr.send_keys(creds["zipnr"])
+            self.sleep(1)
             city = self.driver.find_element_by_id("checkout_shipping_address_city")
             city.send_keys(creds["city"])
+            self.sleep(1)
             phonenr = self.driver.find_element_by_id("checkout_shipping_address_phone")
             phonenr.send_keys(creds["phonenr"])
+            self.sleep(1)
 
             self.driver.find_element(By.TAG_NAME, "body").send_keys(Keys.CONTROL + Keys.HOME)
 
@@ -447,7 +454,6 @@ class OkayTest(MainTest):
                 self.sleep()
 
             menuitems = self.driver.find_elements(By.CSS_SELECTOR, ".nav-nested .nav-nested__link-parent")
-            # menuitems = [item for item in menuitems if item.text]
             self.log(f"H{i}. choose random item from the menu")
             item = random.choice(menuitems)
             item_anchor = item.find_element(By.TAG_NAME, "a")
