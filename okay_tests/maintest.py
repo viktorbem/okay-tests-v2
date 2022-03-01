@@ -58,6 +58,7 @@ class MainTest:
         self.is_slack = is_slack
         self.default_delay = delay
 
+        self.driver = None
         self.driver = self.setup_chrome()
     
     @staticmethod
@@ -65,10 +66,6 @@ class MainTest:
         @functools.wraps(f)
         def inner(self, screenshots=True, *args, **kwargs):
             self.screenshots = screenshots
-            if self.driver.find_elements(By.CSS_SELECTOR, "div[class*='box-promotion']"):
-                print("Bypass exponea popup ----------")
-                self.click(self.driver.find_element(By.CSS_SELECTOR, "div button.close span"))
-                self.sleep(5)
             if self.errors:
                 try:
                     return f(self, *args, **kwargs)
@@ -98,11 +95,21 @@ class MainTest:
         logfile = os.path.join(self.logpath, f"{self.time}_log.txt")
         self.dc = DesiredCapabilities.CHROME
         self.dc["goog:loggingPrefs"] = {"browser": "ALL"}
-        new_driver = webdriver.Chrome(driver, chrome_options=self.options, desired_capabilities=self.dc, service_args=[f"--log-path={logfile}"])
+        try:
+            new_driver = webdriver.Chrome(
+                driver,
+                chrome_options=self.options,
+                desired_capabilities=self.dc,
+                service_args=[f"--log-path={logfile}"]
+            )
+        except Exception as err:
+            self.log_error(err, during="Chromedriver init")
+            sys.exit()
         new_driver.set_window_size(width=width, height=height)
         return new_driver
 
     def set_dev_theme(self, theme):
+        """self.set_dev_theme(theme=Str)"""
         dev_url = f"{self.home_url}/?preview_theme_id={theme}"
         response = requests.get(dev_url)
         if response.status_code == 200:
@@ -119,6 +126,10 @@ class MainTest:
 
     def click(self, element):
         """self.click(element=WebdriverObject)"""
+        if self.driver.find_elements(By.CSS_SELECTOR, "div[class*='box-promotion']"):
+            print("Bypass exponea popup ----------")
+            self.driver.find_element(By.CSS_SELECTOR, "div button.close").click()
+            self.sleep(5)
         self.driver.execute_script("arguments[0].scrollIntoView({block: 'center'});", element)
         element.click()
 
@@ -169,11 +180,19 @@ class MainTest:
         Example:
         - test.abort()
         """
+        with open(os.path.join(self.logpath, f"{self.time}_js.txt"), "w", encoding="utf-8") as logfile:
+            console_log = self.output_js_console()
+            logfile.write(console_log)
         self.driver.close()
 
     def log(self, step):
         """self.log(message=Str)"""
         self.step = f"Func: {sys._getframe(1).f_code.co_name} >> {step}"
+    
+    def output_js_console(self):
+        """self.output_js_console()"""
+        pp = pprint.PrettyPrinter(indent=2)
+        return pp.pformat([log for log in self.driver.get_log("browser") if log["level"] == "SEVERE"])
 
     def new_test(self, screenshots=True):
         """
@@ -194,6 +213,8 @@ class MainTest:
             timestamp = datetime.now().strftime("%H%M%S")
         method_name = sys._getframe(1).f_code.co_name
         method_name = re.sub('[^-a-zA-Z0-9_.() ]+', '', method_name)
+        if not method_name:
+            method_name = "unknown"
         filename = f"{timestamp}{type}_{method_name}"
         png_img = os.path.join(self.logpath, f"{filename}.png")
         self.driver.save_screenshot(png_img)
@@ -242,17 +263,19 @@ class MainTest:
     def log_error(self, message, during="Unidentified error"):
         """self.log_error(message=Str, during=Str)"""
         self.errors = False
+        self.screenshots = True
         message = str(message).split("Stacktrace:")[0]
         msg = f"ERR during >> {during}\n\n{message}"
         print(msg)
         timestamp = datetime.now().strftime("%H%M%S")
-        filename = self.take_screenshot(timestamp, "_ERR")
+        console_log = ""
+        img_filename = None
+        if self.driver != None:
+            img_filename = self.take_screenshot(timestamp, "_ERR")
+            path_to_img = os.path.join(self.logpath, img_filename)
+            console_log = self.output_js_console()
         with open(os.path.join(self.logpath, f"{timestamp}_ERR.txt"), "w", encoding="utf-8") as logfile:
-            pp = pprint.PrettyPrinter(indent=2)
-            console_log = pp.pformat(self.driver.get_log('browser'))
-            logfile.write(f"{msg}\n\nConsole {'-' * 30}\n\n{console_log}")
-        path_to_img = os.path.join(self.logpath, filename)
-        print(filename)
+            logfile.write(f"{msg}f\n\nConsole {'-' * 30}\n\n{console_log}")
 
         # Send email if test crashes
         if self.is_email:
@@ -262,12 +285,13 @@ class MainTest:
             new_msg["Subject"] = self.testname
             new_msg.attach(MIMEText(f"\n\n{message}", "plain"))
 
-            payload = MIMEBase("application", "octate-stream")
-            with open(path_to_img, "rb") as file:
-                payload.set_payload(file.read())
-                encoders.encode_base64(payload)
-                payload.add_header("Content-Disposition", "attachement", filename=filename)
-                new_msg.attach(payload)
+            if img_filename != None:
+                payload = MIMEBase("application", "octate-stream")
+                with open(path_to_img, "rb") as file:
+                    payload.set_payload(file.read())
+                    encoders.encode_base64(payload)
+                    payload.add_header("Content-Disposition", "attachement", filename=img_filename)
+                    new_msg.attach(payload)
             text = new_msg.as_string()
 
             with smtplib.SMTP("smtp.gmail.com") as mailserver:
@@ -282,11 +306,18 @@ class MainTest:
         # Send message to Slack if test crashes
         if self.is_slack:
             client = WebClient(SECRET.slack_token)
-            response = client.files_upload(
-                channels=SECRET.slack_channel,
-                initial_comment=f"*{self.testname} >>* {msg}",
-                file=path_to_img
-            )
+            message = f"*{self.testname} >>* {msg}"
+            if img_filename != None:
+                response = client.files_upload(
+                    channels=SECRET.slack_channel,
+                    initial_comment=message,
+                    file=path_to_img
+                )
+            else:
+                response = client.chat_postMessage(
+                    channel=SECRET.slack_channel,
+                    text=message
+                )
             print(response.status_code)
 
     def bypass_password(self, url):

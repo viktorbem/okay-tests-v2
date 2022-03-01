@@ -79,7 +79,16 @@ class OkayTest(MainTest):
             self.log(f"{service}: check if service is available")
             self.click(self.driver.find_element(By.XPATH, f"//input[@product-service-id={service}]"))
             self.sleep(5)
-            
+
+        unchecked_items = []
+        self.log("Search for services that are still unchecked")
+        item_services = self.driver.find_elements(By.CSS_SELECTOR, ".item__properties input")
+        for service in item_services:
+            if service.get_attribute("checked") != "true":
+                unchecked_items.append(service.get_attribute('product-service-id'))
+        if len(unchecked_items) > 0:
+            raise Exception(f"There is one or more services that should be checked:\n{unchecked_items}")
+
         self.driver.find_element(By.TAG_NAME, "body").send_keys(Keys.CONTROL + Keys.HOME)
         self.sleep()
         self.take_screenshot()
@@ -275,18 +284,25 @@ class OkayTest(MainTest):
         try:
             email = self.driver.find_element(By.ID, "checkout_email")
             email.send_keys(creds["email"])
+            self.sleep(1)
             firstname = self.driver.find_element_by_id("checkout_shipping_address_first_name")
             firstname.send_keys(creds["name"])
+            self.sleep(1)
             surname = self.driver.find_element_by_id("checkout_shipping_address_last_name")
             surname.send_keys(creds["surname"])
+            self.sleep(1)
             street = self.driver.find_element_by_id("checkout_shipping_address_address1")
             street.send_keys(creds["street"])
+            self.sleep(1)
             zipnr = self.driver.find_element_by_id("checkout_shipping_address_zip")
             zipnr.send_keys(creds["zipnr"])
+            self.sleep(1)
             city = self.driver.find_element_by_id("checkout_shipping_address_city")
             city.send_keys(creds["city"])
+            self.sleep(1)
             phonenr = self.driver.find_element_by_id("checkout_shipping_address_phone")
             phonenr.send_keys(creds["phonenr"])
+            self.sleep(1)
 
             self.driver.find_element(By.TAG_NAME, "body").send_keys(Keys.CONTROL + Keys.HOME)
 
@@ -438,13 +454,12 @@ class OkayTest(MainTest):
                 self.sleep()
 
             menuitems = self.driver.find_elements(By.CSS_SELECTOR, ".nav-nested .nav-nested__link-parent")
-
             self.log(f"H{i}. choose random item from the menu")
             item = random.choice(menuitems)
             item_anchor = item.find_element(By.TAG_NAME, "a")
             item_url = item_anchor.get_attribute("href")
 
-            if item_url not in clicked:
+            if item_url not in clicked and item_anchor.text != "":
                 self.log(f"{item_anchor.text} - click this item")
                 clicked.append(item_url)
                 self.click(item_anchor)
@@ -455,8 +470,6 @@ class OkayTest(MainTest):
                 self.sleep()
                 self.take_screenshot()
                 i += 1
-            else:
-                print(f"'{item_anchor.text}' already clicked ----------")
 
         self.sleep()
 
