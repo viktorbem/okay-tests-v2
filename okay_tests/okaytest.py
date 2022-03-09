@@ -542,6 +542,7 @@ class OkayTest(MainTest):
         The argument 'url' is mandatory.
         """
         self.log(f"Open {url} in the browser")
+        self.last_url = url
         self.home_url = f"{urlparse(url).scheme}://{urlparse(url).netloc}/"
         if self.shop_password != "":
             self.bypass_password(self.home_url)
