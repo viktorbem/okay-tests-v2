@@ -45,7 +45,7 @@ test.abort()
 
 ## OKAY.CZ SEARCH DESKTOP
 
-test = OkayTest(name="okaycz_search", theme=THEME)
+test = OkayTest(name="okaycz_search", theme=THEME, is_slack=False)
 test.open_url(url="https://www.okay.cz/")
 words = test.get_random_words(items=5)
 for word in words:
@@ -55,7 +55,7 @@ test.abort()
 
 ## OKAY.CZ SEARCH MOBILE
 
-test = OkayTest(name="okaycz_search_mobile", is_mobile=True, theme=THEME)
+test = OkayTest(name="okaycz_search_mobile", is_mobile=True, theme=THEME, is_slack=False)
 test.open_url(url="https://www.okay.cz/")
 words = test.get_random_words(items=5)
 for word in words:
@@ -110,8 +110,8 @@ test.add_to_cart()
 test.goto_checkout()
 test.choose_delivery(delivery="na mou adresu", proceed=True)
 test.choose_payment(payment="karta", proceed=True)
-# test.handle_gopay()
-# test.empty_cart()
+test.handle_gopay()
+test.empty_cart()
 test.abort()
 
 
