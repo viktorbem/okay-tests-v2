@@ -45,7 +45,7 @@ test.abort()
 
 ## OKAY.SK SEARCH DESKTOP
 
-test = OkayTest(name="okaysk_search", theme=THEME)
+test = OkayTest(name="okaysk_search", theme=THEME, is_slack=False)
 test.open_url(url="https://www.okay.sk/")
 words = test.get_random_words(items=5)
 for word in words:
@@ -55,7 +55,7 @@ test.abort()
 
 ## OKAY.SK SEARCH MOBILE
 
-test = OkayTest(name="okaysk_search_mobile", is_mobile=True, theme=THEME)
+test = OkayTest(name="okaysk_search_mobile", is_mobile=True, theme=THEME, is_slack=False)
 test.open_url(url="https://www.okay.sk/")
 words = test.get_random_words(items=5)
 for word in words:
@@ -110,8 +110,8 @@ test.add_to_cart()
 test.goto_checkout()
 test.choose_delivery(delivery="na moju adresu", proceed=True)
 test.choose_payment(payment="karta", proceed=True)
-# test.handle_gopay()
-# test.empty_cart()
+test.handle_gopay()
+test.empty_cart()
 test.abort()
 
 
@@ -341,6 +341,20 @@ for form in FORMS:
     test.new_test()
     test.open_url(url=form["url"])
     test.fill_form_fields(fields=form["fields"], proceed=False)
+test.abort()
+
+
+## OKAY.SK PRICE CHECK FURNITURE
+
+test = OkayTest(name="okaysk_price_check_furniture", theme=THEME)
+test.open_url(url="https://www.okay.sk/collections/postele?pf_st_expedicia=true")
+products = test.find_elements(selector=".collection-matrix__wrapper .product-wrap")
+was_prices = test.find_elements(selector=".collection-matrix__wrapper .product-thumbnail__was-price")
+if len(products) > 0 and len(was_prices) == 0:
+    test.log_error(
+        message=f"There are no crossed prices available on {test.last_url}", 
+        during="Check crossed prices on page"
+    )
 test.abort()
 
 

@@ -181,6 +181,30 @@ Argument `fields` je povinný. Argument `proceed` je nepovinný a pokud jej nast
 
 <br>
 
+### **find_element**
+
+Vrátí první element na stránce, který odpovídá CSS selectoru specifikovanému řetězcem v argumentu `selector`.
+
+```python
+element = test.find_element(selector=".button--add-to-cart")
+```
+
+Argument `selector` je povinný.
+
+<br>
+
+### **find_elements**
+
+Vrátí `list` (pole) elementů na stránce, které odpovídají CSS selectoru specifikovanému řetězcem v argumentu `selector`.
+
+```python
+elements = test.find_elements(selector=".button--add-to-cart")
+```
+
+Argument `selector` je povinný.
+
+<br>
+
 ### **get_random_words**
 
 Vrátí seznam náhodných výrazů použitelných ve vyhledávání. Délka tohoto seznamu odpovídá číslu v argumentu `items`.

@@ -322,7 +322,7 @@ class JenaTest(MainTest):
         self.take_screenshot()
 
         self.log("Choose payment by card")
-        elements = self.driver.find_elements(By.CSS_SELECTOR, "div.sc-iCoGMd")
+        elements = self.driver.find_elements(By.CSS_SELECTOR, "div[data-cy^='list-']")
         for element in elements:
             if any(word in element.text.lower() for word in ["karta", "card"]):
                 self.click(element)
@@ -349,30 +349,12 @@ class JenaTest(MainTest):
         self.driver.switch_to.default_content()
 
         self.log("Close the payment plugin")
-        elements = self.driver.find_elements(By.CSS_SELECTOR, "div.sc-eXuyPJ.grxFi")
-        elements.extend(self.driver.find_elements(By.CSS_SELECTOR, "div.sc-gzcbmu.bENTHN"))
-        element_found = False
-        for element in elements:
-            if "menu" in element.text.lower():
-                element_found = True
-                self.click(element)
-                break
-        if not element_found:
-            raise Exception("Gopay: Unable to locate the 'menu' button.")
-        
+        self.click(self.driver.find_element(By.CSS_SELECTOR, "button[data-cy='navItem-paymentCancel']"))
         self.sleep()
-        elements = self.driver.find_elements(By.CSS_SELECTOR, "div.sc-iCoGMd.hoarAx")
-        element_found = False
-        for element in elements:
-            if any(word in element.text.lower() for word in ["zpět", "back"]):
-                element_found = True
-                element.click()
-                break
-        if not element_found:
-            raise Exception("Gopay: Unable to locate the 'back' button.")
+        self.click(self.driver.find_element(By.CSS_SELECTOR, "button[data-cy='paymentCancelRedirect']"))
         
         self.log("Wait for redirect back to eshop")
-        self.sleep(20)
+        self.sleep(30)
                 
     @catch_error
     def open_product(self):
@@ -529,6 +511,7 @@ class JenaTest(MainTest):
         The argument 'url' is mandatory.
         """
         self.log(f"Open {url} in the browser")
+        self.last_url = url
         self.home_url = f"{urlparse(url).scheme}://{urlparse(url).netloc}/"
         if self.theme != "":
             self.set_dev_theme(self.theme)
