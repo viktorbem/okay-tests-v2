@@ -43,6 +43,7 @@ class MainTest:
         self.rootpath = os.path.abspath(os.path.dirname(__main__.__file__))
         self.logpath = os.path.join(self.rootpath, "logs", self.date, self.testname)
         
+        self.last_url = ""
         self.home_url = ""
         self.product_name = ""
         self.theme = theme
@@ -138,6 +139,28 @@ class MainTest:
         for char in text:
             element.send_keys(char)
             self.sleep(1)
+
+    def find_element(self, selector, screenshots=True):
+        """
+        Return the first element on page with specified CSS selector as string.
+
+        Example:
+        - element = test.find_element(selector='.button--add-to-cart')
+
+        The 'selector' argument is mandatory.
+        """
+        return self.driver.find_element(By.CSS_SELECTOR, selector)
+
+    def find_elements(self, selector, screenshots=True):
+        """
+        Return the list (array) of elements on page that satisfy the CSS selector specified as string.
+
+        Example:
+        - elements = test.find_elements(selector='.button--add-to-cart')
+
+        The 'selector' argument is mandatory.
+        """
+        return self.driver.find_elements(By.CSS_SELECTOR, selector)
 
     def get_random_words(self, items, screenshots=True):
         """
