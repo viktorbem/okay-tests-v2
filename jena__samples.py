@@ -290,7 +290,7 @@ test.abort()
 ## JENA PRICE CHECK FURNITURE
 
 test = JenaTest(name="jena_price_check_furniture", theme=THEME)
-test.open_url(url="https://www.jena-nabytek.cz/collections/postele?pf_st_dostupnost=true")
+test.open_url(url="https://www.jena-nabytek.cz/collections/sedacky?pf_st_dostupnost=true")
 products = test.find_elements(selector=".collection-matrix__wrapper .product-wrap")
 was_prices = test.find_elements(selector=".collection-matrix__wrapper .product-thumbnail__was-price")
 if len(products) > 0 and len(was_prices) == 0:

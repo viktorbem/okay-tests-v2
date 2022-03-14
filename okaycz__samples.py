@@ -347,15 +347,22 @@ test.abort()
 
 ## OKAY.CZ PRICE CHECK FURNITURE
 
+CATEGORIES = [
+    "https://www.okay.cz/collections/sedaci-soupravy?pf_st_expedice=true",
+    "https://www.okay.cz/collections/pracky-a-susicky?pf_st_expedice=true"
+]
+
 test = OkayTest(name="okaycz_price_check_furniture", theme=THEME)
-test.open_url(url="https://www.okay.cz/collections/postele?pf_st_expedice=true")
-products = test.find_elements(selector=".collection-matrix__wrapper .product-wrap")
-was_prices = test.find_elements(selector=".collection-matrix__wrapper .product-thumbnail__was-price")
-if len(products) > 0 and len(was_prices) == 0:
-    test.log_error(
-        message=f"There are no crossed prices available on {test.last_url}", 
-        during="Check crossed prices on page"
-    )
+for cat_url in CATEGORIES:
+    test.new_test()
+    test.open_url(url=cat_url)
+    products = test.find_elements(selector=".collection-matrix__wrapper .product-wrap")
+    was_prices = test.find_elements(selector=".collection-matrix__wrapper .product-thumbnail__was-price")
+    if len(products) > 0 and len(was_prices) == 0:
+        test.log_error(
+            message=f"There are no crossed prices available on {test.last_url}", 
+            during="Check crossed prices on page"
+        )
 test.abort()
 
 
