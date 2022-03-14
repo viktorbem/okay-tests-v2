@@ -391,4 +391,4 @@ Součástí repozitáře jsou také spubory `okaysk__samples.py` a `jena__sample
 
 <br>
 
-*(C) 2021 OKAY s.r.o.*
+*(C) 2021-2022 OKAY s.r.o.*

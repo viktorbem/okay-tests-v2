@@ -258,7 +258,7 @@ class JenaTest(MainTest):
             "street": "Testovaci 123",
             "zipnr": "60200",
             "city": "Brno",
-            "phonenr": "608123123"
+            "phonenr": "+420608123123"
         }
 
         for key in creds:
@@ -269,24 +269,31 @@ class JenaTest(MainTest):
 
         try:
             email = self.driver.find_element(By.ID, "checkout_email")
+            email.clear()
             email.send_keys(creds["email"])
             self.sleep(1)
             firstname = self.driver.find_element_by_id("checkout_shipping_address_first_name")
+            firstname.clear()
             firstname.send_keys(creds["name"])
             self.sleep(1)
             surname = self.driver.find_element_by_id("checkout_shipping_address_last_name")
+            surname.clear()
             surname.send_keys(creds["surname"])
             self.sleep(1)
             street = self.driver.find_element_by_id("checkout_shipping_address_address1")
+            street.clear()
             street.send_keys(creds["street"])
             self.sleep(1)
             zipnr = self.driver.find_element_by_id("checkout_shipping_address_zip")
+            zipnr.clear()
             zipnr.send_keys(creds["zipnr"])
             self.sleep(1)
             city = self.driver.find_element_by_id("checkout_shipping_address_city")
+            city.clear()
             city.send_keys(creds["city"])
             self.sleep(1)
             phonenr = self.driver.find_element_by_id("checkout_shipping_address_phone")
+            phonenr.clear()
             phonenr.send_keys(creds["phonenr"])
             self.sleep(1)
 
