@@ -205,6 +205,36 @@ Argument `selector` je povinný.
 
 <br>
 
+### **find_child_element**
+
+Vrátí prvního potomka elementu v argumentu, který odpovídá specifikovanému CSS selectoru.
+
+```python
+child = test.find_child_element(
+    element=some_element,
+    selector='.tag.on-order'
+)
+```
+
+Oba argumenty jsou povinné.
+
+<br>
+
+### **find_child_elements**
+
+Vrátí `list` (pole) potomků konkrétního elementu, které odpovídají specifikovanému CSS selectoru.
+
+```python
+children = test.find_child_elements(
+    element=some_element, 
+    selector='.tag.on-order'
+)
+```
+
+Oba argumenty jsou povinné.
+
+<br>
+
 ### **get_random_words**
 
 Vrátí seznam náhodných výrazů použitelných ve vyhledávání. Délka tohoto seznamu odpovídá číslu v argumentu `items`.

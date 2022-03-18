@@ -125,8 +125,10 @@ class MainTest:
         else:
             time.sleep(self.default_delay)
 
-    def click(self, element):
-        """self.click(element=WebdriverObject)"""
+    def click(self, element, delay=False):
+        """self.click(element=WebdriverObject, delay=Bool)"""
+        if delay:
+            self.sleep()
         if self.driver.find_elements(By.CSS_SELECTOR, "div[class*='box-promotion']"):
             print("Bypass exponea popup ----------")
             self.driver.find_element(By.CSS_SELECTOR, "div button.close").click()
@@ -161,6 +163,28 @@ class MainTest:
         The 'selector' argument is mandatory.
         """
         return self.driver.find_elements(By.CSS_SELECTOR, selector)
+
+    def find_child_element(self, element, selector):
+        """
+        Return the first child of the single element in argument that has the specified CSS selector.
+
+        Example:
+        - child = test.find_child_element(element=some_element, selector='.tag.on-order')
+
+        Both arguments are mandatory.
+        """
+        return element.find_element(By.CSS_SELECTOR, selector)
+
+    def find_child_elements(self, element, selector):
+        """
+        Return the list (array) of children of the single element in argument that satisfy the specified CSS selector.
+
+        Example:
+        - children = test.find_child_elements(element=some_element, selector='.tag.on-order')
+
+        Both arguments are mandatory.
+        """
+        return element.find_elements(By.CSS_SELECTOR, selector)
 
     def get_random_words(self, items, screenshots=True):
         """
