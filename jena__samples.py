@@ -301,5 +301,23 @@ if len(products) > 0 and len(was_prices) == 0:
 test.abort()
 
 
+# JENA FURNITURE ON ORDER
+
+test = JenaTest(name="jena_furniture_on_order", theme=THEME)
+page = 1
+found_product = None
+while not found_product:
+    test.open_url(url=f"https://www.jena-nabytek.cz/collections/sedacky?page={page}")
+    products = test.find_elements(selector=".collection-matrix__wrapper .product-wrap")
+    for product in products:
+        if len(test.find_child_elements(product, ".tag.on_order")) > 0:
+            found_product = product
+            break
+    page += 1
+test.click(product, delay=True)
+test.add_to_cart()
+test.abort()
+
+
 end = time.perf_counter() - start
 print(f"Finished in {end:.2f} s")
