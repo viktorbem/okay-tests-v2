@@ -110,6 +110,17 @@ test.check_css(element=".header--search-focus", style="background-color", value=
 
 Všechny argumenty jsou povinné.
 
+### **check_insurances**
+
+Pokusí se zaškrtnout konkrétní druhy pojištění v košíku a následně vytvoří printscreen košíku. Je potřeba definovat pojištění jako `list` (pole) obsahující `product ID` těchto pojištění.
+
+```python
+test.check_insurances(insurances=["6797255966762", "6797255901226"])
+test.check_insurences(insurances=["6797255573546"])
+```
+
+Argument `insurances` je povinný.
+
 <br>
 
 ### **check_services**

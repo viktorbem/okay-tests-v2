@@ -64,6 +64,28 @@ class OkayTest(MainTest):
         self.sleep()
 
     @catch_error
+    def check_insurances(self, insurances):
+        """
+        Try to check specified insurances in cart. After all insurances are checked, take a screenshot.
+        You have to provide a list of 'insurances' IDs that shoud be available for this category.
+
+        Examples:
+        - test.check_insurances(insurances=["6797255966762", "6797255901226"])
+        - test.check_insurences(insurances=["6797255573546"])
+
+        The 'insurances' argument is mandatory.
+        """
+        for insurance in insurances:
+            self.log(f"{insurance}: check if service is available")
+            self.sleep()
+            service_input = self.driver.find_element(By.XPATH, f"//li[@data-shopify-product-id={insurance}]")
+            self.click(service_input.find_element(By.CSS_SELECTOR, "label"))
+        
+        self.driver.find_element(By.TAG_NAME, "body").send_keys(Keys.CONTROL + Keys.HOME)
+        self.sleep()
+        self.take_screenshot()
+
+    @catch_error
     def check_services(self, services):
         """
         Try to check all furniture services in cart. After all services are checked, take a screenshot. You have to
@@ -77,8 +99,9 @@ class OkayTest(MainTest):
         """
         for service in services:
             self.log(f"{service}: check if service is available")
-            self.click(self.driver.find_element(By.XPATH, f"//input[@product-service-id={service}]"))
-            self.sleep(5)
+            self.sleep()
+            service_input = self.driver.find_element(By.XPATH, f"//input[@product-service-id={service}]")
+            self.click(service_input.find_element(By.XPATH, ".."))
 
         unchecked_items = []
         self.log("Search for services that are still unchecked")
@@ -198,7 +221,7 @@ class OkayTest(MainTest):
         - test.empty_cart()
         """
         self.log("Empty the cart")
-        self.driver.get(f"{self.home_url}/cart")
+        self.driver.get(f"{self.home_url}cart")
         cart_is_empty = False
         while not cart_is_empty:
             self.sleep()
@@ -253,7 +276,7 @@ class OkayTest(MainTest):
         """
         self.log("Proceed to the checkout")
         if "cart" not in self.driver.current_url:
-            self.driver.get(f"{self.home_url}/cart")
+            self.driver.get(f"{self.home_url}cart")
             self.sleep()
 
         self.click(self.driver.find_element(By.NAME, "checkout"))

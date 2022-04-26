@@ -104,7 +104,7 @@ test.abort()
 ## OKAY.SK PAYMENT GATE
 
 test = OkayTest(name="okaysk_payment_gate", theme=THEME)
-test.open_url(url="https://www.okay.sk/collections/alkalicke-baterie?pf_p_ceny=2.28%3A5.28")
+test.open_url(url="https://www.okay.sk/collections/vankuse-a-prikryvky?pf_p_cena=3.96%3A40.00&pf_st_expedicia=true")
 test.open_product()
 test.add_to_cart()
 test.goto_checkout()
@@ -375,10 +375,10 @@ while not found_product:
     products = test.find_elements(selector=".collection-matrix__wrapper .product-wrap")
     for product in products:
         if len(test.find_child_elements(product, ".tag.on_order")) > 0:
-            found_product = product
+            found_product = test.find_child_element(product, ".product-thumbnail__title")
             break
     page += 1
-test.click(product, delay=True)
+test.click(found_product, delay=True)
 test.add_to_cart()
 test.abort()
 
