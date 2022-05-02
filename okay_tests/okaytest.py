@@ -101,7 +101,7 @@ class OkayTest(MainTest):
             self.log(f"{service}: check if service is available")
             self.sleep()
             service_input = self.driver.find_element(By.XPATH, f"//input[@product-service-id={service}]")
-            self.click(service_input.find_element(By.XPATH, ".."))
+            self.click(service_input.find_element(By.XPATH, "..").find_element(By.CSS_SELECTOR, ".item__service-info"))
 
         unchecked_items = []
         self.log("Search for services that are still unchecked")
@@ -139,13 +139,13 @@ class OkayTest(MainTest):
                 continue
 
             shipping_options = self.driver.find_elements(By.CSS_SELECTOR, ".section--shipping-method .content-box__row")
-            possible_options = [element for element in shipping_options if "table" in element.get_attribute("style")]
+            possible_options = [element for element in shipping_options if "none" not in element.get_attribute("style")]
 
             self.log(f"Find delivery type that corresponds to '{delivery}'")
             for option in possible_options:
                 
                 delivery_option = option.find_element(By.CSS_SELECTOR, ".radio__label__primary")
-                if delivery.lower() in delivery_option.get_attribute("data-shipping-method-label-title").lower():
+                if delivery.lower() in delivery_option.get_attribute('innerText').lower():
                     chosen_option = option
                     break
 
@@ -668,6 +668,48 @@ class OkayTest(MainTest):
 
         self.sleep()
         self.take_screenshot()
+
+    @catch_error
+    def select_pickup_point(self, code="", proceed=False):
+        """
+        Select pickup point from pickup point widget. If you want to select a specific pickup point, provide its code
+        in 'code' argument, otherwise it chooses by random. The second argument 'proceed' defines whether or not to
+        continue to the next step.
+
+        Example:
+        - test.select_pickup_point(proceed=True)
+        - test.select_pickup_point(code='1046', proceed=False)
+
+        Both arguments are optional, the default value of 'proceed' argument is False.
+        """
+        self.log("Open pickup point widget.")
+        self.click(self.driver.find_element(By.CSS_SELECTOR, ".button--stores-widget"))
+
+        self.sleep()
+        self.take_screenshot()
+
+        self.log("Get list of all available pickup points.")
+        pickup_points = self.driver.find_elements(By.CSS_SELECTOR, ".pick-up-button")
+        if len(pickup_points) == 0:
+            raise Exception("There is no pickup point to choose from.")
+
+        selected_point = random.choice(pickup_points)
+        if code != "":
+            for point in pickup_points:
+                if point.get_attribute("data-id") == str(code):
+                    selected_point = point
+                    break
+
+        selected_point_code = selected_point.get_attribute("data-id")
+        self.log(f"Select pickup point id '{selected_point_code}'")
+        self.click(selected_point)
+
+        self.sleep()
+        self.take_screenshot()
+
+        if proceed:
+            self.click(self.driver.find_element(By.ID, "continue_button"))
+            self.sleep()
 
     @catch_error
     def set_filter(self, name, value):

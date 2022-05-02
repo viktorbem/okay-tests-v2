@@ -123,6 +123,7 @@ CATEGORIES = [
         "url": "https://www.okay.sk/collections/rohove-sedacky-rozkladacie",
         "services": [
             "40968686796951", # Odvoz a ekologicka likvidace sedaciho nabytku a posteli
+            "40968686829719", # Montaz sedacieho nabytku a posteli
         ],
     },
     {
@@ -130,6 +131,7 @@ CATEGORIES = [
         "url": "https://www.okay.sk/collections/postele",
         "services": [
             "40968686796951", # Odvoz a ekologicka likvidace sedaciho nabytku a posteli
+            "40968686829719", # Montaz sedacieho nabytku a posteli
         ],
     },
     {
@@ -380,6 +382,20 @@ while not found_product:
     page += 1
 test.click(found_product, delay=True)
 test.add_to_cart()
+test.abort()
+
+
+## OKAY.SK STORE WIDGET
+
+test = OkayTest(name="okaysk_store_widget", theme=THEME)
+test.open_url(url="https://www.okay.sk/")
+test.open_random_menu_items(items=1, screenshots=False)
+test.open_product(screenshots=False)
+test.add_to_cart(screenshots=False)
+test.goto_checkout(screenshots=False)
+test.choose_delivery(delivery="osobný odber", proceed=False, screenshots=False)
+test.select_pickup_point(proceed=True)
+test.choose_payment(payment="prevod", proceed=False)
 test.abort()
 
 
