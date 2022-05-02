@@ -104,7 +104,7 @@ test.abort()
 ## OKAY.CZ PAYMENT GATE
 
 test = OkayTest(name="okaycz_payment_gate", theme=THEME)
-test.open_url(url="https://www.okay.cz/collections/alkalicke-baterie?pf_p_ceny=59.00%3A180.00")
+test.open_url(url="https://www.okay.cz/collections/polstare-a-prikryvky?pf_p_cena=99.00%3A999.00&pf_st_expedice=true")
 test.open_product()
 test.add_to_cart()
 test.goto_checkout()
@@ -149,6 +149,25 @@ CATEGORIES = [
             "39660572082218", # Montaz kuchyne (rovna)
             "39660572147754", # Demontaz, odvoz a likvidace dreveneho nabytku a kuchyni
             "39660572180522", # Likvidace dreveneho nabytku a kuchyni
+        ],
+    },
+    {
+        "name": "DREVO LEHKA MONTAZ",
+        "url": "https://www.okay.cz/collections/drevene-3",
+        "services": [
+            "39660571918378", # Odvoz a ekologická likvidace sedacího nábytku a postelí
+            "39660572147754", # Demontáž a likvidace dřevěného nábytku a kuchyní
+            "39660572180522", # Likvidace dřevěného nábytku a kuchyní
+            "40081972756522", # Montáž dřevěného nábytku
+        ],
+    },
+    {
+        "name": "DREVO STREDNI MONTAZ",
+        "url": "https://www.okay.cz/collections/obyvaci-steny",
+        "services": [
+            "39660572147754", # Demontáž a likvidace dřevěného nábytku a kuchyní
+            "39660572180522", # Likvidace dřevěného nábytku a kuchyní
+            "40081973837866", # Montáž dřevěného nábytku
         ],
     }
 ]
@@ -347,17 +366,114 @@ test.abort()
 
 ## OKAY.CZ PRICE CHECK FURNITURE
 
+CATEGORIES = [
+    "https://www.okay.cz/collections/sedaci-soupravy?pf_st_expedice=true",
+    "https://www.okay.cz/collections/pracky-a-susicky?pf_st_expedice=true"
+]
+
 test = OkayTest(name="okaycz_price_check_furniture", theme=THEME)
-test.open_url(url="https://www.okay.cz/collections/postele?pf_st_expedice=true")
-products = test.find_elements(selector=".collection-matrix__wrapper .product-wrap")
-was_prices = test.find_elements(selector=".collection-matrix__wrapper .product-thumbnail__was-price")
-if len(products) > 0 and len(was_prices) == 0:
-    test.log_error(
-        message=f"There are no crossed prices available on {test.last_url}", 
-        during="Check crossed prices on page"
-    )
+for cat_url in CATEGORIES:
+    test.new_test()
+    test.open_url(url=cat_url)
+    products = test.find_elements(selector=".collection-matrix__wrapper .product-wrap")
+    was_prices = test.find_elements(selector=".collection-matrix__wrapper .product-thumbnail__was-price")
+    if len(products) > 0 and len(was_prices) == 0:
+        test.log_error(
+            message=f"There are no crossed prices available on {test.last_url}", 
+            during="Check crossed prices on page"
+        )
 test.abort()
 
+
+# OKAY.CZ FURNITURE ON ORDER
+
+test = OkayTest(name="okaycz_furniture_on_order", theme=THEME)
+page = 1
+found_product = None
+while not found_product:
+    test.open_url(url=f"https://www.okay.cz/collections/sedaci-soupravy?page={page}")
+    products = test.find_elements(selector=".collection-matrix__wrapper .product-wrap")
+    for product in products:
+        if len(test.find_child_elements(product, ".tag.on_order")) > 0:
+            found_product = test.find_child_element(product, ".product-thumbnail__title")
+            break
+    page += 1
+test.click(found_product, delay=True)
+test.add_to_cart()
+test.abort()
+
+
+# OKAY.CZ INSIA INSURANCES
+
+CATEGORIES = [
+    {
+        "name": "TELEVIZE",
+        "url": "https://www.okay.cz/collections/televize",
+        "insurances": [
+            "6797255966762", # Prodloužení záruky na 5 let
+            "6797255901226", # Pojištění náhodného poškození a krádeže na 2 roky
+            "6797255573546", # Asistence elektro Axa
+        ],
+    },
+    {
+        "name": "LEDNICE",
+        "url": "https://www.okay.cz/collections/lednice-2",
+        "insurances": [
+            "6797255966762", # Prodloužení záruky na 5 let
+            "6797255835690", # Pojištění náhodného poškození a krádeže na 2 roky
+            "6797256196138", # Asistence Home exclusive Axa
+        ],
+    },
+    {
+        "name": "SMARTPHONY",
+        "url": "https://www.okay.cz/collections/chytre-telefony",
+        "insurances": [
+            "6797256065066", # Prodloužení záruky na 3 roky
+            "6797256097834", # Pojištění náhodného poškození a krádeže na 2 roky
+            "6797255573546", # Asistence elektro Axa
+        ],
+    },
+    {
+        "name": "POSTELE",
+        "url": "https://www.okay.cz/collections/postele",
+        "insurances": [
+            "6797256130602", # Pojištění nábytku TOP na 2 roky
+            "6797256196138", # Asistence Home exclusive Axa
+        ],
+    },
+    {
+        "name": "SEDACKY",
+        "url": "https://www.okay.cz/collections/rozkladaci-sedaci-soupravy",
+        "insurances": [
+            "6797256130602", # Pojištění nábytku TOP na 2 roky
+            "6797256196138", # Asistence Home exclusive Axa
+        ],
+    }
+]
+
+test = OkayTest(name="okaycz_insia_insurances", theme=THEME)
+for category in CATEGORIES:
+    test.new_test()
+    test.open_url(url=category["url"])
+    test.open_product(screenshots=False)
+    test.add_to_cart(screenshots=False)
+    test.check_insurances(insurances=category["insurances"])
+    test.empty_cart()
+test.abort()
+
+
+## OKAY.CZ STORE WIDGET
+
+test = OkayTest(name="okaycz_store_widget", theme=THEME)
+test.open_url(url="https://www.okay.cz/")
+test.open_random_menu_items(items=1, screenshots=False)
+test.open_product(screenshots=False)
+test.add_to_cart(screenshots=False)
+test.goto_checkout(screenshots=False)
+test.choose_delivery(delivery="osobní odběr", proceed=False, screenshots=False)
+test.select_pickup_point(proceed=True)
+test.choose_payment(payment="převod", proceed=False)
+test.abort()
 
 end = time.perf_counter() - start
 print(f"Finished in {end:.2f} s")

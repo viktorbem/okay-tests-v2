@@ -104,7 +104,7 @@ test.abort()
 ## OKAY.SK PAYMENT GATE
 
 test = OkayTest(name="okaysk_payment_gate", theme=THEME)
-test.open_url(url="https://www.okay.sk/collections/alkalicke-baterie?pf_p_ceny=2.28%3A5.28")
+test.open_url(url="https://www.okay.sk/collections/vankuse-a-prikryvky?pf_p_cena=3.96%3A40.00&pf_st_expedicia=true")
 test.open_product()
 test.add_to_cart()
 test.goto_checkout()
@@ -123,6 +123,7 @@ CATEGORIES = [
         "url": "https://www.okay.sk/collections/rohove-sedacky-rozkladacie",
         "services": [
             "40968686796951", # Odvoz a ekologicka likvidace sedaciho nabytku a posteli
+            "40968686829719", # Montaz sedacieho nabytku a posteli
         ],
     },
     {
@@ -130,6 +131,7 @@ CATEGORIES = [
         "url": "https://www.okay.sk/collections/postele",
         "services": [
             "40968686796951", # Odvoz a ekologicka likvidace sedaciho nabytku a posteli
+            "40968686829719", # Montaz sedacieho nabytku a posteli
         ],
     },
     {
@@ -346,15 +348,54 @@ test.abort()
 
 ## OKAY.SK PRICE CHECK FURNITURE
 
+CATEGORIES = [
+    "https://www.okay.sk/collections/sedacie-supravy?pf_st_expedicia=true",
+    "https://www.okay.sk/collections/pracky-a-susicky?pf_st_expedicia=true"
+]
+
 test = OkayTest(name="okaysk_price_check_furniture", theme=THEME)
-test.open_url(url="https://www.okay.sk/collections/postele?pf_st_expedicia=true")
-products = test.find_elements(selector=".collection-matrix__wrapper .product-wrap")
-was_prices = test.find_elements(selector=".collection-matrix__wrapper .product-thumbnail__was-price")
-if len(products) > 0 and len(was_prices) == 0:
-    test.log_error(
-        message=f"There are no crossed prices available on {test.last_url}", 
-        during="Check crossed prices on page"
-    )
+for cat_url in CATEGORIES:
+    test.new_test()
+    test.open_url(url=cat_url)
+    products = test.find_elements(selector=".collection-matrix__wrapper .product-wrap")
+    was_prices = test.find_elements(selector=".collection-matrix__wrapper .product-thumbnail__was-price")
+    if len(products) > 0 and len(was_prices) == 0:
+        test.log_error(
+            message=f"There are no crossed prices available on {test.last_url}", 
+            during="Check crossed prices on page"
+        )
+test.abort()
+
+
+# OKAY.SK FURNITURE ON ORDER
+
+test = OkayTest(name="okaysk_furniture_on_order", theme=THEME)
+page = 1
+found_product = None
+while not found_product:
+    test.open_url(url=f"https://www.okay.sk/collections/sedacie-supravy?page={page}")
+    products = test.find_elements(selector=".collection-matrix__wrapper .product-wrap")
+    for product in products:
+        if len(test.find_child_elements(product, ".tag.on_order")) > 0:
+            found_product = test.find_child_element(product, ".product-thumbnail__title")
+            break
+    page += 1
+test.click(found_product, delay=True)
+test.add_to_cart()
+test.abort()
+
+
+## OKAY.SK STORE WIDGET
+
+test = OkayTest(name="okaysk_store_widget", theme=THEME)
+test.open_url(url="https://www.okay.sk/")
+test.open_random_menu_items(items=1, screenshots=False)
+test.open_product(screenshots=False)
+test.add_to_cart(screenshots=False)
+test.goto_checkout(screenshots=False)
+test.choose_delivery(delivery="osobný odber", proceed=False, screenshots=False)
+test.select_pickup_point(proceed=True)
+test.choose_payment(payment="prevod", proceed=False)
 test.abort()
 
 

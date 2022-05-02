@@ -64,6 +64,28 @@ class OkayTest(MainTest):
         self.sleep()
 
     @catch_error
+    def check_insurances(self, insurances):
+        """
+        Try to check specified insurances in cart. After all insurances are checked, take a screenshot.
+        You have to provide a list of 'insurances' IDs that shoud be available for this category.
+
+        Examples:
+        - test.check_insurances(insurances=["6797255966762", "6797255901226"])
+        - test.check_insurences(insurances=["6797255573546"])
+
+        The 'insurances' argument is mandatory.
+        """
+        for insurance in insurances:
+            self.log(f"{insurance}: check if service is available")
+            self.sleep()
+            service_input = self.driver.find_element(By.XPATH, f"//li[@data-shopify-product-id={insurance}]")
+            self.click(service_input.find_element(By.CSS_SELECTOR, "label"))
+        
+        self.driver.find_element(By.TAG_NAME, "body").send_keys(Keys.CONTROL + Keys.HOME)
+        self.sleep()
+        self.take_screenshot()
+
+    @catch_error
     def check_services(self, services):
         """
         Try to check all furniture services in cart. After all services are checked, take a screenshot. You have to
@@ -77,8 +99,9 @@ class OkayTest(MainTest):
         """
         for service in services:
             self.log(f"{service}: check if service is available")
-            self.click(self.driver.find_element(By.XPATH, f"//input[@product-service-id={service}]"))
-            self.sleep(5)
+            self.sleep()
+            service_input = self.driver.find_element(By.XPATH, f"//input[@product-service-id={service}]")
+            self.click(service_input.find_element(By.XPATH, "..").find_element(By.CSS_SELECTOR, ".item__service-info"))
 
         unchecked_items = []
         self.log("Search for services that are still unchecked")
@@ -116,13 +139,13 @@ class OkayTest(MainTest):
                 continue
 
             shipping_options = self.driver.find_elements(By.CSS_SELECTOR, ".section--shipping-method .content-box__row")
-            possible_options = [element for element in shipping_options if "table" in element.get_attribute("style")]
+            possible_options = [element for element in shipping_options if "none" not in element.get_attribute("style")]
 
             self.log(f"Find delivery type that corresponds to '{delivery}'")
             for option in possible_options:
                 
                 delivery_option = option.find_element(By.CSS_SELECTOR, ".radio__label__primary")
-                if delivery.lower() in delivery_option.get_attribute("data-shipping-method-label-title").lower():
+                if delivery.lower() in delivery_option.get_attribute('innerText').lower():
                     chosen_option = option
                     break
 
@@ -198,7 +221,7 @@ class OkayTest(MainTest):
         - test.empty_cart()
         """
         self.log("Empty the cart")
-        self.driver.get(f"{self.home_url}/cart")
+        self.driver.get(f"{self.home_url}cart")
         cart_is_empty = False
         while not cart_is_empty:
             self.sleep()
@@ -253,7 +276,7 @@ class OkayTest(MainTest):
         """
         self.log("Proceed to the checkout")
         if "cart" not in self.driver.current_url:
-            self.driver.get(f"{self.home_url}/cart")
+            self.driver.get(f"{self.home_url}cart")
             self.sleep()
 
         self.click(self.driver.find_element(By.NAME, "checkout"))
@@ -263,8 +286,10 @@ class OkayTest(MainTest):
 
         domain_loc = self.home_url.split(".")[-1]
         zipnr = "60200"
+        prepend = "+420"
         if "sk" in domain_loc:
             zipnr = "83300"
+            prepend = "+421"
         creds = {
             "email": "test.okay@okaycz.eu",
             "name": "test",
@@ -272,7 +297,7 @@ class OkayTest(MainTest):
             "street": "Testovaci 123",
             "zipnr": zipnr,
             "city": "Testov",
-            "phonenr": "608123123"
+            "phonenr": f"{prepend}608123123"
         }
 
         for key in creds:
@@ -283,24 +308,31 @@ class OkayTest(MainTest):
 
         try:
             email = self.driver.find_element(By.ID, "checkout_email")
+            email.clear()
             email.send_keys(creds["email"])
             self.sleep(1)
             firstname = self.driver.find_element_by_id("checkout_shipping_address_first_name")
+            firstname.clear()
             firstname.send_keys(creds["name"])
             self.sleep(1)
             surname = self.driver.find_element_by_id("checkout_shipping_address_last_name")
+            surname.clear()
             surname.send_keys(creds["surname"])
             self.sleep(1)
             street = self.driver.find_element_by_id("checkout_shipping_address_address1")
+            street.clear()
             street.send_keys(creds["street"])
             self.sleep(1)
             zipnr = self.driver.find_element_by_id("checkout_shipping_address_zip")
+            zipnr.clear()
             zipnr.send_keys(creds["zipnr"])
             self.sleep(1)
             city = self.driver.find_element_by_id("checkout_shipping_address_city")
+            city.clear()
             city.send_keys(creds["city"])
             self.sleep(1)
             phonenr = self.driver.find_element_by_id("checkout_shipping_address_phone")
+            phonenr.clear()
             phonenr.send_keys(creds["phonenr"])
             self.sleep(1)
 
@@ -636,6 +668,48 @@ class OkayTest(MainTest):
 
         self.sleep()
         self.take_screenshot()
+
+    @catch_error
+    def select_pickup_point(self, code="", proceed=False):
+        """
+        Select pickup point from pickup point widget. If you want to select a specific pickup point, provide its code
+        in 'code' argument, otherwise it chooses by random. The second argument 'proceed' defines whether or not to
+        continue to the next step.
+
+        Example:
+        - test.select_pickup_point(proceed=True)
+        - test.select_pickup_point(code='1046', proceed=False)
+
+        Both arguments are optional, the default value of 'proceed' argument is False.
+        """
+        self.log("Open pickup point widget.")
+        self.click(self.driver.find_element(By.CSS_SELECTOR, ".button--stores-widget"))
+
+        self.sleep()
+        self.take_screenshot()
+
+        self.log("Get list of all available pickup points.")
+        pickup_points = self.driver.find_elements(By.CSS_SELECTOR, ".pick-up-button")
+        if len(pickup_points) == 0:
+            raise Exception("There is no pickup point to choose from.")
+
+        selected_point = random.choice(pickup_points)
+        if code != "":
+            for point in pickup_points:
+                if point.get_attribute("data-id") == str(code):
+                    selected_point = point
+                    break
+
+        selected_point_code = selected_point.get_attribute("data-id")
+        self.log(f"Select pickup point id '{selected_point_code}'")
+        self.click(selected_point)
+
+        self.sleep()
+        self.take_screenshot()
+
+        if proceed:
+            self.click(self.driver.find_element(By.ID, "continue_button"))
+            self.sleep()
 
     @catch_error
     def set_filter(self, name, value):

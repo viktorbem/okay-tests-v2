@@ -110,6 +110,17 @@ test.check_css(element=".header--search-focus", style="background-color", value=
 
 Všechny argumenty jsou povinné.
 
+### **check_insurances**
+
+Pokusí se zaškrtnout konkrétní druhy pojištění v košíku a následně vytvoří printscreen košíku. Je potřeba definovat pojištění jako `list` (pole) obsahující `product ID` těchto pojištění.
+
+```python
+test.check_insurances(insurances=["6797255966762", "6797255901226"])
+test.check_insurences(insurances=["6797255573546"])
+```
+
+Argument `insurances` je povinný.
+
 <br>
 
 ### **check_services**
@@ -202,6 +213,36 @@ elements = test.find_elements(selector=".button--add-to-cart")
 ```
 
 Argument `selector` je povinný.
+
+<br>
+
+### **find_child_element**
+
+Vrátí prvního potomka elementu v argumentu, který odpovídá specifikovanému CSS selectoru.
+
+```python
+child = test.find_child_element(
+    element=some_element,
+    selector='.tag.on-order'
+)
+```
+
+Oba argumenty jsou povinné.
+
+<br>
+
+### **find_child_elements**
+
+Vrátí `list` (pole) potomků konkrétního elementu, které odpovídají specifikovanému CSS selectoru.
+
+```python
+children = test.find_child_elements(
+    element=some_element, 
+    selector='.tag.on-order'
+)
+```
+
+Oba argumenty jsou povinné.
 
 <br>
 
@@ -362,6 +403,19 @@ Argument `text` je povinný.
 
 <br>
 
+### **select_pickup_point**
+
+Vybere prodejnu nebo výdejnu z widgetu prodejen. Pokud chcete zvolit konkrétní prodejnu nebo výdejnu, zadejte její kód v argumenty `code`, v opačném případě se vybere prodejna náhodně. Druhý argument `proceed` určuje, zda bude test pokračovat do dalšího kroku objednávky.
+
+```python
+test.select_pickup_point(proceed=True)
+test.select_pickup_point(code='1046', proceed=False)
+```
+
+Oba argumenty jsou volitelné, výchozí hodnota argumentu `proceed` je `False`.
+
+<br>
+
 ### **set_filter**
 
 Nastaví filtr v kolekci podle jeho jména `name` a hodnoty `value`.
@@ -391,4 +445,4 @@ Součástí repozitáře jsou také spubory `okaysk__samples.py` a `jena__sample
 
 <br>
 
-*(C) 2021 OKAY s.r.o.*
+*(C) 2021-2022 OKAY s.r.o.*

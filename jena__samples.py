@@ -290,7 +290,7 @@ test.abort()
 ## JENA PRICE CHECK FURNITURE
 
 test = JenaTest(name="jena_price_check_furniture", theme=THEME)
-test.open_url(url="https://www.jena-nabytek.cz/collections/postele?pf_st_dostupnost=true")
+test.open_url(url="https://www.jena-nabytek.cz/collections/sedacky?pf_st_dostupnost=true")
 products = test.find_elements(selector=".collection-matrix__wrapper .product-wrap")
 was_prices = test.find_elements(selector=".collection-matrix__wrapper .product-thumbnail__was-price")
 if len(products) > 0 and len(was_prices) == 0:
@@ -298,6 +298,24 @@ if len(products) > 0 and len(was_prices) == 0:
         message=f"There are no crossed prices available on {test.last_url}", 
         during="Check crossed prices on page"
     )
+test.abort()
+
+
+# JENA FURNITURE ON ORDER
+
+test = JenaTest(name="jena_furniture_on_order", theme=THEME)
+page = 1
+found_product = None
+while not found_product:
+    test.open_url(url=f"https://www.jena-nabytek.cz/collections/sedacky?page={page}")
+    products = test.find_elements(selector=".collection-matrix__wrapper .product-wrap")
+    for product in products:
+        if len(test.find_child_elements(product, ".tag.on_order")) > 0:
+            found_product = product
+            break
+    page += 1
+test.click(product, delay=True)
+test.add_to_cart()
 test.abort()
 
 
