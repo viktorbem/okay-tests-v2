@@ -403,6 +403,19 @@ Argument `text` je povinný.
 
 <br>
 
+### **select_pickup_point**
+
+Vybere prodejnu nebo výdejnu z widgetu prodejen. Pokud chcete zvolit konkrétní prodejnu nebo výdejnu, zadejte její kód v argumenty `code`, v opačném případě se vybere prodejna náhodně. Druhý argument `proceed` určuje, zda bude test pokračovat do dalšího kroku objednávky.
+
+```python
+test.select_pickup_point(proceed=True)
+test.select_pickup_point(code='1046', proceed=False)
+```
+
+Oba argumenty jsou volitelné, výchozí hodnota argumentu `proceed` je `False`.
+
+<br>
+
 ### **set_filter**
 
 Nastaví filtr v kolekci podle jeho jména `name` a hodnoty `value`.

@@ -462,5 +462,18 @@ for category in CATEGORIES:
 test.abort()
 
 
+## OKAY.CZ STORE WIDGET
+
+test = OkayTest(name="okaycz_store_widget", theme=THEME)
+test.open_url(url="https://www.okay.cz/")
+test.open_random_menu_items(items=1, screenshots=False)
+test.open_product(screenshots=False)
+test.add_to_cart(screenshots=False)
+test.goto_checkout(screenshots=False)
+test.choose_delivery(delivery="osobní odběr", proceed=False, screenshots=False)
+test.select_pickup_point(proceed=True)
+test.choose_payment(payment="převod", proceed=False)
+test.abort()
+
 end = time.perf_counter() - start
 print(f"Finished in {end:.2f} s")
