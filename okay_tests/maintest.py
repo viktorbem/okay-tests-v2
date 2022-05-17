@@ -239,7 +239,7 @@ class MainTest:
     def output_js_console(self):
         """self.output_js_console()"""
         pp = pprint.PrettyPrinter(indent=2)
-        return pp.pformat([log for log in self.driver.get_log("browser") if log["level"] == "SEVERE"])
+        return pp.pformat([log for log in self.driver.get_log("browser")])
 
     def new_test(self, screenshots=True):
         """

@@ -124,6 +124,7 @@ CATEGORIES = [
         "services": [
             "39660571918378", # Odvoz a ekologicka likvidace sedaciho nabytku a posteli
             "39660571951146", # Montaz sedaciho nabytku
+            "39660572147754", # Demontáž a likvidace dřevěného nábytku a kuchyní
         ],
     },
     {
@@ -131,6 +132,9 @@ CATEGORIES = [
         "url": "https://www.okay.cz/collections/postele",
         "services": [
             "39660571918378", # Odvoz a ekologicka likvidace sedaciho nabytku a posteli
+            "39660572147754", # Demontáž a likvidace dřevěného nábytku a kuchyní
+            "39660572180522", # Likvidace dřevěného nábytku a kuchyní
+            "40081972756522", # Montáž dřevěného nábytku
         ],
     },
     {
@@ -176,8 +180,8 @@ test = OkayTest(name="okaycz_furniture_services", theme=THEME)
 for category in CATEGORIES:
     test.new_test()
     test.open_url(url=category["url"])
-    test.open_product(screenshots=False)
-    test.add_to_cart(screenshots=False)
+    test.open_product(screenshots=True)
+    test.add_to_cart(screenshots=True)
     test.check_services(services=category["services"])
     test.empty_cart()
 test.abort()
@@ -220,9 +224,9 @@ test = OkayTest(name="okaycz_delivery_options_electro", theme=THEME)
 for category in CATEGORIES:
     test.new_test()
     test.open_url(url=category["url"])
-    test.open_product(screenshots=False)
-    test.add_to_cart(screenshots=False)
-    test.goto_checkout(screenshots=False)
+    test.open_product(screenshots=True)
+    test.add_to_cart(screenshots=True)
+    test.goto_checkout(screenshots=True)
     delivery = test.parse_delivery()
     test.choose_delivery(delivery="na mou adresu", proceed=True, screenshots=False)
     payment = test.parse_payment()
@@ -277,9 +281,9 @@ test = OkayTest(name="okaycz_delivery_options_furniture", theme=THEME)
 for category in CATEGORIES:
     test.new_test()
     test.open_url(url=category["url"])
-    test.open_product(screenshots=False)
-    test.add_to_cart(screenshots=False)
-    test.goto_checkout(screenshots=False)
+    test.open_product(screenshots=True)
+    test.add_to_cart(screenshots=True)
+    test.goto_checkout(screenshots=True)
     delivery = test.parse_delivery()
     test.choose_delivery(delivery="na mou adresu", proceed=True, screenshots=False)
     payment = test.parse_payment()
@@ -443,7 +447,7 @@ CATEGORIES = [
     },
     {
         "name": "SEDACKY",
-        "url": "https://www.okay.cz/collections/rozkladaci-sedaci-soupravy",
+        "url": "https://www.okay.cz/collections/sedaci-soupravy-do-u-rozkladaci",
         "insurances": [
             "6797256130602", # Pojištění nábytku TOP na 2 roky
             "6797256196138", # Asistence Home exclusive Axa
