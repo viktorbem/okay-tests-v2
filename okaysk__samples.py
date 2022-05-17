@@ -124,6 +124,7 @@ CATEGORIES = [
         "services": [
             "40968686796951", # Odvoz a ekologicka likvidace sedaciho nabytku a posteli
             "40968686829719", # Montaz sedacieho nabytku a posteli
+            "40968686928023", # Demontaz a likvidacia dreveneho nabytku a kuchyn
         ],
     },
     {
@@ -131,7 +132,9 @@ CATEGORIES = [
         "url": "https://www.okay.sk/collections/postele",
         "services": [
             "40968686796951", # Odvoz a ekologicka likvidace sedaciho nabytku a posteli
-            "40968686829719", # Montaz sedacieho nabytku a posteli
+            "40968686928023", # Demontáž a likvidácia dreveného nábytku a kuchýň
+            "41050674692247", # Likvidácia dreveného nábytku a kuchýň
+            "42026198696087", # Montáž dreveného nábytku
         ],
     },
     {
@@ -151,6 +154,25 @@ CATEGORIES = [
             "40968686928023", # Demontaz, odvoz a likvidace dreveneho nabytku a kuchyni
             "41050674692247", # Likvidace dreveneho nabytku a kuchyni
         ],
+    },
+    {
+        "name": "DREVO LEHKA MONTAZ",
+        "url": "https://www.okay.sk/collections/drevene-postele",
+        "services": [
+            "40968686796951", # Odvoz a ekologická likvidácia sedacieho nábytku a postelí
+            "40968686928023", # Demontáž a likvidácia dreveného nábytku a kuchýň
+            "41050674692247", # Likvidácia dreveného nábytku a kuchýň
+            "42026198696087", # Montáž dreveného nábytku
+        ],
+    },
+    {
+        "name": "DREVO STREDNI MONTAZ",
+        "url": "https://www.okay.sk/collections/obyvacie-steny",
+        "services": [
+            "40968686928023", # Demontáž a likvidácia dreveného nábytku a kuchýň
+            "41050674692247", # Likvidácia dreveného nábytku a kuchýň
+            "42026219012247", # Montáž dreveného nábytku
+        ],
     }
 ]
 
@@ -158,8 +180,8 @@ test = OkayTest(name="okaysk_furniture_services", theme=THEME)
 for category in CATEGORIES:
     test.new_test()
     test.open_url(url=category["url"])
-    test.open_product(screenshots=False)
-    test.add_to_cart(screenshots=False)
+    test.open_product(screenshots=True)
+    test.add_to_cart(screenshots=True)
     test.check_services(services=category["services"])
     test.empty_cart()
 test.abort()
@@ -202,9 +224,9 @@ test = OkayTest(name="okaysk_delivery_options_electro", theme=THEME)
 for category in CATEGORIES:
     test.new_test()
     test.open_url(url=category["url"])
-    test.open_product(screenshots=False)
-    test.add_to_cart(screenshots=False)
-    test.goto_checkout(screenshots=False)
+    test.open_product(screenshots=True)
+    test.add_to_cart(screenshots=True)
+    test.goto_checkout(screenshots=True)
     delivery = test.parse_delivery()
     test.choose_delivery(delivery="na moju adresu", proceed=True, screenshots=False)
     payment = test.parse_payment()
@@ -259,9 +281,9 @@ test = OkayTest(name="okaysk_delivery_options_furniture", theme=THEME)
 for category in CATEGORIES:
     test.new_test()
     test.open_url(url=category["url"])
-    test.open_product(screenshots=False)
-    test.add_to_cart(screenshots=False)
-    test.goto_checkout(screenshots=False)
+    test.open_product(screenshots=True)
+    test.add_to_cart(screenshots=True)
+    test.goto_checkout(screenshots=True)
     delivery = test.parse_delivery()
     test.choose_delivery(delivery="na moju adresu", proceed=True, screenshots=False)
     payment = test.parse_payment()
@@ -382,6 +404,63 @@ while not found_product:
     page += 1
 test.click(found_product, delay=True)
 test.add_to_cart()
+test.abort()
+
+
+# OKAY.SK INSIA INSURANCES
+
+CATEGORIES = [
+    {
+        "name": "TELEVIZE",
+        "url": "https://www.okay.sk/collections/televizory",
+        "insurances": [
+            "7519182127255", # Asistencie elektro Axa
+            "7519183175831", # Poistenie náhodného poškodenia a odcudzenia na 2 roky
+            "7519181963415", # Predĺžená záruka na 5 rokov
+        ],
+    },
+    {
+        "name": "LEDNICE",
+        "url": "https://www.okay.sk/collections/chladnicky",
+        "insurances": [
+            "7519182127255", # Asistencie elektro Axa
+            "7519183175831", # Poistenie náhodného poškodenia a odcudzenia na 2 roky
+            "7519181963415", # Predĺžená záruka na 5 rokov
+        ],
+    },
+    {
+        "name": "SMARTPHONY",
+        "url": "https://www.okay.sk/collections/chytre-telefony",
+        "insurances": [
+            "7519182127255", # Asistencie elektro Axa
+            "7519183405207", # Poistenie náhodného poškodenia a odcudzenia na 2 roky
+            "7519180456087", # Predĺžená záruka na 3 roky
+        ],
+    },
+    {
+        "name": "POSTELE",
+        "url": "https://www.okay.sk/collections/postele",
+        "insurances": [
+            "7519180587159", # Asistencie Home exclusive Axa
+        ],
+    },
+    {
+        "name": "SEDACKY",
+        "url": "https://www.okay.sk/collections/rozkladacie-sedacky-v-tvare-u",
+        "insurances": [
+            "7519180587159", # Asistencie Home exclusive Axa
+        ],
+    }
+]
+
+test = OkayTest(name="okaysk_insia_insurances", theme=THEME)
+for category in CATEGORIES:
+    test.new_test()
+    test.open_url(url=category["url"])
+    test.open_product(screenshots=False)
+    test.add_to_cart(screenshots=False)
+    test.check_insurances(insurances=category["insurances"])
+    test.empty_cart()
 test.abort()
 
 
