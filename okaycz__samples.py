@@ -29,7 +29,7 @@ test = OkayTest(name='okaycz_filters', theme=THEME)
 test.open_url(url='https://www.okay.cz/')
 test.open_specific_menu_item(text='Televize')
 test.set_filter(name='výrobci', value='lg')
-test.set_filter(name='úhlopříčka', value='55')
+test.set_filter(name='technologie', value='led')
 test.abort()
 
 
@@ -70,7 +70,7 @@ test.open_url(url='https://www.okay.cz/collections/mobilni-telefony-3')
 test.open_product()
 test.add_to_cart()
 test.goto_checkout()
-test.choose_delivery(delivery='na mou adresu', proceed=True)
+test.choose_delivery(delivery='na mou adresu', exclude='mastercard', proceed=True)
 test.choose_payment(payment='bankovní převod', proceed=False)
 test.abort()
 
@@ -82,7 +82,7 @@ test.open_url(url='https://www.okay.cz/collections/mobilni-telefony-3')
 test.open_product()
 test.add_to_cart()
 test.goto_checkout()
-test.choose_delivery(delivery='na mou adresu', proceed=True)
+test.choose_delivery(delivery='na mou adresu', exclude='mastercard', proceed=True)
 test.choose_payment(payment='bankovní převod', proceed=False)
 test.abort()
 
@@ -95,7 +95,7 @@ test.open_product()
 test.add_to_cart()
 test.goto_checkout()
 test.choose_delivery(delivery='zásilkovna', proceed=False, screenshots=False)
-test.choose_delivery(delivery='na mou adresu', proceed=True)
+test.choose_delivery(delivery='na mou adresu', exclude='mastercard', proceed=True)
 test.choose_payment(payment='dobírka', proceed=True)
 test.confirm_order()
 test.abort()
@@ -108,7 +108,7 @@ test.open_url(url='https://www.okay.cz/collections/polstare-a-prikryvky?pf_p_cen
 test.open_product()
 test.add_to_cart()
 test.goto_checkout()
-test.choose_delivery(delivery='na mou adresu', proceed=True)
+test.choose_delivery(delivery='na mou adresu', exclude='mastercard', proceed=True)
 test.choose_payment(payment='karta', proceed=True)
 test.handle_gopay()
 test.empty_cart()
@@ -129,7 +129,7 @@ CATEGORIES = [
     },
     {
         'name': 'POSTELE',
-        'url': 'https://www.okay.cz/collections/postele',
+        'url': 'https://www.okay.cz/collections/manzelske-postele',
         'services': [
             '39660571918378', # Odvoz a ekologicka likvidace sedaciho nabytku a posteli
             '39660572147754', # Demontáž a likvidace dřevěného nábytku a kuchyní
@@ -228,7 +228,7 @@ for category in CATEGORIES:
     test.add_to_cart(screenshots=True)
     test.goto_checkout(screenshots=True)
     delivery = test.parse_delivery()
-    test.choose_delivery(delivery='na mou adresu', proceed=True, screenshots=False)
+    test.choose_delivery(delivery='na mou adresu', exclude='mastercard', proceed=True, screenshots=False)
     payment = test.parse_payment()
     test.choose_payment(payment='dobírka', proceed=False, screenshots=False)
     test.log_results(
@@ -285,7 +285,7 @@ for category in CATEGORIES:
     test.add_to_cart(screenshots=True)
     test.goto_checkout(screenshots=True)
     delivery = test.parse_delivery()
-    test.choose_delivery(delivery='na mou adresu', proceed=True, screenshots=False)
+    test.choose_delivery(delivery='na mou adresu', exclude='mastercard', proceed=True, screenshots=False)
     payment = test.parse_payment()
     test.choose_payment(payment='převod', proceed=False, screenshots=False)
     test.log_results(

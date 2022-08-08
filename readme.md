@@ -138,13 +138,15 @@ Argument `services` je povinný.
 
 ### **choose_delivery**
 
-Zvolí druh dopravy definovaný argumentem `delivery`. Je potřeba, aby se test zrovna nacházel ve fázi volby dopravy.
+Zvolí druh dopravy definovaný argumentem `delivery`, pokud zároveň neobsahuje text v argumentu `exclude`. Je potřeba, aby se test zrovna nacházel ve fázi volby dopravy.
 
 ```python
-test.choose_delivery(delivery='na moju adresu', proceed=True)
+test.choose_delivery(delivery='na moju adresu', exclude='mastercard', proceed=True)
 ```
 
-Argument `delivery` je povinný a musí odpovídat způsobu dopravy na daném webu. Argument `proceed` je nepovinný a pokud jej nastavíte `True`, bude test pokračovat k volbě platby (výchozí hodnota je `False`).
+Argument `delivery` je povinný a musí odpovídat způsobu dopravy na daném webu. 
+Argument `exclude` je nepovinný a slouží k přesnějšímu určení jednoho ze dvou podobných druhů doprav.
+Argument `proceed` je nepovinný a pokud jej nastavíte `True`, bude test pokračovat k volbě platby (výchozí hodnota je `False`).
 
 <br>
 
