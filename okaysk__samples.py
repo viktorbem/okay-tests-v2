@@ -70,8 +70,8 @@ test.open_url(url='https://www.okay.sk/collections/mobilne-telefony-4')
 test.open_product()
 test.add_to_cart()
 test.goto_checkout()
-test.choose_delivery(delivery='na moju adresu', proceed=True)
-test.choose_payment(payment='bankový prevod', proceed=False)
+test.choose_delivery(delivery='na moju adresu', exclude='mastercard', proceed=True)
+test.choose_payment(payment='karta', proceed=False)
 test.abort()
 
 
@@ -82,8 +82,8 @@ test.open_url(url='https://www.okay.sk/collections/mobilne-telefony-4')
 test.open_product()
 test.add_to_cart()
 test.goto_checkout()
-test.choose_delivery(delivery='na moju adresu', proceed=True)
-test.choose_payment(payment='bankový prevod', proceed=False)
+test.choose_delivery(delivery='na moju adresu', exclude='mastercard', proceed=True)
+test.choose_payment(payment='karta', proceed=False)
 test.abort()
 
 
@@ -95,7 +95,7 @@ test.open_product()
 test.add_to_cart()
 test.goto_checkout()
 test.choose_delivery(delivery='packeta', proceed=False, screenshots=False)
-test.choose_delivery(delivery='na moju adresu', proceed=True)
+test.choose_delivery(delivery='na moju adresu', exclude='mastercard', proceed=True)
 test.choose_payment(payment='dobierka', proceed=True)
 test.confirm_order()
 test.abort()
@@ -108,7 +108,7 @@ test.open_url(url='https://www.okay.sk/collections/vankuse-a-prikryvky?pf_p_cena
 test.open_product()
 test.add_to_cart()
 test.goto_checkout()
-test.choose_delivery(delivery='na moju adresu', proceed=True)
+test.choose_delivery(delivery='na moju adresu', exclude='mastercard', proceed=True)
 test.choose_payment(payment='karta', proceed=True)
 test.handle_gopay()
 test.empty_cart()
@@ -129,7 +129,7 @@ CATEGORIES = [
     },
     {
         'name': 'POSTELE',
-        'url': 'https://www.okay.sk/collections/postele',
+        'url': 'https://www.okay.sk/collections/manzelske-postele',
         'services': [
             '40968686796951', # Odvoz a ekologicka likvidace sedaciho nabytku a posteli
             '40968686928023', # Demontáž a likvidácia dreveného nábytku a kuchýň
@@ -228,7 +228,7 @@ for category in CATEGORIES:
     test.add_to_cart(screenshots=True)
     test.goto_checkout(screenshots=True)
     delivery = test.parse_delivery()
-    test.choose_delivery(delivery='na moju adresu', proceed=True, screenshots=False)
+    test.choose_delivery(delivery='na moju adresu', exclude='mastercard', proceed=True, screenshots=False)
     payment = test.parse_payment()
     test.choose_payment(payment='dobierka', proceed=False, screenshots=False)
     test.log_results(
@@ -285,9 +285,9 @@ for category in CATEGORIES:
     test.add_to_cart(screenshots=True)
     test.goto_checkout(screenshots=True)
     delivery = test.parse_delivery()
-    test.choose_delivery(delivery='na moju adresu', proceed=True, screenshots=False)
+    test.choose_delivery(delivery='na moju adresu', exclude='mastercard', proceed=True, screenshots=False)
     payment = test.parse_payment()
-    test.choose_payment(payment='prevod', proceed=False, screenshots=False)
+    test.choose_payment(payment='karta', proceed=False, screenshots=False)
     test.log_results(
         name=category['name'],
         url=category['url'],

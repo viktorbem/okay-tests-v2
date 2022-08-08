@@ -120,7 +120,7 @@ class MainTest:
         with open(os.path.join(self.logpath, f'{self.time}_js.txt'), 'w', encoding='utf-8') as logfile:
             console_log = self.output_js_console()
             logfile.write(console_log)
-        self.driver.close()
+        self.driver.quit()
 
     def bypass_password(self, url):
         '''self.bypass_password(url=Str)'''
@@ -267,9 +267,9 @@ class MainTest:
                     new_msg.attach(payload)
             text = new_msg.as_string()
 
-            with smtplib.SMTP('smtp.gmail.com') as mailserver:
+            with smtplib.SMTP('smtp-relay.sendinblue.com', 587) as mailserver:
                 mailserver.starttls()
-                mailserver.login(user=SECRET.mail_from, password=SECRET.mail_password)
+                mailserver.login(user=SECRET.mail_login, password=SECRET.mail_password)
                 mailserver.sendmail(
                     from_addr=SECRET.mail_from,
                     to_addrs=SECRET.mail_to,

@@ -117,7 +117,7 @@ class OkayTest(MainTest):
         self.take_screenshot()
 
     @catch_error
-    def choose_delivery(self, delivery, proceed=False):
+    def choose_delivery(self, delivery, exclude='', proceed=False):
         '''
         Choose delivery type defined in 'delivery' argument. You have to be in the 'shipping' step of checkout.
 
@@ -145,7 +145,9 @@ class OkayTest(MainTest):
             for option in possible_options:
                 
                 delivery_option = option.find_element(By.CSS_SELECTOR, '.radio__label__primary')
-                if delivery.lower() in delivery_option.get_attribute('innerText').lower():
+                delivery_option_text = delivery_option.get_attribute('innerText').lower()
+                if delivery.lower() in delivery_option_text and \
+                    (not exclude or exclude.lower() not in delivery_option_text):
                     chosen_option = option
                     break
 
