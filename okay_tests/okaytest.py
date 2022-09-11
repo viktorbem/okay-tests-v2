@@ -40,7 +40,7 @@ class OkayTest(MainTest):
             else:
                 selector = '.header-cart a'
 
-            self.click(self.driver.find_element(By.CSS_SELECTOR, selector))
+            self.click_with_js(self.driver.find_element(By.CSS_SELECTOR, selector))
 
         self.sleep(15)
         self.take_screenshot()
@@ -67,11 +67,11 @@ class OkayTest(MainTest):
     def check_insurances(self, insurances):
         '''
         Try to check specified insurances in cart. After all insurances are checked, take a screenshot.
-        You have to provide a list of 'insurances' IDs that shoud be available for this category.
+        You have to provide a list of 'insurances' IDs that should be available for this category.
 
         Examples:
         - test.check_insurances(insurances=['6797255966762', '6797255901226'])
-        - test.check_insurences(insurances=['6797255573546'])
+        - test.check_insurances(insurances=['6797255573546'])
 
         The 'insurances' argument is mandatory.
         '''
@@ -89,7 +89,7 @@ class OkayTest(MainTest):
     def check_services(self, services):
         '''
         Try to check all furniture services in cart. After all services are checked, take a screenshot. You have to
-        provide a list of 'services' IDs that shoud be available for this category.
+        provide a list of 'services' IDs that should be available for this category.
 
         Examples:
         - test.check_services(services=['40968686796951', '40968686829719'])
@@ -124,7 +124,7 @@ class OkayTest(MainTest):
         Example:
         - test.choose_delivery(delivery='na moju adresu', proceed=True)
 
-        The argument 'delivery' is mandatory and it should correspond to real delivery types on website.
+        The argument 'delivery' is mandatory, and it should correspond to real delivery types on website.
         The argument 'proceed' is optional. If you set 'proceed' to 'True', test will proceed to next step.
         The default value of 'proceed' argument is 'False'.
         '''
@@ -173,7 +173,7 @@ class OkayTest(MainTest):
         Example:
         test.choose_payment(payment='na moju adresu', proceed=True)
 
-        The argument 'delivery' is mandatory and it should correspond to real delivery types on website.
+        The argument 'delivery' is mandatory, and it should correspond to real delivery types on website.
         The argument 'proceed' is optional. If you set 'proceed' to 'True', test will proceed to next step.
         The default value of 'proceed' argument is 'False'.
         '''
@@ -238,7 +238,8 @@ class OkayTest(MainTest):
     @catch_error
     def fill_form_fields(self, fields, proceed=False):
         '''
-        Fill in several input fields in the form specified by the 'fields' argument as list of dictionaries with 'id' and 'value' keys.
+        Fill in several input fields in the form specified by the 'fields' argument
+        as list of dictionaries with 'id' and 'value' keys.
 
         Example:
         - test.fill_form_fields(fields=[{'id': 'name', 'value': 'Josef'}], proceed=True)
@@ -355,7 +356,7 @@ class OkayTest(MainTest):
     def handle_gopay(self):
         '''
         Proceed through the payment gate until it is able to fill in credit card information,    
-        then return back to the eshop to cancel order.
+        then return to the eshop to cancel order.
 
         Example:
         - test.handle_gopay()
@@ -439,7 +440,8 @@ class OkayTest(MainTest):
     @catch_error
     def open_random_menu_items(self, items):
         '''
-        Get a list of all main menu items, randomly click as many as defined in argument and take screenshots of results.
+        Get a list of all main menu items, randomly click as many as defined in argument
+        and take screenshots of results.
 
         Example:
         - test.click_random_mainmenu_items(items=3)
@@ -579,7 +581,7 @@ class OkayTest(MainTest):
     @catch_error
     def open_url(self, url):
         '''
-        Open an URL defined as argument of this method.
+        Open a URL defined as argument of this method.
 
         Example:
         - test.open_url(url='https://www.okay.cz/')
@@ -686,7 +688,7 @@ class OkayTest(MainTest):
     def select_pickup_point(self, code='', proceed=False):
         '''
         Select pickup point from pickup point widget. If you want to select a specific pickup point, provide its code
-        in 'code' argument, otherwise it chooses by random. The second argument 'proceed' defines whether or not to
+        in 'code' argument, otherwise it chooses by random. The second argument 'proceed' defines whether to
         continue to the next step.
 
         Example:
@@ -754,9 +756,9 @@ class OkayTest(MainTest):
             self.sleep()
 
         self.log(f'Set the "{name}" filter to "{value}"')
-        filter = self.driver.find_elements(By.CSS_SELECTOR, '.boost-pfs-filter-button .boost-pfs-filter-option-value')
+        current_filter = self.driver.find_elements(By.CSS_SELECTOR, '.boost-pfs-filter-button .boost-pfs-filter-option-value')
         is_found = False
-        for item in filter:
+        for item in current_filter:
             if str(value).lower() in item.text.lower():
                 self.click(item)
                 is_found = True

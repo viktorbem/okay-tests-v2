@@ -116,7 +116,7 @@ Pokusí se zaškrtnout konkrétní druhy pojištění v košíku a následně vy
 
 ```python
 test.check_insurances(insurances=["6797255966762", "6797255901226"])
-test.check_insurences(insurances=["6797255573546"])
+test.check_insurances(insurances=["6797255573546"])
 ```
 
 Argument `insurances` je povinný.

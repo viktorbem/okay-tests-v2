@@ -73,6 +73,7 @@ class MainTest:
                     return f(self, *args, **kwargs)
                 except Exception as err:
                     self.log_error(message=err, during=self.step)
+                    self.sleep(60)
         return inner
 
     def _setup_chrome(self):
@@ -151,7 +152,8 @@ class MainTest:
             self.sleep()
         self.driver.execute_script('arguments[0].click();', element)
 
-    def find_child_element(self, element, selector):
+    @staticmethod
+    def find_child_element(element, selector):
         '''
         Return the first child of the single element in argument that has the specified CSS selector.
 
@@ -162,7 +164,8 @@ class MainTest:
         '''
         return element.find_element(By.CSS_SELECTOR, selector)
 
-    def find_child_elements(self, element, selector):
+    @staticmethod
+    def find_child_elements(element, selector):
         '''
         Return the list (array) of children of the single element in argument that satisfy the specified CSS selector.
 
@@ -213,9 +216,9 @@ class MainTest:
             lang_key = 'sk'
         
         try:
-            with open(os.path.join(os.path.abspath(os.path.dirname(__file__)), 'search.json')) as json_file:
-                data = json.loads(json_file.read())
-                search_words = data[web_key][lang_key]
+            with open(os.path.join(os.path.abspath(os.path.dirname(__file__)), 'search.json')) as data_file:
+                loaded_data = json.loads(data_file.read())
+                search_words = loaded_data[web_key][lang_key]
         except FileNotFoundError:
             return ['Search terms not provided']
 
@@ -243,7 +246,7 @@ class MainTest:
         timestamp = datetime.now().strftime('%H%M%S')
         console_log = ''
         img_filename = None
-        if self.driver != None:
+        if self.driver is not None:
             img_filename = self.take_screenshot(timestamp, '_ERR')
             path_to_img = os.path.join(self.logpath, img_filename)
             console_log = self.output_js_console()
@@ -258,12 +261,12 @@ class MainTest:
             new_msg['Subject'] = self.testname
             new_msg.attach(MIMEText(f'\n\n{message}', 'plain'))
 
-            if img_filename != None:
+            if img_filename is not None:
                 payload = MIMEBase('application', 'octate-stream')
                 with open(path_to_img, 'rb') as file:
                     payload.set_payload(file.read())
                     encoders.encode_base64(payload)
-                    payload.add_header('Content-Disposition', 'attachement', filename=img_filename)
+                    payload.add_header('Content-Disposition', 'attachment', filename=img_filename)
                     new_msg.attach(payload)
             text = new_msg.as_string()
 
@@ -280,7 +283,7 @@ class MainTest:
         if self.is_slack:
             client = WebClient(SECRET.slack_token)
             message = f'*{self.testname} >>* {msg}'
-            if img_filename != None:
+            if img_filename is not None:
                 response = client.files_upload(
                     channels=SECRET.slack_channel,
                     initial_comment=message,
