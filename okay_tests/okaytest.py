@@ -77,7 +77,7 @@ class OkayTest(MainTest):
         '''
         for insurance in insurances:
             self.log(f'{insurance}: check if service is available')
-            self.sleep(20)
+            self.sleep()
             service_input = self.driver.find_element(By.XPATH, f'//li[@data-shopify-product-id={insurance}]')
             self.click(service_input.find_element(By.CSS_SELECTOR, 'label'))
         

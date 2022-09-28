@@ -90,7 +90,7 @@ test.abort()
 ## OKAY.CZ FINISHED COD ORDER
 
 test = OkayTest(name='okaycz_finished_cod_order', theme=THEME)
-test.open_url(url='https://www.okay.cz/collections/alkalicke-baterie?pf_p_ceny=59.00%3A180.00')
+test.open_url(url='https://www.okay.cz/collections/baterie?pf_p_ceny=59.00%3A180.00')
 test.open_product()
 test.add_to_cart()
 test.goto_checkout()
@@ -131,7 +131,7 @@ CATEGORIES = [
         'name': 'POSTELE',
         'url': 'https://www.okay.cz/collections/manzelske-postele',
         'services': [
-            '39660571918378', # Odvoz a ekologicka likvidace sedaciho nabytku a posteli
+            # '39660571918378', # Odvoz a ekologicka likvidace sedaciho nabytku a posteli
             '39660572147754', # Demontáž a likvidace dřevěného nábytku a kuchyní
             # '39660572180522', # Likvidace dřevěného nábytku a kuchyní
             '40081972756522', # Montáž dřevěného nábytku
@@ -439,7 +439,7 @@ CATEGORIES = [
     },
     {
         'name': 'POSTELE',
-        'url': 'https://www.okay.cz/collections/postele',
+        'url': 'https://www.okay.cz/collections/postele?pf_p_cena=10000%3A39999',
         'insurances': [
             '6797256130602', # Pojištění nábytku TOP na 2 roky
             '6797256196138', # Asistence Home exclusive Axa
