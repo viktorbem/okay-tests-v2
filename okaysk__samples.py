@@ -90,7 +90,7 @@ test.abort()
 ## OKAY.SK FINISHED COD ORDER
 
 test = OkayTest(name='okaysk_finished_cod_order', theme=THEME)
-test.open_url(url='https://www.okay.sk/collections/alkalicke-baterie?pf_p_ceny=2.28%3A5.28')
+test.open_url(url='https://www.okay.sk/collections/baterie?pf_p_ceny=2.28%3A5.28')
 test.open_product()
 test.add_to_cart()
 test.goto_checkout()
@@ -131,7 +131,7 @@ CATEGORIES = [
         'name': 'POSTELE',
         'url': 'https://www.okay.sk/collections/manzelske-postele',
         'services': [
-            '40968686796951', # Odvoz a ekologicka likvidace sedaciho nabytku a posteli
+            # '40968686796951', # Odvoz a ekologicka likvidace sedaciho nabytku a posteli
             '40968686928023', # Demontáž a likvidácia dreveného nábytku a kuchýň
             # '41050674692247', # Likvidácia dreveného nábytku a kuchýň
             '42026198696087', # Montáž dreveného nábytku
