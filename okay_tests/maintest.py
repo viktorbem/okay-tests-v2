@@ -25,7 +25,7 @@ from types import SimpleNamespace
 
 with open(os.path.join(os.path.abspath(os.path.dirname(__main__.__file__)), 'config.json')) as json_file:
     data = json.loads(json_file.read(), object_hook=lambda kwargs: SimpleNamespace(**kwargs))
-    DEFAULT, SECRET = data.defaults, data.secrets
+    DEFAULT, SECRET, CREDS = data.defaults, data.secrets, data.creds
 
 
 class MainTest:
@@ -50,6 +50,8 @@ class MainTest:
         self.theme = theme
         self.errors = True
         self.screenshots = True
+
+        self.creds = json.loads(json.dumps(CREDS, default=lambda s: vars(s)))
 
         if not os.path.exists(self.logpath):
             os.makedirs(self.logpath)
@@ -123,6 +125,13 @@ class MainTest:
             logfile.write(console_log)
         self.driver.quit()
 
+    def bypass_exponea(self, selector, button):
+        '''self.bypass_exponea(selector=Str, button=Str)'''
+        popups = self.driver.find_elements(By.CSS_SELECTOR, selector)
+        for popup in popups:
+            popup.find_element(By.CSS_SELECTOR, button).click()
+            self.sleep(5)
+
     def bypass_password(self, url):
         '''self.bypass_password(url=Str)'''
         self.driver.get(url)
@@ -139,10 +148,8 @@ class MainTest:
         '''self.click(element=WebdriverObject, delay=Bool)'''
         if delay:
             self.sleep()
-        popups = self.driver.find_elements(By.CSS_SELECTOR, 'div[class*="box-promotion"]')
-        for popup in popups:
-            popup.find_element(By.CSS_SELECTOR, 'div button.close').click()
-            self.sleep(5)
+        self.bypass_exponea('a[class*="exponea"]', '.exponea-close')
+        self.bypass_exponea('div[class*="box-promotion"]', 'div button.close')
         self.driver.execute_script('arguments[0].scrollIntoView({block: "center"});', element)
         element.click()
 

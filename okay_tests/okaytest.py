@@ -77,7 +77,7 @@ class OkayTest(MainTest):
         '''
         for insurance in insurances:
             self.log(f'{insurance}: check if service is available')
-            self.sleep()
+            self.sleep(15)
             service_input = self.driver.find_element(By.XPATH, f'//li[@data-shopify-product-id={insurance}]')
             self.click(service_input.find_element(By.CSS_SELECTOR, 'label'))
         
@@ -99,7 +99,7 @@ class OkayTest(MainTest):
         '''
         for service in services:
             self.log(f'{service}: check if service is available')
-            self.sleep()
+            self.sleep(15)
             service_input = self.driver.find_element(By.XPATH, f'//input[@product-service-id={service}]')
             self.click(service_input.find_element(By.XPATH, '..').find_element(By.CSS_SELECTOR, '.item__service-info'))
 
@@ -129,32 +129,23 @@ class OkayTest(MainTest):
         The default value of 'proceed' argument is 'False'.
         '''
         self.log('Get all possible delivery types')
-        shipping_tabs = self.driver.find_elements(By.CSS_SELECTOR, '.checkout-shipping-tabs a')
+        shipping_options = self.driver.find_elements(By.CSS_SELECTOR, '.section--shipping-method .content-box__row')
+        possible_options = [element for element in shipping_options if 'none' not in element.get_attribute('style')]
+
+        self.log(f'Find delivery type that corresponds to "{delivery}"')
         chosen_option = None
-        for element in shipping_tabs:
-            try:
-                self.click(element)
-            except Exception as err:
-                print(f'"{element.text}" is not clickable ----------')
-                continue
-
-            shipping_options = self.driver.find_elements(By.CSS_SELECTOR, '.section--shipping-method .content-box__row')
-            possible_options = [element for element in shipping_options if 'none' not in element.get_attribute('style')]
-
-            self.log(f'Find delivery type that corresponds to "{delivery}"')
-            for option in possible_options:
-                
-                delivery_option = option.find_element(By.CSS_SELECTOR, '.radio__label__primary')
-                delivery_option_text = delivery_option.get_attribute('innerText').lower()
-                if delivery.lower() in delivery_option_text and \
-                    (not exclude or exclude.lower() not in delivery_option_text):
-                    chosen_option = option
-                    break
-
-            self.sleep()
-            if chosen_option:
+        for option in possible_options: 
+            delivery_option = option.find_element(By.CSS_SELECTOR, '.radio__label__primary')
+            delivery_option_text = delivery_option.get_attribute('innerText').lower()
+            if delivery.lower() in delivery_option_text and \
+                (not exclude or exclude.lower() not in delivery_option_text):
+                chosen_option = option
                 break
 
+        if not chosen_option:
+            raise Exception(f'Unable to find delivery type that corresponds to "{delivery}"')
+
+        self.sleep()
         self.log(f'Click on the delivery type that corresponds to "{delivery}"')
         self.click(chosen_option)
 
@@ -400,6 +391,43 @@ class OkayTest(MainTest):
         self.log('Wait for redirect back to eshop')
         self.sleep(30)
                 
+    @catch_error
+    def login_seller(self):
+        '''
+        Log into sellers (tablet) app with set credentials. 
+        Those should be saved in "config.json" file according to documentation.
+
+        Example:
+        - test.login_seller()
+        '''
+        self.log('Get seller\'s credentials from config file')
+        shop_name = urlparse(self.home_url).netloc
+        sid = self.creds[shop_name]['sid']
+        password = self.creds[shop_name]['pass']
+
+        self.log('Fill in the seller\'s credentials')
+        id_input = self.driver.find_element(By.CSS_SELECTOR, '#sellerId')
+        id_input.send_keys(sid)
+
+        self.sleep(1)
+        pass_input = self.driver.find_element(By.CSS_SELECTOR, '#sellerPassword')
+        pass_input.send_keys(password)
+
+        self.sleep(1)
+        self.click(self.driver.find_element(By.CSS_SELECTOR, '#sellersLoginApp input.button[type="submit"]'))
+        
+        self.log('Wait for successful login of the seller')
+        self.sleep(15)
+
+        if len(self.driver.find_elements(By.CSS_SELECTOR, "#sellersLoginApp .sellerLoginError")) > 0:
+            raise Exception(f'Unable to log the seller in with "{sid}" id')
+
+        self.take_screenshot()
+
+        self.log('Turn off the store product filter')
+        self.click(self.driver.find_element(By.CSS_SELECTOR, '#filterFloatingButton'))
+        self.sleep()
+
     @catch_error
     def open_product(self):
         '''
@@ -708,6 +736,9 @@ class OkayTest(MainTest):
         if len(pickup_points) == 0:
             raise Exception('There is no pickup point to choose from.')
 
+        if len(pickup_points) > 10:
+            pickup_points = pickup_points[0:10]
+
         selected_point = random.choice(pickup_points)
         if code != '':
             for point in pickup_points:
@@ -725,6 +756,40 @@ class OkayTest(MainTest):
         if proceed:
             self.click(self.driver.find_element(By.ID, 'continue_button'))
             self.sleep()
+
+    @catch_error
+    def send_offer(self, email):
+        '''
+        Send custom offer to an email specified in "email" argument.
+
+        Example:
+        - test.send_offer(email="test.okay@okaycz.eu")
+
+        The "email" argument is mandatory.
+        '''
+        self.log(f'Send custom offer to "{email}"')
+        email_input = self.driver.find_element(By.CSS_SELECTOR, '#sellerOfferContainer input[type="email"]')
+        email_input.send_keys(email)
+
+        self.click(self.driver.find_element(By.CSS_SELECTOR, '#sellerOfferContainer .sendOfferButton'))
+
+        self.sleep(5)
+        self.log('Add custom message to offer before send')
+
+        message_inputs = self.driver.find_elements(By.CSS_SELECTOR, '#sendOfferPopup input[type="text"]')
+        if len(message_inputs) > 0:
+            message_inputs[0].send_keys('TEST - This offer was sent by Selenium')
+
+        self.sleep()
+        self.take_screenshot()
+        
+        self.click(self.driver.find_element(By.CSS_SELECTOR, '#sellerOfferContainer #sendOfferPopup .sendOfferButton'))
+
+        self.sleep(15)
+        if len(self.driver.find_elements(By.CSS_SELECTOR, '#sellerOfferContainer .successMessage')) == 0:
+            raise Exception(f'The custom offer to "{email}" was not send properly.')
+
+        self.take_screenshot()
 
     @catch_error
     def set_filter(self, name, value):

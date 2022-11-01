@@ -1,15 +1,25 @@
 {
-    "defaults": {
-        "delay": 10,
-        "is_headless": 0,
-        "is_email": 0,
-        "is_slack": 0
+  "defaults": {
+    "delay": 10,
+    "is_headless": 0,
+    "is_email": 0,
+    "is_slack": 0
+  },
+  "secrets": {
+    "mail_to": "",
+    "mail_from": "",
+    "mail_password": "",
+    "slack_token": "",
+    "slack_channel": ""
+  },
+  "creds": {
+    "www.okay.cz": {
+      "sid": "",
+      "pass": ""
     },
-    "secrets": {
-        "mail_to": "",
-        "mail_from": "",
-        "mail_password": "",
-        "slack_token": "",
-        "slack_channel": ""
+    "www.okay.sk": {
+      "sid": "",
+      "pass": ""
     }
+  }
 }
