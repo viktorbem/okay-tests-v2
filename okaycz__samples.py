@@ -115,6 +115,18 @@ test.empty_cart()
 test.abort()
 
 
+## OKAY.CZ SELLER OFFER
+
+test = OkayTest(name='okaycz_seller_offer', theme=THEME)
+test.open_url(url='https://www.okay.cz/pages/prihlaseni-prodejce')
+test.login_seller()
+test.open_random_menu_items(items=1, screenshots=False)
+test.open_product()
+test.add_to_cart(screenshots=False)
+test.send_offer(email='petr.stroh@online.okay.cz')
+test.abort()
+
+
 ## OKAY.CZ FURNITURE SERVICES
 
 CATEGORIES = [
@@ -129,9 +141,9 @@ CATEGORIES = [
     },
     {
         'name': 'POSTELE',
-        'url': 'https://www.okay.cz/collections/manzelske-postele',
+        'url': 'https://www.okay.cz/collections/calounene',
         'services': [
-            # '39660571918378', # Odvoz a ekologicka likvidace sedaciho nabytku a posteli
+            '39660571918378', # Odvoz a ekologicka likvidace sedaciho nabytku a posteli
             '39660572147754', # Demontáž a likvidace dřevěného nábytku a kuchyní
             # '39660572180522', # Likvidace dřevěného nábytku a kuchyní
             '40081972756522', # Montáž dřevěného nábytku

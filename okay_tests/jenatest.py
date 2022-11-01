@@ -496,7 +496,7 @@ class JenaTest(MainTest):
         '''
         if self.is_mobile:
             self.log('Open dropdown menu on mobile')
-            self.click(self.driver.find_element(By.CSS_SELECTOR, '.mobile-menu__toggle-button'))
+            self.click_with_js(self.driver.find_element(By.CSS_SELECTOR, '.mobile-menu__toggle-button'))
             self.sleep()
 
         self.log(f'Open category: {text}')

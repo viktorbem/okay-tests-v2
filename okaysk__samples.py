@@ -29,7 +29,7 @@ test = OkayTest(name='okaysk_filters', theme=THEME)
 test.open_url(url='https://www.okay.sk/')
 test.open_specific_menu_item(text='Televízory')
 test.set_filter(name='výrobcovia', value='lg')
-test.set_filter(name='uhlopriečka', value='55')
+test.set_filter(name='operačný systém', value='web os')
 test.abort()
 
 
@@ -115,6 +115,18 @@ test.empty_cart()
 test.abort()
 
 
+## OKAY.SK SELLER OFFER
+
+test = OkayTest(name='okaysk_seller_offer', theme=THEME)
+test.open_url(url='https://www.okay.sk/pages/prihlasenie-predajcu')
+test.login_seller()
+test.open_random_menu_items(items=1, screenshots=False)
+test.open_product()
+test.add_to_cart(screenshots=False)
+test.send_offer(email='petr.stroh@online.okay.cz')
+test.abort()
+
+
 ## OKAY.SK FURNITURE SERVICES
 
 CATEGORIES = [
@@ -129,9 +141,9 @@ CATEGORIES = [
     },
     {
         'name': 'POSTELE',
-        'url': 'https://www.okay.sk/collections/manzelske-postele',
+        'url': 'https://www.okay.sk/collections/calunene-postele',
         'services': [
-            # '40968686796951', # Odvoz a ekologicka likvidace sedaciho nabytku a posteli
+            '40968686796951', # Odvoz a ekologicka likvidace sedaciho nabytku a posteli
             '40968686928023', # Demontáž a likvidácia dreveného nábytku a kuchýň
             # '41050674692247', # Likvidácia dreveného nábytku a kuchýň
             '42026198696087', # Montáž dreveného nábytku

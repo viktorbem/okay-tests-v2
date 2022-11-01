@@ -38,6 +38,12 @@ cp config_sample.json config.json
         "mail_password": "",    // heslo k tomuto mailu
         "slack_token": "",      // API token do slacku
         "slack_channel": ""     // ID kanálu ve slacku
+    },
+    "creds": {
+        "www.okay.cz": {        // url adresa eshopu
+            "sid": "",          // id (středisko) prodejce
+            "pass": ""          // osobní heslo prodejce
+        }
     }
 }
 ```
@@ -305,6 +311,17 @@ Všechny argumenty, tedy `name`, `url` a `logs` jsou povinné.
 
 <br>
 
+### **login_seller**
+
+Přihlásí uživatele do prodejní (tabletové) aplikace s pomocí uložených údajů.
+Tyto údaje by měly být uloženy v souboru `config.json`, viz výše.
+
+```python
+test.login_seller()
+```
+
+<br>
+
 ### **new_test**
 
 Tuto metodu je vhodné používat ve všech `for` a `while` smyčkách na začátku každé iterace. Nastaví výchozí hodnoty testu během jednotlivých iterací, vyčistí cache a cookies.
@@ -418,6 +435,18 @@ Oba argumenty jsou volitelné, výchozí hodnota argumentu `proceed` je `False`.
 
 <br>
 
+### **send_offer**
+
+Odešle obsah košíku nabídkou na email zadaný v argumentu `email`.
+
+```python
+test.send_offer(email="test@test.cz")
+```
+
+Argument `email` je povinný.
+
+<br>
+
 ### **set_filter**
 
 Nastaví filtr v kolekci podle jeho jména `name` a hodnoty `value`.
@@ -443,8 +472,4 @@ test.click_random_mainmenu_items(items=3, screenshots=False)
 
 ## Další příklady
 
-Součástí repozitáře jsou také spubory `okaysk__samples.py` a `jena__samples.py`, které obsahují základní baterii testů. Můžete jej použít jako referenční příklady při psaní vlastních testů.
-
-<br>
-
-*(C) 2021-2022 OKAY s.r.o.*
+Součástí repozitáře jsou také spubory `*__samples.py`, které obsahují základní baterii testů. Můžete je použít jako referenční příklady při psaní vlastních testů.
