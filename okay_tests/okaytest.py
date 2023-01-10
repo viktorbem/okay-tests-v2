@@ -305,27 +305,27 @@ class OkayTest(MainTest):
             email.clear()
             email.send_keys(creds['email'])
             self.sleep(1)
-            firstname = self.driver.find_element_by_id('checkout_shipping_address_first_name')
+            firstname = self.driver.find_element(By.ID, 'checkout_shipping_address_first_name')
             firstname.clear()
             firstname.send_keys(creds['name'])
             self.sleep(1)
-            surname = self.driver.find_element_by_id('checkout_shipping_address_last_name')
+            surname = self.driver.find_element(By.ID, 'checkout_shipping_address_last_name')
             surname.clear()
             surname.send_keys(creds['surname'])
             self.sleep(1)
-            street = self.driver.find_element_by_id('checkout_shipping_address_address1')
+            street = self.driver.find_element(By.ID, 'checkout_shipping_address_address1')
             street.clear()
             street.send_keys(creds['street'])
             self.sleep(1)
-            zipnr = self.driver.find_element_by_id('checkout_shipping_address_zip')
+            zipnr = self.driver.find_element(By.ID, 'checkout_shipping_address_zip')
             zipnr.clear()
             zipnr.send_keys(creds['zipnr'])
             self.sleep(1)
-            city = self.driver.find_element_by_id('checkout_shipping_address_city')
+            city = self.driver.find_element(By.ID, 'checkout_shipping_address_city')
             city.clear()
             city.send_keys(creds['city'])
             self.sleep(1)
-            phonenr = self.driver.find_element_by_id('checkout_shipping_address_phone')
+            phonenr = self.driver.find_element(By.ID, 'checkout_shipping_address_phone')
             phonenr.clear()
             phonenr.send_keys(creds['phonenr'])
             self.sleep(1)
@@ -341,7 +341,7 @@ class OkayTest(MainTest):
         except Exception as err:
             print('Credentials already provided ----------')
         
-        self.sleep()
+        self.sleep(20)
 
     @catch_error
     def handle_gopay(self):
@@ -368,13 +368,13 @@ class OkayTest(MainTest):
         self.driver.switch_to.frame(self.driver.find_element(By.TAG_NAME, 'iframe'))
 
         self.log('Fill in card details')
-        card_num = self.driver.find_element(By.NAME, 'cardnumber')
+        card_num = self.driver.find_element(By.NAME, 'cardPan')
         self.send_keys_slowly(card_num, '5555555555554444')
         self.sleep(2)
-        expiration = self.driver.find_element(By.NAME, 'exp-date')
+        expiration = self.driver.find_element(By.NAME, 'cardExp')
         self.send_keys_slowly(expiration, '1230')
         self.sleep(2)
-        cvc = self.driver.find_element(By.NAME, 'cvc')
+        cvc = self.driver.find_element(By.NAME, 'cardCvc')
         self.send_keys_slowly(cvc, '123')
 
         self.sleep()
@@ -437,7 +437,7 @@ class OkayTest(MainTest):
         - test.open_product()
         '''
         self.log('Get the list of the bestsellers')
-        bestsellers = self.driver.find_elements(By.CSS_SELECTOR, '.flickity-slider div')
+        bestsellers = self.driver.find_elements(By.CSS_SELECTOR, '#collection-topsellers .product-wrap')
 
         self.log('Find the first product in stock and open it')
         test_product = None
@@ -625,6 +625,7 @@ class OkayTest(MainTest):
             self.set_dev_theme(self.theme)
         self.driver.get(url)
         self.sleep()
+        self.take_screenshot()
 
     @catch_error
     def parse_delivery(self):

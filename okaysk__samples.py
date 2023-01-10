@@ -117,14 +117,14 @@ test.abort()
 
 ## OKAY.SK SELLER OFFER
 
-test = OkayTest(name='okaysk_seller_offer', theme=THEME)
-test.open_url(url='https://www.okay.sk/pages/prihlasenie-predajcu')
-test.login_seller()
-test.open_random_menu_items(items=1, screenshots=False)
-test.open_product()
-test.add_to_cart(screenshots=False)
-test.send_offer(email='petr.stroh@online.okay.cz')
-test.abort()
+# test = OkayTest(name='okaysk_seller_offer', theme=THEME)
+# test.open_url(url='https://www.okay.sk/pages/prihlasenie-predajcu')
+# test.login_seller()
+# test.open_random_menu_items(items=1, screenshots=False)
+# test.open_product()
+# test.add_to_cart(screenshots=False)
+# test.send_offer(email='petr.stroh@online.okay.cz')
+# test.abort()
 
 
 ## OKAY.SK FURNITURE SERVICES
@@ -404,7 +404,7 @@ test.abort()
 # OKAY.SK FURNITURE ON ORDER
 
 test = OkayTest(name='okaysk_furniture_on_order', theme=THEME)
-page = 1
+page = 5
 found_product = None
 while not found_product:
     test.open_url(url=f'https://www.okay.sk/collections/sedacie-supravy?page={page}')

@@ -81,7 +81,9 @@ class MainTest:
     def _setup_chrome(self):
         self.options = webdriver.ChromeOptions()
         self.options.add_argument('--lang=en')
+        self.options.add_argument('--disable-gpu')
         self.options.add_experimental_option('excludeSwitches', ['enable-logging'])
+        self.options.add_experimental_option('extensionLoadTimeout', 60000)
         if self.is_mobile:
             width = 360
             height = width * 3
@@ -111,6 +113,7 @@ class MainTest:
             self.log_error(err, during='Chromedriver init')
             sys.exit()
         new_driver.set_window_size(width=width, height=height)
+        new_driver.set_page_load_timeout(600)
         return new_driver
 
     def abort(self, screenshots=True):

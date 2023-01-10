@@ -12,8 +12,9 @@ Pillow==8.4.0
 pycodestyle==2.8.0
 pycparser==2.20
 pyOpenSSL==21.0.0
+PySocks==1.7.1
 requests==2.26.0
-selenium==4.0.0
+selenium==4.7.2
 six==1.16.0
 slack-sdk==3.11.2
 sniffio==1.2.0
