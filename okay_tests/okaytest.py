@@ -279,18 +279,22 @@ class OkayTest(MainTest):
         self.log('Fill in all necessary details if needed')
 
         domain_loc = self.home_url.split('.')[-1]
-        zipnr = '60200'
+        street = 'Kšírova 676/259'
+        zipnr = '61900'
+        city = 'Brno'
         prepend = '+420'
         if 'sk' in domain_loc:
-            zipnr = '83300'
+            street = 'Černyševského 1287/10'
+            zipnr = '85101'
+            city = 'Bratislava'
             prepend = '+421'
         creds = {
             'email': 'test.okay@okaycz.eu',
             'name': 'test',
             'surname': 'test',
-            'street': 'Testovaci 123',
+            'street': street,
             'zipnr': zipnr,
-            'city': 'Testov',
+            'city': city,
             'phonenr': f'{prepend}608123123'
         }
 
@@ -305,6 +309,10 @@ class OkayTest(MainTest):
             email.clear()
             email.send_keys(creds['email'])
             self.sleep(1)
+        except Exception as err:
+            print('Credentials might have been already provided ----------')
+            print(err)
+        else:
             firstname = self.driver.find_element(By.ID, 'checkout_shipping_address_first_name')
             firstname.clear()
             firstname.send_keys(creds['name'])
@@ -336,11 +344,8 @@ class OkayTest(MainTest):
             self.take_screenshot()
 
             self.log('Proceed to shipping form')
-            self.click(self.driver.find_element(By.ID, 'continue_button'))
-        
-        except Exception as err:
-            print('Credentials already provided ----------')
-        
+            self.click_with_js(self.driver.find_element(By.ID, 'continue_button'))
+
         self.sleep(20)
 
     @catch_error
@@ -554,7 +559,7 @@ class OkayTest(MainTest):
             if item_url not in clicked and item_url.startswith(self.home_url):
                 self.log(f'{item.text} - click this item')
                 clicked.append(item_url)
-                self.click(item)
+                self.click(item, delay=True)
 
                 self.sleep()
                 self.take_screenshot()

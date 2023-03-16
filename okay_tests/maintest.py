@@ -153,7 +153,10 @@ class MainTest:
             self.sleep()
         self.bypass_exponea('a[class*="exponea"]', '.exponea-close')
         self.bypass_exponea('div[class*="box-promotion"]', 'div button.close')
+        self.bypass_exponea('div.exponea-banner', '.exponea-close')
         self.driver.execute_script('arguments[0].scrollIntoView({block: "center"});', element)
+        if delay:
+            self.sleep(1)
         element.click()
 
     def click_with_js(self, element, delay=False):
