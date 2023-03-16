@@ -344,7 +344,7 @@ class OkayTest(MainTest):
             self.take_screenshot()
 
             self.log('Proceed to shipping form')
-            self.click(self.driver.find_element(By.ID, 'continue_button'))
+            self.click_with_js(self.driver.find_element(By.ID, 'continue_button'))
 
         self.sleep(20)
 
@@ -559,7 +559,7 @@ class OkayTest(MainTest):
             if item_url not in clicked and item_url.startswith(self.home_url):
                 self.log(f'{item.text} - click this item')
                 clicked.append(item_url)
-                self.click(item)
+                self.click(item, delay=True)
 
                 self.sleep()
                 self.take_screenshot()

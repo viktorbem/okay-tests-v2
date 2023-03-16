@@ -179,7 +179,7 @@ CATEGORIES = [
     },
     {
         'name': 'DREVO STREDNI MONTAZ',
-        'url': 'https://www.okay.sk/collections/obyvacie-steny',
+        'url': 'https://www.okay.sk/collections/spalnove-zostavy',
         'services': [
             '40968686928023', # Demontáž a likvidácia dreveného nábytku a kuchýň
             '41050674692247', # Likvidácia dreveného nábytku a kuchýň

@@ -52,6 +52,24 @@ Pokud chcete testy spouštět automaticky, je potřeba nastavit CRON.
 
 <br>
 
+## Jak nainstalovat chromedriver na linuxovy server
+
+Součástí repozitáře je skript `get_chromedriver.sh`, pomocí kterého snadno stáhnete a "nainstalujete" chromedriver, který je potřeba pro běh testů na linuxovém serveru. Pokud jej chcete použít, je potřeba jej nastavit jako spustitelný:
+
+```
+sudo chmod +x get_chromedriver.sh
+```
+
+Následně jej můžete použít takto:
+
+```
+sudo ./get_chromedriver.sh [DOWNLOAD_URL]
+```
+
+Místo `[DOWNLOAD_URL]` je potřeba doplnit odkaz na aktuální verzi chromedriveru. Podle vaší verze prohlížeče jej najdete [zde](https://chromedriver.chromium.org/downloads). Stejný postup potom použijete i v případě aktualizace chromedriveru.
+
+<br>
+
 ## Jak psát testy
 
 Pro testování jsou k dispozici dvě třídy, a sice `OkayTest` a `JenaTest` - zvolte si tu, která odpovídá testované stránce. Testy píšete v Pythonu pomocí jednoduchých metod.

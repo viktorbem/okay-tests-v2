@@ -179,7 +179,7 @@ CATEGORIES = [
     },
     {
         'name': 'DREVO STREDNI MONTAZ',
-        'url': 'https://www.okay.cz/collections/obyvaci-steny',
+        'url': 'https://www.okay.cz/collections/loznicove-komplety',
         'services': [
             '39660572147754', # Demontáž a likvidace dřevěného nábytku a kuchyní
             '39660572180522', # Likvidace dřevěného nábytku a kuchyní
@@ -437,7 +437,7 @@ CATEGORIES = [
         'insurances': [
             '6797255966762', # Prodloužení záruky na 5 let
             '6797255835690', # Pojištění náhodného poškození a krádeže na 2 roky
-            '6797256196138', # Asistence Home exclusive Axa
+            '6797255573546', # Asistence elektro Axa
         ],
     },
     {
