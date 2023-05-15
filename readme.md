@@ -38,11 +38,35 @@ cp config_sample.json config.json
         "mail_password": "",    // heslo k tomuto mailu
         "slack_token": "",      // API token do slacku
         "slack_channel": ""     // ID kanálu ve slacku
+    },
+    "creds": {
+        "www.okay.cz": {        // url adresa eshopu
+            "sid": "",          // id (středisko) prodejce
+            "pass": ""          // osobní heslo prodejce
+        }
     }
 }
 ```
 
 Pokud chcete testy spouštět automaticky, je potřeba nastavit CRON.
+
+<br>
+
+## Jak nainstalovat chromedriver na linuxovy server
+
+Součástí repozitáře je skript `get_chromedriver.sh`, pomocí kterého snadno stáhnete a "nainstalujete" chromedriver, který je potřeba pro běh testů na linuxovém serveru. Pokud jej chcete použít, je potřeba jej nastavit jako spustitelný:
+
+```
+sudo chmod +x get_chromedriver.sh
+```
+
+Následně jej můžete použít takto:
+
+```
+sudo ./get_chromedriver.sh [DOWNLOAD_URL]
+```
+
+Místo `[DOWNLOAD_URL]` je potřeba doplnit odkaz na aktuální verzi chromedriveru. Podle vaší verze prohlížeče jej najdete [zde](https://chromedriver.chromium.org/downloads). Stejný postup potom použijete i v případě aktualizace chromedriveru.
 
 <br>
 
@@ -116,7 +140,7 @@ Pokusí se zaškrtnout konkrétní druhy pojištění v košíku a následně vy
 
 ```python
 test.check_insurances(insurances=["6797255966762", "6797255901226"])
-test.check_insurences(insurances=["6797255573546"])
+test.check_insurances(insurances=["6797255573546"])
 ```
 
 Argument `insurances` je povinný.
@@ -138,13 +162,15 @@ Argument `services` je povinný.
 
 ### **choose_delivery**
 
-Zvolí druh dopravy definovaný argumentem `delivery`. Je potřeba, aby se test zrovna nacházel ve fázi volby dopravy.
+Zvolí druh dopravy definovaný argumentem `delivery`, pokud zároveň neobsahuje text v argumentu `exclude`. Je potřeba, aby se test zrovna nacházel ve fázi volby dopravy.
 
 ```python
-test.choose_delivery(delivery='na moju adresu', proceed=True)
+test.choose_delivery(delivery='na moju adresu', exclude='mastercard', proceed=True)
 ```
 
-Argument `delivery` je povinný a musí odpovídat způsobu dopravy na daném webu. Argument `proceed` je nepovinný a pokud jej nastavíte `True`, bude test pokračovat k volbě platby (výchozí hodnota je `False`).
+Argument `delivery` je povinný a musí odpovídat způsobu dopravy na daném webu. 
+Argument `exclude` je nepovinný a slouží k přesnějšímu určení jednoho ze dvou podobných druhů doprav.
+Argument `proceed` je nepovinný a pokud jej nastavíte `True`, bude test pokračovat k volbě platby (výchozí hodnota je `False`).
 
 <br>
 
@@ -303,6 +329,17 @@ Všechny argumenty, tedy `name`, `url` a `logs` jsou povinné.
 
 <br>
 
+### **login_seller**
+
+Přihlásí uživatele do prodejní (tabletové) aplikace s pomocí uložených údajů.
+Tyto údaje by měly být uloženy v souboru `config.json`, viz výše.
+
+```python
+test.login_seller()
+```
+
+<br>
+
 ### **new_test**
 
 Tuto metodu je vhodné používat ve všech `for` a `while` smyčkách na začátku každé iterace. Nastaví výchozí hodnoty testu během jednotlivých iterací, vyčistí cache a cookies.
@@ -325,13 +362,14 @@ test.open_product()
 
 ### **open_random_menu_items**
 
-Vezme seznam všech položek v hlavním menu, náhodně klikne na tolik, kolik je definováno argumentem `items` a pořídí printscreeny.
+Vezme seznam všech položek v hlavním menu, náhodně klikne na tolik, kolik je definováno argumentem `items` a pořídí printscreeny. Můžete přidat nepovinný argument `limit`, ktery omezí počet položek menu pouze na prvních N.
 
 ```python
-test.click_random_mainmenu_items(items=3)
+test.click_random_mainmenu_items(items=3, limit=5)
 ```
 
 Argument `items` je povinný.
+Argument `limit` je nepovinný.
 
 <br>
 
@@ -416,6 +454,18 @@ Oba argumenty jsou volitelné, výchozí hodnota argumentu `proceed` je `False`.
 
 <br>
 
+### **send_offer**
+
+Odešle obsah košíku nabídkou na email zadaný v argumentu `email`.
+
+```python
+test.send_offer(email="test@test.cz")
+```
+
+Argument `email` je povinný.
+
+<br>
+
 ### **set_filter**
 
 Nastaví filtr v kolekci podle jeho jména `name` a hodnoty `value`.
@@ -441,8 +491,4 @@ test.click_random_mainmenu_items(items=3, screenshots=False)
 
 ## Další příklady
 
-Součástí repozitáře jsou také spubory `okaysk__samples.py` a `jena__samples.py`, které obsahují základní baterii testů. Můžete jej použít jako referenční příklady při psaní vlastních testů.
-
-<br>
-
-*(C) 2021-2022 OKAY s.r.o.*
+Součástí repozitáře jsou také spubory `*__samples.py`, které obsahují základní baterii testů. Můžete je použít jako referenční příklady při psaní vlastních testů.

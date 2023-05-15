@@ -25,7 +25,7 @@ from types import SimpleNamespace
 
 with open(os.path.join(os.path.abspath(os.path.dirname(__main__.__file__)), 'config.json')) as json_file:
     data = json.loads(json_file.read(), object_hook=lambda kwargs: SimpleNamespace(**kwargs))
-    DEFAULT, SECRET = data.defaults, data.secrets
+    DEFAULT, SECRET, CREDS = data.defaults, data.secrets, data.creds
 
 
 class MainTest:
@@ -51,6 +51,8 @@ class MainTest:
         self.errors = True
         self.screenshots = True
 
+        self.creds = json.loads(json.dumps(CREDS, default=lambda s: vars(s)))
+
         if not os.path.exists(self.logpath):
             os.makedirs(self.logpath)
         
@@ -73,12 +75,15 @@ class MainTest:
                     return f(self, *args, **kwargs)
                 except Exception as err:
                     self.log_error(message=err, during=self.step)
+                    self.sleep(60)
         return inner
 
     def _setup_chrome(self):
         self.options = webdriver.ChromeOptions()
         self.options.add_argument('--lang=en')
+        self.options.add_argument('--disable-gpu')
         self.options.add_experimental_option('excludeSwitches', ['enable-logging'])
+        self.options.add_experimental_option('extensionLoadTimeout', 60000)
         if self.is_mobile:
             width = 360
             height = width * 3
@@ -108,6 +113,7 @@ class MainTest:
             self.log_error(err, during='Chromedriver init')
             sys.exit()
         new_driver.set_window_size(width=width, height=height)
+        new_driver.set_page_load_timeout(600)
         return new_driver
 
     def abort(self, screenshots=True):
@@ -120,7 +126,14 @@ class MainTest:
         with open(os.path.join(self.logpath, f'{self.time}_js.txt'), 'w', encoding='utf-8') as logfile:
             console_log = self.output_js_console()
             logfile.write(console_log)
-        self.driver.close()
+        self.driver.quit()
+
+    def bypass_exponea(self, selector, button):
+        '''self.bypass_exponea(selector=Str, button=Str)'''
+        popups = self.driver.find_elements(By.CSS_SELECTOR, selector)
+        for popup in popups:
+            popup.find_element(By.CSS_SELECTOR, button).click()
+            self.sleep(5)
 
     def bypass_password(self, url):
         '''self.bypass_password(url=Str)'''
@@ -138,11 +151,12 @@ class MainTest:
         '''self.click(element=WebdriverObject, delay=Bool)'''
         if delay:
             self.sleep()
-        popups = self.driver.find_elements(By.CSS_SELECTOR, 'div[class*="box-promotion"]')
-        for popup in popups:
-            popup.find_element(By.CSS_SELECTOR, 'div button.close').click()
-            self.sleep(5)
+        self.bypass_exponea('a[class*="exponea"]', '.exponea-close')
+        self.bypass_exponea('div[class*="box-promotion"]', 'div button.close')
+        self.bypass_exponea('div.exponea-banner', '.exponea-close')
         self.driver.execute_script('arguments[0].scrollIntoView({block: "center"});', element)
+        if delay:
+            self.sleep(5)
         element.click()
 
     def click_with_js(self, element, delay=False):
@@ -151,7 +165,8 @@ class MainTest:
             self.sleep()
         self.driver.execute_script('arguments[0].click();', element)
 
-    def find_child_element(self, element, selector):
+    @staticmethod
+    def find_child_element(element, selector):
         '''
         Return the first child of the single element in argument that has the specified CSS selector.
 
@@ -162,7 +177,8 @@ class MainTest:
         '''
         return element.find_element(By.CSS_SELECTOR, selector)
 
-    def find_child_elements(self, element, selector):
+    @staticmethod
+    def find_child_elements(element, selector):
         '''
         Return the list (array) of children of the single element in argument that satisfy the specified CSS selector.
 
@@ -213,9 +229,9 @@ class MainTest:
             lang_key = 'sk'
         
         try:
-            with open(os.path.join(os.path.abspath(os.path.dirname(__file__)), 'search.json')) as json_file:
-                data = json.loads(json_file.read())
-                search_words = data[web_key][lang_key]
+            with open(os.path.join(os.path.abspath(os.path.dirname(__file__)), 'search.json')) as data_file:
+                loaded_data = json.loads(data_file.read())
+                search_words = loaded_data[web_key][lang_key]
         except FileNotFoundError:
             return ['Search terms not provided']
 
@@ -243,7 +259,7 @@ class MainTest:
         timestamp = datetime.now().strftime('%H%M%S')
         console_log = ''
         img_filename = None
-        if self.driver != None:
+        if self.driver is not None:
             img_filename = self.take_screenshot(timestamp, '_ERR')
             path_to_img = os.path.join(self.logpath, img_filename)
             console_log = self.output_js_console()
@@ -258,18 +274,18 @@ class MainTest:
             new_msg['Subject'] = self.testname
             new_msg.attach(MIMEText(f'\n\n{message}', 'plain'))
 
-            if img_filename != None:
+            if img_filename is not None:
                 payload = MIMEBase('application', 'octate-stream')
                 with open(path_to_img, 'rb') as file:
                     payload.set_payload(file.read())
                     encoders.encode_base64(payload)
-                    payload.add_header('Content-Disposition', 'attachement', filename=img_filename)
+                    payload.add_header('Content-Disposition', 'attachment', filename=img_filename)
                     new_msg.attach(payload)
             text = new_msg.as_string()
 
-            with smtplib.SMTP('smtp.gmail.com') as mailserver:
+            with smtplib.SMTP('smtp-relay.sendinblue.com', 587) as mailserver:
                 mailserver.starttls()
-                mailserver.login(user=SECRET.mail_from, password=SECRET.mail_password)
+                mailserver.login(user=SECRET.mail_login, password=SECRET.mail_password)
                 mailserver.sendmail(
                     from_addr=SECRET.mail_from,
                     to_addrs=SECRET.mail_to,
@@ -280,7 +296,7 @@ class MainTest:
         if self.is_slack:
             client = WebClient(SECRET.slack_token)
             message = f'*{self.testname} >>* {msg}'
-            if img_filename != None:
+            if img_filename is not None:
                 response = client.files_upload(
                     channels=SECRET.slack_channel,
                     initial_comment=message,

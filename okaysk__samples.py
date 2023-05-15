@@ -29,7 +29,7 @@ test = OkayTest(name='okaysk_filters', theme=THEME)
 test.open_url(url='https://www.okay.sk/')
 test.open_specific_menu_item(text='Televízory')
 test.set_filter(name='výrobcovia', value='lg')
-test.set_filter(name='uhlopriečka', value='55')
+test.set_filter(name='operačný systém', value='web os')
 test.abort()
 
 
@@ -70,8 +70,8 @@ test.open_url(url='https://www.okay.sk/collections/mobilne-telefony-4')
 test.open_product()
 test.add_to_cart()
 test.goto_checkout()
-test.choose_delivery(delivery="na moju adresu", proceed=True)
-test.choose_payment(payment="karta", proceed=False)
+test.choose_delivery(delivery='na moju adresu', exclude='mastercard', proceed=True)
+test.choose_payment(payment='karta', proceed=False)
 test.abort()
 
 
@@ -82,20 +82,20 @@ test.open_url(url='https://www.okay.sk/collections/mobilne-telefony-4')
 test.open_product()
 test.add_to_cart()
 test.goto_checkout()
-test.choose_delivery(delivery="na moju adresu", proceed=True)
-test.choose_payment(payment="karta", proceed=False)
+test.choose_delivery(delivery='na moju adresu', exclude='mastercard', proceed=True)
+test.choose_payment(payment='karta', proceed=False)
 test.abort()
 
 
 ## OKAY.SK FINISHED COD ORDER
 
 test = OkayTest(name='okaysk_finished_cod_order', theme=THEME)
-test.open_url(url='https://www.okay.sk/collections/alkalicke-baterie?pf_p_ceny=2.28%3A5.28')
+test.open_url(url='https://www.okay.sk/collections/baterie?pf_p_ceny=2.28%3A5.28')
 test.open_product()
 test.add_to_cart()
 test.goto_checkout()
 test.choose_delivery(delivery='packeta', proceed=False, screenshots=False)
-test.choose_delivery(delivery='na moju adresu', proceed=True)
+test.choose_delivery(delivery='na moju adresu', exclude='mastercard', proceed=True)
 test.choose_payment(payment='dobierka', proceed=True)
 test.confirm_order()
 test.abort()
@@ -108,11 +108,23 @@ test.open_url(url='https://www.okay.sk/collections/vankuse-a-prikryvky?pf_p_cena
 test.open_product()
 test.add_to_cart()
 test.goto_checkout()
-test.choose_delivery(delivery='na moju adresu', proceed=True)
+test.choose_delivery(delivery='na moju adresu', exclude='mastercard', proceed=True)
 test.choose_payment(payment='karta', proceed=True)
 test.handle_gopay()
 test.empty_cart()
 test.abort()
+
+
+## OKAY.SK SELLER OFFER
+
+# test = OkayTest(name='okaysk_seller_offer', theme=THEME)
+# test.open_url(url='https://www.okay.sk/pages/prihlasenie-predajcu')
+# test.login_seller()
+# test.open_random_menu_items(items=1, screenshots=False)
+# test.open_product()
+# test.add_to_cart(screenshots=False)
+# test.send_offer(email='petr.stroh@online.okay.cz')
+# test.abort()
 
 
 ## OKAY.SK FURNITURE SERVICES
@@ -129,7 +141,7 @@ CATEGORIES = [
     },
     {
         'name': 'POSTELE',
-        'url': 'https://www.okay.sk/collections/postele',
+        'url': 'https://www.okay.sk/collections/calunene-postele',
         'services': [
             '40968686796951', # Odvoz a ekologicka likvidace sedaciho nabytku a posteli
             '40968686928023', # Demontáž a likvidácia dreveného nábytku a kuchýň
@@ -167,7 +179,7 @@ CATEGORIES = [
     },
     {
         'name': 'DREVO STREDNI MONTAZ',
-        'url': 'https://www.okay.sk/collections/obyvacie-steny',
+        'url': 'https://www.okay.sk/collections/spalnove-zostavy',
         'services': [
             '40968686928023', # Demontáž a likvidácia dreveného nábytku a kuchýň
             '41050674692247', # Likvidácia dreveného nábytku a kuchýň
@@ -228,7 +240,7 @@ for category in CATEGORIES:
     test.add_to_cart(screenshots=True)
     test.goto_checkout(screenshots=True)
     delivery = test.parse_delivery()
-    test.choose_delivery(delivery='na moju adresu', proceed=True, screenshots=False)
+    test.choose_delivery(delivery='na moju adresu', exclude='mastercard', proceed=True, screenshots=False)
     payment = test.parse_payment()
     test.choose_payment(payment='dobierka', proceed=False, screenshots=False)
     test.log_results(
@@ -285,9 +297,9 @@ for category in CATEGORIES:
     test.add_to_cart(screenshots=True)
     test.goto_checkout(screenshots=True)
     delivery = test.parse_delivery()
-    test.choose_delivery(delivery='na moju adresu', proceed=True, screenshots=False)
+    test.choose_delivery(delivery='na moju adresu', exclude='mastercard', proceed=True, screenshots=False)
     payment = test.parse_payment()
-    test.choose_payment(payment="karta", proceed=False, screenshots=False)
+    test.choose_payment(payment='karta', proceed=False, screenshots=False)
     test.log_results(
         name=category['name'],
         url=category['url'],
@@ -392,7 +404,7 @@ test.abort()
 # OKAY.SK FURNITURE ON ORDER
 
 test = OkayTest(name='okaysk_furniture_on_order', theme=THEME)
-page = 1
+page = 5
 found_product = None
 while not found_product:
     test.open_url(url=f'https://www.okay.sk/collections/sedacie-supravy?page={page}')
@@ -468,13 +480,13 @@ test.abort()
 
 test = OkayTest(name='okaysk_store_widget', theme=THEME)
 test.open_url(url='https://www.okay.sk/')
-test.open_random_menu_items(items=1, screenshots=False)
+test.open_random_menu_items(items=1, limit=5, screenshots=False)
 test.open_product(screenshots=False)
 test.add_to_cart(screenshots=False)
 test.goto_checkout(screenshots=False)
 test.choose_delivery(delivery='osobný odber', proceed=False, screenshots=False)
 test.select_pickup_point(proceed=True)
-test.choose_payment(payment='prevod', proceed=False)
+test.choose_payment(payment='bankou', proceed=False)
 test.abort()
 
 

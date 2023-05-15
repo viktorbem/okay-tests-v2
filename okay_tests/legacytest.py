@@ -26,7 +26,10 @@ class LegacyTest(MainTest):
         self.sleep()
 
         try:
-            self.click(self.driver.find_element(By.CSS_SELECTOR, ".js-prebasket-step-1 .js-prebasket-continue-button-anchor"))
+            self.click(self.driver.find_element(
+                By.CSS_SELECTOR,
+                ".js-prebasket-step-1 .js-prebasket-continue-button-anchor"
+            ))
         except Exception as err:
             print("Product has no cross-sell...\n")
 
@@ -45,7 +48,7 @@ class LegacyTest(MainTest):
         Example:
         - test.choose_delivery_and_payment(delivery="na mou adresu", payment="převod", proceed=True)
 
-        The arguments 'delivery' and 'payment' are mandatory and they should correspond to real types on website.
+        The arguments 'delivery' and 'payment' are mandatory, and they should correspond to real types on website.
         The argument 'proceed' is optional. If you set 'proceed' to 'True', test will proceed to next step.
         The default value of 'proceed' argument is 'False'.
         """
@@ -202,3 +205,7 @@ class LegacyTest(MainTest):
             self.set_dev_theme(self.theme)
         self.driver.get(url)
         self.sleep()
+
+
+if __name__ == '__main__':
+    pass

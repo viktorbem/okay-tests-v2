@@ -29,7 +29,7 @@ test = OkayTest(name='okaycz_filters', theme=THEME)
 test.open_url(url='https://www.okay.cz/')
 test.open_specific_menu_item(text='Televize')
 test.set_filter(name='výrobci', value='lg')
-test.set_filter(name='úhlopříčka', value='55')
+test.set_filter(name='technologie', value='led')
 test.abort()
 
 
@@ -70,8 +70,8 @@ test.open_url(url='https://www.okay.cz/collections/mobilni-telefony-3')
 test.open_product()
 test.add_to_cart()
 test.goto_checkout()
-test.choose_delivery(delivery='na mou adresu', proceed=True)
-test.choose_payment(payment='bankovní převod', proceed=False)
+test.choose_delivery(delivery='na mou adresu', exclude='mastercard', proceed=True)
+test.choose_payment(payment='platba bankou', proceed=False)
 test.abort()
 
 
@@ -82,20 +82,20 @@ test.open_url(url='https://www.okay.cz/collections/mobilni-telefony-3')
 test.open_product()
 test.add_to_cart()
 test.goto_checkout()
-test.choose_delivery(delivery='na mou adresu', proceed=True)
-test.choose_payment(payment='bankovní převod', proceed=False)
+test.choose_delivery(delivery='na mou adresu', exclude='mastercard', proceed=True)
+test.choose_payment(payment='platba bankou', proceed=False)
 test.abort()
 
 
 ## OKAY.CZ FINISHED COD ORDER
 
 test = OkayTest(name='okaycz_finished_cod_order', theme=THEME)
-test.open_url(url='https://www.okay.cz/collections/alkalicke-baterie?pf_p_ceny=59.00%3A180.00')
+test.open_url(url='https://www.okay.cz/collections/baterie?pf_p_ceny=59.00%3A180.00')
 test.open_product()
 test.add_to_cart()
 test.goto_checkout()
 test.choose_delivery(delivery='zásilkovna', proceed=False, screenshots=False)
-test.choose_delivery(delivery='na mou adresu', proceed=True)
+test.choose_delivery(delivery='na mou adresu', exclude='mastercard', proceed=True)
 test.choose_payment(payment='dobírka', proceed=True)
 test.confirm_order()
 test.abort()
@@ -108,11 +108,23 @@ test.open_url(url='https://www.okay.cz/collections/polstare-a-prikryvky?pf_p_cen
 test.open_product()
 test.add_to_cart()
 test.goto_checkout()
-test.choose_delivery(delivery='na mou adresu', proceed=True)
+test.choose_delivery(delivery='na mou adresu', exclude='mastercard', proceed=True)
 test.choose_payment(payment='karta', proceed=True)
 test.handle_gopay()
 test.empty_cart()
 test.abort()
+
+
+## OKAY.CZ SELLER OFFER
+
+# test = OkayTest(name='okaycz_seller_offer', theme=THEME)
+# test.open_url(url='https://www.okay.cz/pages/prihlaseni-prodejce')
+# test.login_seller()
+# test.open_random_menu_items(items=1, screenshots=False)
+# test.open_product()
+# test.add_to_cart(screenshots=False)
+# test.send_offer(email='petr.stroh@online.okay.cz')
+# test.abort()
 
 
 ## OKAY.CZ FURNITURE SERVICES
@@ -129,7 +141,7 @@ CATEGORIES = [
     },
     {
         'name': 'POSTELE',
-        'url': 'https://www.okay.cz/collections/postele',
+        'url': 'https://www.okay.cz/collections/calounene',
         'services': [
             '39660571918378', # Odvoz a ekologicka likvidace sedaciho nabytku a posteli
             '39660572147754', # Demontáž a likvidace dřevěného nábytku a kuchyní
@@ -167,7 +179,7 @@ CATEGORIES = [
     },
     {
         'name': 'DREVO STREDNI MONTAZ',
-        'url': 'https://www.okay.cz/collections/obyvaci-steny',
+        'url': 'https://www.okay.cz/collections/loznicove-komplety',
         'services': [
             '39660572147754', # Demontáž a likvidace dřevěného nábytku a kuchyní
             '39660572180522', # Likvidace dřevěného nábytku a kuchyní
@@ -228,7 +240,7 @@ for category in CATEGORIES:
     test.add_to_cart(screenshots=True)
     test.goto_checkout(screenshots=True)
     delivery = test.parse_delivery()
-    test.choose_delivery(delivery='na mou adresu', proceed=True, screenshots=False)
+    test.choose_delivery(delivery='na mou adresu', exclude='mastercard', proceed=True, screenshots=False)
     payment = test.parse_payment()
     test.choose_payment(payment='dobírka', proceed=False, screenshots=False)
     test.log_results(
@@ -285,9 +297,9 @@ for category in CATEGORIES:
     test.add_to_cart(screenshots=True)
     test.goto_checkout(screenshots=True)
     delivery = test.parse_delivery()
-    test.choose_delivery(delivery='na mou adresu', proceed=True, screenshots=False)
+    test.choose_delivery(delivery='na mou adresu', exclude='mastercard', proceed=True, screenshots=False)
     payment = test.parse_payment()
-    test.choose_payment(payment='převod', proceed=False, screenshots=False)
+    test.choose_payment(payment='platba bankou', proceed=False, screenshots=False)
     test.log_results(
         name=category['name'],
         url=category['url'],
@@ -392,7 +404,7 @@ test.abort()
 # OKAY.CZ FURNITURE ON ORDER
 
 test = OkayTest(name='okaycz_furniture_on_order', theme=THEME)
-page = 1
+page = 5
 found_product = None
 while not found_product:
     test.open_url(url=f'https://www.okay.cz/collections/sedaci-soupravy?page={page}')
@@ -425,7 +437,7 @@ CATEGORIES = [
         'insurances': [
             '6797255966762', # Prodloužení záruky na 5 let
             '6797255835690', # Pojištění náhodného poškození a krádeže na 2 roky
-            '6797256196138', # Asistence Home exclusive Axa
+            '6797255573546', # Asistence elektro Axa
         ],
     },
     {
@@ -439,7 +451,7 @@ CATEGORIES = [
     },
     {
         'name': 'POSTELE',
-        'url': 'https://www.okay.cz/collections/postele',
+        'url': 'https://www.okay.cz/collections/postele?pf_p_cena=10000%3A39999',
         'insurances': [
             '6797256130602', # Pojištění nábytku TOP na 2 roky
             '6797256196138', # Asistence Home exclusive Axa
@@ -470,13 +482,13 @@ test.abort()
 
 test = OkayTest(name='okaycz_store_widget', theme=THEME)
 test.open_url(url='https://www.okay.cz/')
-test.open_random_menu_items(items=1, screenshots=False)
+test.open_random_menu_items(items=1, limit=5, screenshots=False)
 test.open_product(screenshots=False)
 test.add_to_cart(screenshots=False)
 test.goto_checkout(screenshots=False)
 test.choose_delivery(delivery='osobní odběr', proceed=False, screenshots=False)
 test.select_pickup_point(proceed=True)
-test.choose_payment(payment='převod', proceed=False)
+test.choose_payment(payment='platba bankou', proceed=False)
 test.abort()
 
 end = time.perf_counter() - start

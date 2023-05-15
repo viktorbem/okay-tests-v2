@@ -40,7 +40,7 @@ class OkayTest(MainTest):
             else:
                 selector = '.header-cart a'
 
-            self.click(self.driver.find_element(By.CSS_SELECTOR, selector))
+            self.click_with_js(self.driver.find_element(By.CSS_SELECTOR, selector))
 
         self.sleep(15)
         self.take_screenshot()
@@ -67,17 +67,17 @@ class OkayTest(MainTest):
     def check_insurances(self, insurances):
         '''
         Try to check specified insurances in cart. After all insurances are checked, take a screenshot.
-        You have to provide a list of 'insurances' IDs that shoud be available for this category.
+        You have to provide a list of 'insurances' IDs that should be available for this category.
 
         Examples:
         - test.check_insurances(insurances=['6797255966762', '6797255901226'])
-        - test.check_insurences(insurances=['6797255573546'])
+        - test.check_insurances(insurances=['6797255573546'])
 
         The 'insurances' argument is mandatory.
         '''
         for insurance in insurances:
             self.log(f'{insurance}: check if service is available')
-            self.sleep(20)
+            self.sleep(15)
             service_input = self.driver.find_element(By.XPATH, f'//li[@data-shopify-product-id={insurance}]')
             self.click(service_input.find_element(By.CSS_SELECTOR, 'label'))
         
@@ -89,7 +89,7 @@ class OkayTest(MainTest):
     def check_services(self, services):
         '''
         Try to check all furniture services in cart. After all services are checked, take a screenshot. You have to
-        provide a list of 'services' IDs that shoud be available for this category.
+        provide a list of 'services' IDs that should be available for this category.
 
         Examples:
         - test.check_services(services=['40968686796951', '40968686829719'])
@@ -99,7 +99,7 @@ class OkayTest(MainTest):
         '''
         for service in services:
             self.log(f'{service}: check if service is available')
-            self.sleep()
+            self.sleep(15)
             service_input = self.driver.find_element(By.XPATH, f'//input[@product-service-id={service}]')
             self.click(service_input.find_element(By.XPATH, '..').find_element(By.CSS_SELECTOR, '.item__service-info'))
 
@@ -117,42 +117,35 @@ class OkayTest(MainTest):
         self.take_screenshot()
 
     @catch_error
-    def choose_delivery(self, delivery, proceed=False):
+    def choose_delivery(self, delivery, exclude='', proceed=False):
         '''
         Choose delivery type defined in 'delivery' argument. You have to be in the 'shipping' step of checkout.
 
         Example:
         - test.choose_delivery(delivery='na moju adresu', proceed=True)
 
-        The argument 'delivery' is mandatory and it should correspond to real delivery types on website.
+        The argument 'delivery' is mandatory, and it should correspond to real delivery types on website.
         The argument 'proceed' is optional. If you set 'proceed' to 'True', test will proceed to next step.
         The default value of 'proceed' argument is 'False'.
         '''
         self.log('Get all possible delivery types')
-        shipping_tabs = self.driver.find_elements(By.CSS_SELECTOR, '.checkout-shipping-tabs a')
+        shipping_options = self.driver.find_elements(By.CSS_SELECTOR, '.section--shipping-method .content-box__row')
+        possible_options = [element for element in shipping_options if 'none' not in element.get_attribute('style')]
+
+        self.log(f'Find delivery type that corresponds to "{delivery}"')
         chosen_option = None
-        for element in shipping_tabs:
-            try:
-                self.click(element)
-            except Exception as err:
-                print(f'"{element.text}" is not clickable ----------')
-                continue
-
-            shipping_options = self.driver.find_elements(By.CSS_SELECTOR, '.section--shipping-method .content-box__row')
-            possible_options = [element for element in shipping_options if 'none' not in element.get_attribute('style')]
-
-            self.log(f'Find delivery type that corresponds to "{delivery}"')
-            for option in possible_options:
-                
-                delivery_option = option.find_element(By.CSS_SELECTOR, '.radio__label__primary')
-                if delivery.lower() in delivery_option.get_attribute('innerText').lower():
-                    chosen_option = option
-                    break
-
-            self.sleep()
-            if chosen_option:
+        for option in possible_options: 
+            delivery_option = option.find_element(By.CSS_SELECTOR, '.radio__label__primary')
+            delivery_option_text = delivery_option.get_attribute('innerText').lower()
+            if delivery.lower() in delivery_option_text and \
+                (not exclude or exclude.lower() not in delivery_option_text):
+                chosen_option = option
                 break
 
+        if not chosen_option:
+            raise Exception(f'Unable to find delivery type that corresponds to "{delivery}"')
+
+        self.sleep()
         self.log(f'Click on the delivery type that corresponds to "{delivery}"')
         self.click(chosen_option)
 
@@ -171,7 +164,7 @@ class OkayTest(MainTest):
         Example:
         test.choose_payment(payment='na moju adresu', proceed=True)
 
-        The argument 'delivery' is mandatory and it should correspond to real delivery types on website.
+        The argument 'delivery' is mandatory, and it should correspond to real delivery types on website.
         The argument 'proceed' is optional. If you set 'proceed' to 'True', test will proceed to next step.
         The default value of 'proceed' argument is 'False'.
         '''
@@ -236,7 +229,8 @@ class OkayTest(MainTest):
     @catch_error
     def fill_form_fields(self, fields, proceed=False):
         '''
-        Fill in several input fields in the form specified by the 'fields' argument as list of dictionaries with 'id' and 'value' keys.
+        Fill in several input fields in the form specified by the 'fields' argument
+        as list of dictionaries with 'id' and 'value' keys.
 
         Example:
         - test.fill_form_fields(fields=[{'id': 'name', 'value': 'Josef'}], proceed=True)
@@ -285,19 +279,21 @@ class OkayTest(MainTest):
         self.log('Fill in all necessary details if needed')
 
         domain_loc = self.home_url.split('.')[-1]
-        zipnr = '60200'
-        prepend = '+420'
+        street = 'Kšírova 676/259'
+        zipnr = '61900'
+        city = 'Brno'
         if 'sk' in domain_loc:
-            zipnr = '83300'
-            prepend = '+421'
+            street = 'Černyševského 1287/10'
+            zipnr = '85101'
+            city = 'Bratislava'
         creds = {
             'email': 'test.okay@okaycz.eu',
             'name': 'test',
             'surname': 'test',
-            'street': 'Testovaci 123',
+            'street': street,
             'zipnr': zipnr,
-            'city': 'Testov',
-            'phonenr': f'{prepend}608123123'
+            'city': city,
+            'phonenr': '608123123'
         }
 
         for key in creds:
@@ -311,27 +307,31 @@ class OkayTest(MainTest):
             email.clear()
             email.send_keys(creds['email'])
             self.sleep(1)
-            firstname = self.driver.find_element_by_id('checkout_shipping_address_first_name')
+        except Exception as err:
+            print('Credentials might have been already provided ----------')
+            print(err)
+        else:
+            firstname = self.driver.find_element(By.ID, 'checkout_shipping_address_first_name')
             firstname.clear()
             firstname.send_keys(creds['name'])
             self.sleep(1)
-            surname = self.driver.find_element_by_id('checkout_shipping_address_last_name')
+            surname = self.driver.find_element(By.ID, 'checkout_shipping_address_last_name')
             surname.clear()
             surname.send_keys(creds['surname'])
             self.sleep(1)
-            street = self.driver.find_element_by_id('checkout_shipping_address_address1')
+            street = self.driver.find_element(By.ID, 'checkout_shipping_address_address1')
             street.clear()
             street.send_keys(creds['street'])
             self.sleep(1)
-            zipnr = self.driver.find_element_by_id('checkout_shipping_address_zip')
+            zipnr = self.driver.find_element(By.ID, 'checkout_shipping_address_zip')
             zipnr.clear()
             zipnr.send_keys(creds['zipnr'])
             self.sleep(1)
-            city = self.driver.find_element_by_id('checkout_shipping_address_city')
+            city = self.driver.find_element(By.ID, 'checkout_shipping_address_city')
             city.clear()
             city.send_keys(creds['city'])
             self.sleep(1)
-            phonenr = self.driver.find_element_by_id('checkout_shipping_address_phone')
+            phonenr = self.driver.find_element(By.ID, 'custom_phone_number')
             phonenr.clear()
             phonenr.send_keys(creds['phonenr'])
             self.sleep(1)
@@ -342,18 +342,15 @@ class OkayTest(MainTest):
             self.take_screenshot()
 
             self.log('Proceed to shipping form')
-            self.click(self.driver.find_element(By.ID, 'continue_button'))
-        
-        except Exception as err:
-            print('Credentials already provided ----------')
-        
-        self.sleep()
+            self.click_with_js(self.driver.find_element(By.ID, 'continue_button'))
+
+        self.sleep(20)
 
     @catch_error
     def handle_gopay(self):
         '''
         Proceed through the payment gate until it is able to fill in credit card information,    
-        then return back to the eshop to cancel order.
+        then return to the eshop to cancel order.
 
         Example:
         - test.handle_gopay()
@@ -374,13 +371,13 @@ class OkayTest(MainTest):
         self.driver.switch_to.frame(self.driver.find_element(By.TAG_NAME, 'iframe'))
 
         self.log('Fill in card details')
-        card_num = self.driver.find_element(By.NAME, 'cardnumber')
+        card_num = self.driver.find_element(By.NAME, 'cardPan')
         self.send_keys_slowly(card_num, '5555555555554444')
         self.sleep(2)
-        expiration = self.driver.find_element(By.NAME, 'exp-date')
+        expiration = self.driver.find_element(By.NAME, 'cardExp')
         self.send_keys_slowly(expiration, '1230')
         self.sleep(2)
-        cvc = self.driver.find_element(By.NAME, 'cvc')
+        cvc = self.driver.find_element(By.NAME, 'cardCvc')
         self.send_keys_slowly(cvc, '123')
 
         self.sleep()
@@ -398,6 +395,43 @@ class OkayTest(MainTest):
         self.sleep(30)
                 
     @catch_error
+    def login_seller(self):
+        '''
+        Log into sellers (tablet) app with set credentials. 
+        Those should be saved in "config.json" file according to documentation.
+
+        Example:
+        - test.login_seller()
+        '''
+        self.log('Get seller\'s credentials from config file')
+        shop_name = urlparse(self.home_url).netloc
+        sid = self.creds[shop_name]['sid']
+        password = self.creds[shop_name]['pass']
+
+        self.log('Fill in the seller\'s credentials')
+        id_input = self.driver.find_element(By.CSS_SELECTOR, '#sellerId')
+        id_input.send_keys(sid)
+
+        self.sleep(1)
+        pass_input = self.driver.find_element(By.CSS_SELECTOR, '#sellerPassword')
+        pass_input.send_keys(password)
+
+        self.sleep(1)
+        self.click(self.driver.find_element(By.CSS_SELECTOR, '#sellersLoginApp input.button[type="submit"]'))
+        
+        self.log('Wait for successful login of the seller')
+        self.sleep(15)
+
+        if len(self.driver.find_elements(By.CSS_SELECTOR, "#sellersLoginApp .sellerLoginError")) > 0:
+            raise Exception(f'Unable to log the seller in with "{sid}" id')
+
+        self.take_screenshot()
+
+        self.log('Turn off the store product filter')
+        self.click(self.driver.find_element(By.CSS_SELECTOR, '#filterFloatingButton'))
+        self.sleep()
+
+    @catch_error
     def open_product(self):
         '''
         Look for the top bestseller in stock. If there is none, open the first product in collection.
@@ -406,7 +440,7 @@ class OkayTest(MainTest):
         - test.open_product()
         '''
         self.log('Get the list of the bestsellers')
-        bestsellers = self.driver.find_elements(By.CSS_SELECTOR, '.flickity-slider div')
+        bestsellers = self.driver.find_elements(By.CSS_SELECTOR, '#collection-topsellers .product-wrap')
 
         self.log('Find the first product in stock and open it')
         test_product = None
@@ -435,16 +469,22 @@ class OkayTest(MainTest):
         self.take_screenshot()
 
     @catch_error
-    def open_random_menu_items(self, items):
+    def open_random_menu_items(self, items, limit = 0):
         '''
-        Get a list of all main menu items, randomly click as many as defined in argument and take screenshots of results.
+        Get a list of all main menu items, randomly click as many as defined in argument
+        and take screenshots of results. You may provide another keyword argument 'limit',
+        which will limit the list to first N items of menu.
 
         Example:
-        - test.click_random_mainmenu_items(items=3)
+        - test.click_random_mainmenu_items(items=3, limit=5)
 
         The argument 'items' is mandatory.
+        The argument 'limit' is optional.
         This is going to click on 3 items in main menu.
         '''
+        if items > limit > 0:
+            items = limit
+
         self.log(f'Click on {items} random items in main menu')
         clicked = []
         i = 0
@@ -468,6 +508,8 @@ class OkayTest(MainTest):
                 self.sleep()
 
             menuitems = self.driver.find_elements(By.CSS_SELECTOR, '.nav-nested .nav-nested__link-parent')
+            if limit > 0:
+                menuitems = menuitems[:limit]
             self.log(f'H{i}. choose random item from the menu')
             item = random.choice(menuitems)
             item_anchor = item.find_element(By.TAG_NAME, 'a')
@@ -522,7 +564,7 @@ class OkayTest(MainTest):
             if item_url not in clicked and item_url.startswith(self.home_url):
                 self.log(f'{item.text} - click this item')
                 clicked.append(item_url)
-                self.click(item)
+                self.click(item, delay=True)
 
                 self.sleep()
                 self.take_screenshot()
@@ -577,7 +619,7 @@ class OkayTest(MainTest):
     @catch_error
     def open_url(self, url):
         '''
-        Open an URL defined as argument of this method.
+        Open a URL defined as argument of this method.
 
         Example:
         - test.open_url(url='https://www.okay.cz/')
@@ -593,6 +635,7 @@ class OkayTest(MainTest):
             self.set_dev_theme(self.theme)
         self.driver.get(url)
         self.sleep()
+        self.take_screenshot()
 
     @catch_error
     def parse_delivery(self):
@@ -684,7 +727,7 @@ class OkayTest(MainTest):
     def select_pickup_point(self, code='', proceed=False):
         '''
         Select pickup point from pickup point widget. If you want to select a specific pickup point, provide its code
-        in 'code' argument, otherwise it chooses by random. The second argument 'proceed' defines whether or not to
+        in 'code' argument, otherwise it chooses by random. The second argument 'proceed' defines whether to
         continue to the next step.
 
         Example:
@@ -704,6 +747,9 @@ class OkayTest(MainTest):
         if len(pickup_points) == 0:
             raise Exception('There is no pickup point to choose from.')
 
+        if len(pickup_points) > 10:
+            pickup_points = pickup_points[0:10]
+
         selected_point = random.choice(pickup_points)
         if code != '':
             for point in pickup_points:
@@ -721,6 +767,40 @@ class OkayTest(MainTest):
         if proceed:
             self.click(self.driver.find_element(By.ID, 'continue_button'))
             self.sleep()
+
+    @catch_error
+    def send_offer(self, email):
+        '''
+        Send custom offer to an email specified in "email" argument.
+
+        Example:
+        - test.send_offer(email="test.okay@okaycz.eu")
+
+        The "email" argument is mandatory.
+        '''
+        self.log(f'Send custom offer to "{email}"')
+        email_input = self.driver.find_element(By.CSS_SELECTOR, '#sellerOfferContainer input[type="email"]')
+        email_input.send_keys(email)
+
+        self.click(self.driver.find_element(By.CSS_SELECTOR, '#sellerOfferContainer .sendOfferButton'))
+
+        self.sleep(5)
+        self.log('Add custom message to offer before send')
+
+        message_inputs = self.driver.find_elements(By.CSS_SELECTOR, '#sendOfferPopup input[type="text"]')
+        if len(message_inputs) > 0:
+            message_inputs[0].send_keys('TEST - This offer was sent by Selenium')
+
+        self.sleep()
+        self.take_screenshot()
+        
+        self.click(self.driver.find_element(By.CSS_SELECTOR, '#sellerOfferContainer #sendOfferPopup .sendOfferButton'))
+
+        self.sleep(15)
+        if len(self.driver.find_elements(By.CSS_SELECTOR, '#sellerOfferContainer .successMessage')) == 0:
+            raise Exception(f'The custom offer to "{email}" was not send properly.')
+
+        self.take_screenshot()
 
     @catch_error
     def set_filter(self, name, value):
@@ -752,9 +832,9 @@ class OkayTest(MainTest):
             self.sleep()
 
         self.log(f'Set the "{name}" filter to "{value}"')
-        filter = self.driver.find_elements(By.CSS_SELECTOR, '.boost-pfs-filter-button .boost-pfs-filter-option-value')
+        current_filter = self.driver.find_elements(By.CSS_SELECTOR, '.boost-pfs-filter-button .boost-pfs-filter-option-value')
         is_found = False
-        for item in filter:
+        for item in current_filter:
             if str(value).lower() in item.text.lower():
                 self.click(item)
                 is_found = True

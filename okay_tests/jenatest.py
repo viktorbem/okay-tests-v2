@@ -67,7 +67,7 @@ class JenaTest(MainTest):
     def check_services(self, services):
         '''
         Try to check all furniture services in cart. After all services are checked, take a screenshot. You have to
-        provide a list of 'services' IDs that shoud be available for this category.
+        provide a list of 'services' IDs that should be available for this category.
 
         Examples:
         - test.check_services(services=['40968686796951', '40968686829719'])
@@ -101,7 +101,7 @@ class JenaTest(MainTest):
         Example:
         - test.choose_delivery(delivery='na mou adresu', proceed=True)
 
-        The argument 'delivery' is mandatory and it should correspond to real delivery types on website.
+        The argument 'delivery' is mandatory, and it should correspond to real delivery types on website.
         The argument 'proceed' is optional. If you set 'proceed' to 'True', test will proceed to next step.
         The default value of 'proceed' argument is 'False'.
         '''
@@ -137,12 +137,15 @@ class JenaTest(MainTest):
         Example:
         test.choose_payment(payment='na mou adresu', proceed=True)
 
-        The argument 'delivery' is mandatory and it should correspond to real delivery types on website.
+        The argument 'delivery' is mandatory, and it should correspond to real delivery types on website.
         The argument 'proceed' is optional. If you set 'proceed' to 'True', test will proceed to next step.
         The default value of 'proceed' argument is 'False'.
         '''
         self.log('Get list of all possible payment options')
-        payment_options = self.driver.find_elements(By.CSS_SELECTOR, '.section--payment-method fieldset .content-box__row')
+        payment_options = self.driver.find_elements(
+            By.CSS_SELECTOR,
+            '.section--payment-method fieldset .content-box__row'
+        )
         chosen_option = None
         self.log(f'Find payment type that corresponds to "{payment}"')
         for option in payment_options:
@@ -202,7 +205,8 @@ class JenaTest(MainTest):
     @catch_error
     def fill_form_fields(self, fields, proceed=False):
         '''
-        Fill in several input fields in the form specified by the 'fields' argument as list of dictionaries with 'id' and 'value' keys.
+        Fill in several input fields in the form specified by the 'fields' argument
+        as list of dictionaries with 'id' and 'value' keys.
 
         Example:
         - test.fill_form_fields(fields=[{'id': 'name', 'value': 'Josef'}], proceed=True)
@@ -272,33 +276,33 @@ class JenaTest(MainTest):
             email.clear()
             email.send_keys(creds['email'])
             self.sleep(1)
-            firstname = self.driver.find_element_by_id('checkout_shipping_address_first_name')
+            firstname = self.driver.find_element(By.ID, 'checkout_shipping_address_first_name')
             firstname.clear()
             firstname.send_keys(creds['name'])
             self.sleep(1)
-            surname = self.driver.find_element_by_id('checkout_shipping_address_last_name')
+            surname = self.driver.find_element(By.ID, 'checkout_shipping_address_last_name')
             surname.clear()
             surname.send_keys(creds['surname'])
             self.sleep(1)
-            street = self.driver.find_element_by_id('checkout_shipping_address_address1')
+            street = self.driver.find_element(By.ID, 'checkout_shipping_address_address1')
             street.clear()
             street.send_keys(creds['street'])
             self.sleep(1)
-            zipnr = self.driver.find_element_by_id('checkout_shipping_address_zip')
+            zipnr = self.driver.find_element(By.ID, 'checkout_shipping_address_zip')
             zipnr.clear()
             zipnr.send_keys(creds['zipnr'])
             self.sleep(1)
-            city = self.driver.find_element_by_id('checkout_shipping_address_city')
+            city = self.driver.find_element(By.ID, 'checkout_shipping_address_city')
             city.clear()
             city.send_keys(creds['city'])
             self.sleep(1)
-            phonenr = self.driver.find_element_by_id('checkout_shipping_address_phone')
+            phonenr = self.driver.find_element(By.ID, 'checkout_shipping_address_phone')
             phonenr.clear()
             phonenr.send_keys(creds['phonenr'])
             self.sleep(1)
 
             self.log('Terms and conditions agreement')
-            checkbox = self.driver.find_element_by_id('ecf--terms-input')
+            checkbox = self.driver.find_element(By.ID, 'ecf--terms-input')
             if not checkbox.is_selected():
                 self.click(checkbox)
 
@@ -340,13 +344,13 @@ class JenaTest(MainTest):
         self.driver.switch_to.frame(self.driver.find_element(By.TAG_NAME, 'iframe'))
 
         self.log('Fill in card details')
-        card_num = self.driver.find_element(By.NAME, 'cardnumber')
+        card_num = self.driver.find_element(By.NAME, 'cardPan')
         self.send_keys_slowly(card_num, '5555555555554444')
         self.sleep(2)
-        expiration = self.driver.find_element(By.NAME, 'exp-date')
+        expiration = self.driver.find_element(By.NAME, 'cardExp')
         self.send_keys_slowly(expiration, '1230')
         self.sleep(2)
-        cvc = self.driver.find_element(By.NAME, 'cvc')
+        cvc = self.driver.find_element(By.NAME, 'cardCvc')
         self.send_keys_slowly(cvc, '123')
 
         self.sleep()
@@ -403,7 +407,8 @@ class JenaTest(MainTest):
     @catch_error
     def open_random_menu_items(self, items):
         '''
-        Get a list of all main menu items, randomly click as many as defined in argument and take screenshots of results.
+        Get a list of all main menu items, randomly click as many as defined in argument
+        and take screenshots of results.
 
         Example:
         - test.click_random_mainmenu_items(items=3)
@@ -455,7 +460,7 @@ class JenaTest(MainTest):
         The argument 'items' is mandatory.
         This is going to click on 3 items in footer.
         '''
-        self.log(f'Click on {items} random items in foooter')
+        self.log(f'Click on {items} random items in footer')
         clicked = []
         i = 0
 
@@ -491,7 +496,7 @@ class JenaTest(MainTest):
         '''
         if self.is_mobile:
             self.log('Open dropdown menu on mobile')
-            self.click(self.driver.find_element(By.CSS_SELECTOR, '.mobile-menu__toggle-button'))
+            self.click_with_js(self.driver.find_element(By.CSS_SELECTOR, '.mobile-menu__toggle-button'))
             self.sleep()
 
         self.log(f'Open category: {text}')
@@ -624,7 +629,9 @@ class JenaTest(MainTest):
         if self.is_mobile:
             self.log('Open filter menu on mobile')
             wait = WebDriverWait(self.driver, 60)
-            filter_btn = wait.until(EC.element_to_be_clickable((By.CSS_SELECTOR, '.boost-pfs-filter-tree-mobile-button button')))
+            filter_btn = wait.until(EC.element_to_be_clickable(
+                (By.CSS_SELECTOR, '.boost-pfs-filter-tree-mobile-button button')
+            ))
             self.click(filter_btn)
             self.sleep()
 
@@ -634,7 +641,10 @@ class JenaTest(MainTest):
         for item in filter_options:
             if str(name).lower() in item.text.lower():
                 self.click(item)
-                dropdown = item.find_element(By.XPATH, './../..').find_element(By.CSS_SELECTOR, '.boost-pfs-filter-option-content')
+                dropdown = item.find_element(By.XPATH, './../..').find_element(
+                    By.CSS_SELECTOR,
+                    '.boost-pfs-filter-option-content'
+                )
                 is_found = True
                 break
         if not is_found:
@@ -642,9 +652,12 @@ class JenaTest(MainTest):
         self.sleep()
 
         self.log(f'Set the "{name}" filter to "{value}"')
-        filter = self.driver.find_elements(By.CSS_SELECTOR, '.boost-pfs-filter-button .boost-pfs-filter-option-value')
+        current_filter = self.driver.find_elements(
+            By.CSS_SELECTOR,
+            '.boost-pfs-filter-button .boost-pfs-filter-option-value'
+        )
         is_found = False
-        for item in filter:
+        for item in current_filter:
             if str(value).lower() in item.text.lower():
                 self.click(item)
                 is_found = True
