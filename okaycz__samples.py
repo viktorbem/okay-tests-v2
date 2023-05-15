@@ -71,7 +71,7 @@ test.open_product()
 test.add_to_cart()
 test.goto_checkout()
 test.choose_delivery(delivery='na mou adresu', exclude='mastercard', proceed=True)
-test.choose_payment(payment='bankovní převod', proceed=False)
+test.choose_payment(payment='platba bankou', proceed=False)
 test.abort()
 
 
@@ -83,7 +83,7 @@ test.open_product()
 test.add_to_cart()
 test.goto_checkout()
 test.choose_delivery(delivery='na mou adresu', exclude='mastercard', proceed=True)
-test.choose_payment(payment='bankovní převod', proceed=False)
+test.choose_payment(payment='platba bankou', proceed=False)
 test.abort()
 
 
@@ -299,7 +299,7 @@ for category in CATEGORIES:
     delivery = test.parse_delivery()
     test.choose_delivery(delivery='na mou adresu', exclude='mastercard', proceed=True, screenshots=False)
     payment = test.parse_payment()
-    test.choose_payment(payment='převod', proceed=False, screenshots=False)
+    test.choose_payment(payment='platba bankou', proceed=False, screenshots=False)
     test.log_results(
         name=category['name'],
         url=category['url'],
@@ -482,13 +482,13 @@ test.abort()
 
 test = OkayTest(name='okaycz_store_widget', theme=THEME)
 test.open_url(url='https://www.okay.cz/')
-test.open_random_menu_items(items=1, screenshots=False)
+test.open_random_menu_items(items=1, limit=5, screenshots=False)
 test.open_product(screenshots=False)
 test.add_to_cart(screenshots=False)
 test.goto_checkout(screenshots=False)
 test.choose_delivery(delivery='osobní odběr', proceed=False, screenshots=False)
 test.select_pickup_point(proceed=True)
-test.choose_payment(payment='převod', proceed=False)
+test.choose_payment(payment='platba bankou', proceed=False)
 test.abort()
 
 end = time.perf_counter() - start
