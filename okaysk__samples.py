@@ -480,13 +480,13 @@ test.abort()
 
 test = OkayTest(name='okaysk_store_widget', theme=THEME)
 test.open_url(url='https://www.okay.sk/')
-test.open_random_menu_items(items=1, screenshots=False)
+test.open_random_menu_items(items=1, limit=5, screenshots=False)
 test.open_product(screenshots=False)
 test.add_to_cart(screenshots=False)
 test.goto_checkout(screenshots=False)
 test.choose_delivery(delivery='osobný odber', proceed=False, screenshots=False)
 test.select_pickup_point(proceed=True)
-test.choose_payment(payment='prevod', proceed=False)
+test.choose_payment(payment='bankou', proceed=False)
 test.abort()
 
 

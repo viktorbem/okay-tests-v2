@@ -362,13 +362,14 @@ test.open_product()
 
 ### **open_random_menu_items**
 
-Vezme seznam všech položek v hlavním menu, náhodně klikne na tolik, kolik je definováno argumentem `items` a pořídí printscreeny.
+Vezme seznam všech položek v hlavním menu, náhodně klikne na tolik, kolik je definováno argumentem `items` a pořídí printscreeny. Můžete přidat nepovinný argument `limit`, ktery omezí počet položek menu pouze na prvních N.
 
 ```python
-test.click_random_mainmenu_items(items=3)
+test.click_random_mainmenu_items(items=3, limit=5)
 ```
 
 Argument `items` je povinný.
+Argument `limit` je nepovinný.
 
 <br>
 

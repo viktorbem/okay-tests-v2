@@ -282,12 +282,10 @@ class OkayTest(MainTest):
         street = 'Kšírova 676/259'
         zipnr = '61900'
         city = 'Brno'
-        prepend = '+420'
         if 'sk' in domain_loc:
             street = 'Černyševského 1287/10'
             zipnr = '85101'
             city = 'Bratislava'
-            prepend = '+421'
         creds = {
             'email': 'test.okay@okaycz.eu',
             'name': 'test',
@@ -295,7 +293,7 @@ class OkayTest(MainTest):
             'street': street,
             'zipnr': zipnr,
             'city': city,
-            'phonenr': f'{prepend}608123123'
+            'phonenr': '608123123'
         }
 
         for key in creds:
@@ -333,7 +331,7 @@ class OkayTest(MainTest):
             city.clear()
             city.send_keys(creds['city'])
             self.sleep(1)
-            phonenr = self.driver.find_element(By.ID, 'checkout_shipping_address_phone')
+            phonenr = self.driver.find_element(By.ID, 'custom_phone_number')
             phonenr.clear()
             phonenr.send_keys(creds['phonenr'])
             self.sleep(1)
@@ -471,17 +469,22 @@ class OkayTest(MainTest):
         self.take_screenshot()
 
     @catch_error
-    def open_random_menu_items(self, items):
+    def open_random_menu_items(self, items, limit = 0):
         '''
         Get a list of all main menu items, randomly click as many as defined in argument
-        and take screenshots of results.
+        and take screenshots of results. You may provide another keyword argument 'limit',
+        which will limit the list to first N items of menu.
 
         Example:
-        - test.click_random_mainmenu_items(items=3)
+        - test.click_random_mainmenu_items(items=3, limit=5)
 
         The argument 'items' is mandatory.
+        The argument 'limit' is optional.
         This is going to click on 3 items in main menu.
         '''
+        if items > limit > 0:
+            items = limit
+
         self.log(f'Click on {items} random items in main menu')
         clicked = []
         i = 0
@@ -505,6 +508,8 @@ class OkayTest(MainTest):
                 self.sleep()
 
             menuitems = self.driver.find_elements(By.CSS_SELECTOR, '.nav-nested .nav-nested__link-parent')
+            if limit > 0:
+                menuitems = menuitems[:limit]
             self.log(f'H{i}. choose random item from the menu')
             item = random.choice(menuitems)
             item_anchor = item.find_element(By.TAG_NAME, 'a')
